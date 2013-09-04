@@ -1,0 +1,26 @@
+{
+ :maptype=>:kv,
+ :mapname=>"callnumber_map",
+ :map => {"Z"=>"Z - Library Science",
+ "V"=>"V - Naval Science",
+ "U"=>"U - Military Science",
+ "T"=>"T - Technology",
+ "S"=>"S - Agriculture",
+ "R"=>"R - Medicine",
+ "Q"=>"Q - Science",
+ "P"=>"P - Language and Literature",
+ "N"=>"N - Fine Arts",
+ "M"=>"M - Music",
+ "L"=>"L - Education",
+ "K"=>"K - Law",
+ "J"=>"J - Political Science",
+ "H"=>"H - Social Science",
+ "G"=>"G - Geography, Anthropology, Recreation",
+ "F"=>"F - General American History",
+ "E"=>"E - United States History",
+ "D"=>"D - World History",
+ "C"=>"C - Historical Sciences",
+ "B"=>"B - Philosophy, Psychology, Religion",
+ "A"=>"A - General Works"}
+
+}
