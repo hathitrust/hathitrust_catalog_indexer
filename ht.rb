@@ -286,6 +286,8 @@ each_record do |r, context|
   r.each_by_tag('974') do |f|
     
     # Get the easy stuff
+    
+    ##### NO NO NO Do this with a class, for god's sake #####
     h = {
       :rights = f['r'],
       :htid   = f['u'],
@@ -303,7 +305,11 @@ each_record do |r, context|
     htdata << h
   end
   
-  context.clipboard[:ht_fields] = ht_fields
+  if ht_fields.size == 0
+    context.skip!("No 974s in record  #{r['001']}")
+  else
+    context.clipboard[:ht_fields] = ht_fields
+  end
     
 end
     
