@@ -1,7 +1,5 @@
 {
- :maptype=>:kv,
- :mapname=>"country_map",
- :map => {"xr"=>"Czech Republic",
+ "xr"=>"Czech Republic",
  "xp"=>"Spratly Island",
  "xo"=>"Slovakia",
  "xn"=>"Macedonia",
@@ -317,6 +315,5 @@
  "ye"=>"Yemen",
  "xx"=>"No place, unknown, or undetermined",
  "xv"=>"Slovenia",
- "xs"=>"South Georgia and the South Sandwich Islands"}
-
+ "xs"=>"South Georgia and the South Sandwich Islands"
 }
