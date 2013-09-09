@@ -207,10 +207,17 @@ to_field "topic", extract_marc("600abcdefghjklmnopqrstuvxyz:600a:610abcdefghklmn
 to_field "genre", extract_marc('655ab')
 
 
-# field('geographic') do
-#   mapname 'area_map'
-#   spec("043a")
-# end
+# Look into using Traject default geo field
+to_field "geographic" do |record, acc|
+  marc_geo_map = Traject::TranslationMap.new("marc_geographic")
+  extractor_043a      = MarcExtractor.cached("043a", :seperator => nil)
+  acc.concat(
+    extractor_043a.extract(record).collect do |code|
+      # remove any trailing hyphens, then map
+      marc_geo_map[code.gsub(/\-+\Z/, '')]
+    end.compact
+  )
+end
 
 to_field 'era', extract_marc("600y:610y:611y:630y:650y:651y:654y:655y:656y:657y:690z:691y:692z:694z:695z:696z:697z:698z:699z")
 
