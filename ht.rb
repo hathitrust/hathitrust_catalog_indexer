@@ -28,7 +28,7 @@ settings do
   store "writer_class_name", "Traject::DebugWriter"
   store "output_file", "debug.out"
   store "log.batch_progress", 5_000
-  store 'processing_thread_pool', 3
+  store 'processing_thread_pool', 4
   provide "mock_reader.limit", 100
   
 end
@@ -276,19 +276,263 @@ to_field 'language008', extract_marc('008[35-37]')
 ############ HATHITRUST STUFF #######
 #####################################
 #
-# The HT stuff has gotten ridiculously complex
-# Needs refactoring in a big way. How many times am I going to
-# find the 974s?
-#
-# Sadly, I can't do it *all* with side effects because the syntax demands that
-# something actually get set. So, we'll set ht_id, and do everything else by
-# directly manipulating the doc
-# 
-# custom('ht_id') do
-#   function(:fillHathi) {
-#     mod mcu
-#     args TMAPS
-#   }
-# end
-# 
 
+
+# Start off by building up a data structure representing all the 974s
+# and stick it in ht_fields
+each_record do |r, context|
+  
+  ht_fields = []
+  r.each_by_tag('974') do |f|
+    
+    # Get the easy stuff
+    h = {
+      :rights = f['r'],
+      :htid   = f['u'],
+      :last_update_date = f['d'],
+      :enum_chron = f['z']
+    }
+    
+    # Get the namespace
+    if ns_match = /^(.*?)\./.match(htid)
+      h[:namespace] = ns_match[1]
+    else
+      context.skip!("Malformed htid #{htid} in record #{r['001']}")
+    end
+    
+    htdata << h
+  end
+  
+  context.clipboard[:ht_fields] = ht_fields
+    
+end
+    
+
+
+
+
+
+
+# 
+# 
+#       ###############################################
+#       # The hathitrust stuff is a disaster. Just put
+#       # it all in one big method and use side effects.
+#       #################################################
+# 
+#       def self.fillHathi doc, r, tmaps
+#         # Set some defaults
+#         defaultDate = '00000000'
+# 
+#         # Get the 974s
+#         fields = r.find_by_tag('974');
+# 
+#         # How many of them are there?
+#         ht_count = fields.size
+#         
+# #puts "HT_COUNT is #{ht_count}"
+#         # If zero, just set HTSO to false and bail. Nothing to do
+#         if ht_count == 0
+#           doc['ht_searchonly'] = false
+#           doc['ht_searchonly_intl'] = false
+#           doc['id'] = nil
+#           return nil
+#         end
+# 
+#         # ...otherwise, set it
+#         doc['ht_count'] = ht_count
+# 
+#         # Start off by assuming that it's HTSO for both us and intl
+#         htso      = true
+#         htso_intl = true
+# 
+#         # Presume no enumchron
+#         gotEnumchron = false
+# 
+# 
+#         # Places to stash things
+#         htids = []
+#         json = []
+#         jsonindex = {}
+#         avail = {:us => [], :intl => []}
+#         rights = []
+#         sources = []
+# 
+#         # Loop through the fields to get what we need
+#         fields.each do |f|
+# 
+#           # Get the rights code
+#           rc = f['r']
+#           rights << rc
+# 
+#           # Set availability based on the rights code
+#           us_avail = tmaps['availability_map_ht'][rc]
+#           intl_avail =  tmaps['availability_map_ht_intl'][rc]
+#           avail[:us] << us_avail
+#           avail[:intl] << intl_avail
+# 
+#           # Get the ID and make sure it's lowercase.
+#           # Put it in a local array (htids) because we have to return it
+#           id = f['u']
+#           lc_id = id.downcase
+#           if id != lc_id
+#             log.error "#{id} needs to be lowecase";
+#             id = lc_id
+#           end
+#           htids << id
+# 
+#           # Extract the source
+#           m = /^(.*?+)\./.match id
+#           unless m and m[1]
+#             log.error "Bad htid '#{id}' in record #{ r['001'].value}"
+#             next
+#           end
+# 
+#           sources << HTSOURCEMAP[m[1]]
+# 
+#           # Update date
+#           udate = f['d'] || defaultDate
+#           doc.add 'ht_id_update', udate
+# 
+#           # Start the json rec.
+#           jsonrec = {
+#             'htid' => id,
+#             'ingest' => udate,
+#             'rights'  => rc,
+#             'heldby'   => [] # fill in later
+#           }
+# 
+#           # enumchron
+#           echron = f['z']
+#           if echron
+#             jsonrec['enumcron'] = echron
+#             gotEnumchron = true
+#           end
+# 
+# 
+#           # Display
+#           doc.add 'ht_id_display', [id, udate, echron].join("|")
+# 
+#           # Add the current item's information to the json array,
+#           # and keep a pointer to it in jsonindex so we can easily
+#           # update the holdings later.
+# 
+#           json << jsonrec
+#           jsonindex[id] = jsonrec
+# 
+#           # Does this item already negate HTSO?
+#           htso = false if us_avail == 'Full Text'
+#           htso_intl = false if intl_avail == 'Full Text'
+#         end
+# 
+# 
+#         # Done processing the items. Add aggreage info
+# 
+#         # If we've got nothing in ht_rightscode but 'nobody', we
+#         # need to mark it as a tombstone.
+# 
+#         rights.uniq!    #make uniq
+#         rights.compact! #remove nil
+#       
+#         if rights.size == 1 && rights[0] == 'nobody'
+#           rights << 'tombstone'
+#         end
+# 
+# 
+#         doc.add 'ht_availability',  avail[:us].uniq
+#         doc.add 'ht_availability_intl', avail[:intl].uniq
+#         doc.add 'ht_rightscode', rights
+#         doc.add 'htsource', sources.uniq
+# 
+# 
+# 
+# 
+# 
+#         # Now we need to do record-level
+#         # stuff.
+# 
+#         # Figure out for real the HTSO status. It's only HTSO
+#         # if the item-level stuff is htso (as represented by htso
+#         # and htso_intl) AND the record_level stuff is also HTSO.
+# 
+#         record_htso = self.record_level_htso(r)
+#         doc['ht_searchonly'] = htso && record_htso
+#         doc['ht_searchonly_intl'] = htso_intl && record_htso
+# 
+#         # Add in the print database holdings
+# 
+#          heldby = []
+#          holdings = self.fromHTID(htids)
+#          holdings.each do |a|
+#            htid, inst = *a
+#            heldby << inst
+#            jsonindex[htid]['heldby'] << inst
+#          end
+#          
+#          doc['ht_heldby'] = heldby.uniq
+# 
+#         # Sort and JSONify the json structure
+# 
+#         json = sortHathiJSON json if gotEnumchron
+#         doc['ht_json'] = json.to_json
+# 
+#         # Finally, return the ids
+#         return htids
+# 
+#       end
+# 
+# 
+#       ############################################################
+#       # Get record-level boolean for whether or not this is HTSO
+#       ###########################################################
+#       def self.record_level_htso r
+#         # Check to see if we have an online or circ holding
+#         r.find_by_tag('973').each do |f|
+#           return false if f['b'] == 'avail_online';
+#           return false if f['b'] == 'avail_circ';
+#         end
+# 
+#         # Check to see if we have a local holding that's not SDR
+#         r.find_by_tag('852').each do |f|
+#           return false if f['b'] and f['b'] != 'SDR'
+#         end
+# 
+#         # otherwise
+#         return true
+#       end
+# 
+# 
+# 
+# 
+# 
+#       ########################################################
+#       # PRINT HOLDINGS
+#       ########################################################
+#       # Get the print holdings from the phdb, based on
+#       # hathitrust IDs.
+#       #
+# 
+#       # Log in
+# 
+#       @htidsnippet = "
+#         select volume_id, member_id from holdings_htitem_htmember
+#         where volume_id "
+# 
+#       def self.fromHTID htids
+#         Thread.current[:phdbdbh] ||= JDBCHelper::Connection.new(
+#           :driver=>'com.mysql.jdbc.Driver',
+#           :url=>'jdbc:mysql://' + MDP_DB_MACHINE + '/ht',
+#           :user => MDP_USER,
+#           :password => MDP_PASSWORD
+#         )
+# 
+#         q = @htidsnippet + "IN (#{commaify htids})"
+#         return Thread.current[:phdbdbh].query(q)
+#       end
+# 
+#       # Produce a comma-delimited list. We presume there aren't any double-quotes
+#       # in the values
+# 
+#       def self.commaify a
+#         return *a.map{|v| "\"#{v}\""}.join(', ')
+#       end
