@@ -3,6 +3,7 @@ $:.unshift File.expand_path('../ht', __FILE__)
 
 
 require 'marc/fast_xmlwriter'
+require 'marc/nokogiri_writer'
 require 'library_stdnums'
 
 require 'traject/macros/marc21_semantics'
@@ -27,11 +28,15 @@ settings do
   store "writer_class_name", "Traject::DebugWriter"
   store "output_file", "debug.out"
   store "log.batch_progress", 5_000
-  store 'processing_thread_pool', 0
+  store 'processing_thread_pool', 3
   provide "mock_reader.limit", 100
   
 end
 
+# Get ready to map marc4j record into an xml string
+unless defined?(MarcPermissiveStreamReader) && defined?(MarcXmlReader)
+  Traject::Util.require_marc4j_jars(settings)
+end
 
 
 ################################
@@ -46,9 +51,15 @@ to_field "id", extract_marc("001", :first => true)
       #******  FOR TESTING ONLY
       #******  DON'T FORGET TO REENGAGE!!!
 
-      # to_field 'fullrecord' do |record, acc| 
-      #   acc << MARC::FastXMLWriter.encode(record)  
-      # end
+      
+      to_field 'fullrecord' do |record, acc| 
+        xmlos = java.io.ByteArrayOutputStream.new
+        writer = org.marc4j.MarcXmlWriter.new(xmlos)
+        writer.setUnicodeNormalization(true)
+        writer.write(record.original_marc4j) 
+        writer.writeEndDocument();
+        acc << xmlos.toString
+      end
 
       #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
