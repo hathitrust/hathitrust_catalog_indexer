@@ -1,6 +1,5 @@
 $:.unshift '/Users/dueberb/devel/ruby/ruby-marc/lib'
-$:.unshift File.expand_path('../ht', __FILE__)
-
+$:.unshift  "#{File.dirname(__FILE__)}/lib"
 
 require 'marc/fast_xmlwriter'
 require 'marc/nokogiri_writer'
@@ -13,8 +12,8 @@ require 'traject/macros/marc_format_classifier'
 extend Traject::Macros::MarcFormats
 
 
-require_relative 'lib/ht_macros'
-extend Traject::Macros::HathiTrust
+require 'ht_macros'
+extend HathiTrust::Traject::Macros
 
  
 require 'traject/marc4j_reader'
@@ -28,7 +27,7 @@ settings do
   store "writer_class_name", "Traject::DebugWriter"
   store "output_file", "debug.out"
   store "log.batch_progress", 5_000
-  store 'processing_thread_pool', 4
+  store 'processing_thread_pool', 0
   provide "mock_reader.limit", 100
   
 end
@@ -37,6 +36,12 @@ end
 unless defined?(MarcPermissiveStreamReader) && defined?(MarcXmlReader)
   Traject::Util.require_marc4j_jars(settings)
 end
+
+################################
+###### Setup ###################
+################################
+
+each_record HathiTrust::Traject::Macros.setup
 
 
 ################################
@@ -53,12 +58,13 @@ to_field "id", extract_marc("001", :first => true)
 
       
       to_field 'fullrecord' do |record, acc| 
-        xmlos = java.io.ByteArrayOutputStream.new
-        writer = org.marc4j.MarcXmlWriter.new(xmlos)
-        writer.setUnicodeNormalization(true)
-        writer.write(record.original_marc4j) 
-        writer.writeEndDocument();
-        acc << xmlos.toString
+        # xmlos = java.io.ByteArrayOutputStream.new
+        # writer = org.marc4j.MarcXmlWriter.new(xmlos)
+        # writer.setUnicodeNormalization(true)
+        # writer.write(record.original_marc4j) 
+        # writer.writeEndDocument();
+        # acc << xmlos.toString
+        acc << MARC::FastXMLWriter.encode(record)
       end
 
       #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -67,9 +73,8 @@ to_field "allfields", extract_all_marc_values
 
 # Get a formatter
 Traject::Util.require_marc4j_jars({})
-require '/Users/dueberb/devel/java/MARCFormat/dist/MARCFormat.jar'
+require 'MARCFormat.jar'
 format_extractor = Java::org.marc4j::GetFormat.new
-$:.unshift '/Users/dueberb/devel/ruby/ht_traject'
 format_map       = Traject::TranslationMap.new("formats")
 
 to_field "format" do |record, acc, context|
@@ -81,7 +86,7 @@ to_field "format" do |record, acc, context|
   
   # We need to know for later if this is a serial/journal type
   if acc.include? "Journal"
-    context.clipboard[:journal] = true
+    context.clipboard[:ht][:journal] = true
   end
 end
 
@@ -159,25 +164,25 @@ to_field "series2", extract_marc("490a")
 # Serial titles count on the format alreayd being set and having the string 'Serial' in it.
 
 to_field "serialTitle" do |r, acc, context|
-  if context.clipboard[:journal]
+  if context.clipboard[:ht][:journal]
     extract_with_and_without_filing_characters('245abdefghknp', :trim_punctuation => true).call(r, acc, context)
   end
 end
 
 to_field('serialTitle_ab') do |r, acc, context|
-  if context.clipboard[:journal]
+  if context.clipboard[:ht][:journal]
     extract_with_and_without_filing_characters('245ab', :trim_punctuation => true).call(r, acc, context)
   end
 end  
 
 to_field('serialTitle_a') do |r, acc, context|
-  if context.clipboard[:journal]
+  if context.clipboard[:ht][:journal]
     extract_with_and_without_filing_characters('245a', :trim_punctuation => true).call(r, acc, context)
   end
 end  
   
 to_field('serialTitle_rest') do |r, acc, context|
-  if context.clipboard[:journal]
+  if context.clipboard[:ht][:journal]
     extract_with_and_without_filing_characters(%w[
       130adfgklmnoprst
       210ab
@@ -252,12 +257,16 @@ to_field "country_of_pub", extract_marc('752ab')
 each_record extract_date_into_context
 
 # Now use that value
-to_field "publishDate" do |rec, acc, context|
-  acc << context.clipboard[:ht_date] if context.clipboard[:ht_date]
+to_field "publishDate" do |record, acc, context|
+  if context.clipboard[:ht][:date]
+    acc << context.clipboard[:ht][:date] 
+  else
+    logger.debug "No valid date: #{record['001'].value}"
+  end
 end
 
 to_field 'publishDateRange' do |rec, acc, context|
-   dr = Traject::Macros::HathiTrust::HTMacros.compute_date_range(context.clipboard[:ht_date])
+   dr = HathiTrust::Traject::Macros::HTMacros.compute_date_range(context.clipboard[:ht][:date])
    acc << dr if dr
  end
 
@@ -289,26 +298,26 @@ each_record do |r, context|
     
     ##### NO NO NO Do this with a class, for god's sake #####
     h = {
-      :rights = f['r'],
-      :htid   = f['u'],
-      :last_update_date = f['d'],
-      :enum_chron = f['z']
+      :rights => f['r'],
+      :htid   => f['u'],
+      :last_update_date => f['d'],
+      :enum_chron => f['z']
     }
     
     # Get the namespace
-    if ns_match = /^(.*?)\./.match(htid)
+    if ns_match = /^(.*?)\./.match(h[:htid])
       h[:namespace] = ns_match[1]
     else
       context.skip!("Malformed htid #{htid} in record #{r['001']}")
     end
     
-    htdata << h
+    ht_fields << h
   end
   
   if ht_fields.size == 0
     context.skip!("No 974s in record  #{r['001']}")
   else
-    context.clipboard[:ht_fields] = ht_fields
+    context.clipboard[:ht][:fields] = ht_fields
   end
     
 end

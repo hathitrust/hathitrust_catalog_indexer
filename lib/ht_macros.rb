@@ -1,14 +1,15 @@
-module Traject::Macros
-  module HathiTrust
+module HathiTrust
+end
+
+module HathiTrust::Traject
+  
+  module Macros
     
-    def please(&blk)
-      badarg = true unless block_given?
-      raise ArgumentError.new("No block given") if badarg
-      
-      lam = blk.call
-      badarg =  true unless lam.is_a?(Proc)
-      raise ArgumentError.new("perform takes a zero-arity block that returns a lambda") if badarg
-      return lam
+    # Get a namespaced place to put all the ht stuff
+    def self.setup
+      lambda do |record, context| 
+        context.clipboard[:ht] = {}
+      end
     end
     
     def extract_with_and_without_filing_characters(spec, opts={})
@@ -20,11 +21,11 @@ module Traject::Macros
       lambda do |record, accumulator, context|
         accumulator.concat HTMacros.get_with_and_without_filing(extractor, record)
         if only_first
-          Marc21.first! accumulator
+          Traject::Macros::Marc21.first! accumulator
         end
 
         if trim_punctuation
-          accumulator.collect! {|s| Marc21.trim_punctuation(s)}
+          accumulator.collect! {|s| Traject::Macros::Marc21.trim_punctuation(s)}
         end
 
         if default_value && accumulator.empty?
@@ -38,16 +39,52 @@ module Traject::Macros
     
     # Stick some dates into the context object for later use
     def extract_date_into_context
-      bad_date_types = {
-        'n' => true,
-        'u' => true,
-        'b' => true
-      }
-      
-      only_four_digits = /\A\d{4}\Z/
-      contains_four_digits = /(\d{4})/
       
       lambda do |r, context|
+        if date = HTMacros.get_date(r)
+          context.clipboard[:ht][:date] = date
+        end
+      end
+ 
+
+      
+    end
+    
+    
+    
+    
+    class HTMacros
+      # Takes a MARC::Extractor and a record and returns that string 
+      # with and without filing characters as specified by the 
+      # indicator 2. 
+      #
+      # Should probably test to make sure the passed in extractor
+      # actually asks for the first subfield, but that seems like
+      # more work than just telling people to make sure to do that.
+      
+      def self.get_with_and_without_filing(extractor, record)
+        rv = []
+        extractor.collect_matching_lines(record) do |field, spec, ext| 
+          str = ext.collect_subfields(field, spec).first
+          next unless str
+          non_filing = field.indicator2.to_i
+          rv << str
+          rv << str.slice(non_filing, str.length)
+        end
+        rv.uniq.compact
+      end
+      
+      # Get a date from a record, as best you can
+      def self.get_date(r)
+        bad_date_types = {
+          'n' => true,
+          'u' => true,
+          'b' => true
+        }
+      
+        only_four_digits = /\A\d{4}\Z/
+        contains_four_digits = /(\d{4})/
+        
         if r['008']
           ohoh8 = r['008'].value
           date1 = ohoh8[7..10].downcase
@@ -61,44 +98,25 @@ module Traject::Macros
           end
           
           if m = only_four_digits.match(date1)
-            context.clipboard[:ht_date] = date1
+            return date1
           end
         end
         
-        # Go on and check the 260c if necessary
-        if !context.clipboard[:ht_date] && r['260'] && r['260']['c']
+        # OK. If the 008 had a good date, we've already returned
+        # it. Fall back on the 260c
+        if r['260'] && r['260']['c']
           if m = contains_four_digits.match(r['260']['c'])
-            context.clipboard[:ht_date] = m[1]
+            return m[1]
           end
         end
-        
-        # If we've got no date at all, log it
-        
-        unless context.clipboard[:ht_date]
-          logger.debug "No valid date: #{r['001'].value}"
-          return
-        end
+        return nil
       end
       
-    end
-    
-    
-    
-    
-    class HTMacros
-      def self.get_with_and_without_filing(extractor, record)
-        rv = []
-        extractor.collect_matching_lines(record) do |field, spec, ext| 
-          str = ext.collect_subfields(field, spec).first
-          next unless str
-          non_filing = field.indicator2.to_i
-          rv << str
-          rv << str.slice(non_filing, str.length)
-        end
-        rv.uniq.compact
-      end
-      
-      
+      # Get a date range for easier faceting. 1800+ goes to the decade,
+      # before that goes to the century, pre-1500 gets the string
+      # "Pre-1500"
+      #
+      # Returns 'nil' for dates after 2100, presuming they're just wrong
       def self.compute_date_range(date)
         return nil unless date
         if date < "1500"
@@ -115,6 +133,8 @@ module Traject::Macros
         end
         return nil # default
       end
+      
+      
       
     end
     
