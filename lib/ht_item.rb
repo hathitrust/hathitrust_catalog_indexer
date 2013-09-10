@@ -68,6 +68,11 @@ module HathiTrust
         @namespace = namespace_for(@htid)
       end
       
+      def source
+        Traject::TranslationMap.new('ht_namespace_map')[namespace]
+      end
+      
+      
       def us_availability
         Traject::TranslationMap.new('availability_map_ht')[rights]
       end

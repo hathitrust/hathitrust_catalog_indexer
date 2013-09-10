@@ -292,20 +292,55 @@ end
 
 to_field 'ht_id' do |record, acc, context|
   context.clipboard[:ht][:items].each do |item|
-    acc << item.htid
+    lcid = item.htid.downcase
+    if lcid != item.htid
+      logger.error "#{item.htid} needs to be lowecase";
+    end
+    acc << lcid
   end
 end
 
 to_field 'ht_rightscode' do |record, acc, context|
-  acc.concat context.clipboard[:ht][:items].rights
+  rightcodes = context.clipboard[:ht][:items].map{|item| item.rights}
+  rightcodes.compact!
+  rightcodes.uniq!
+  if rightcodes.size == 1 && rights[0] == 'nobody'
+    rightcodes << 'tombstone'
+  end
+  acc.concat rightcodes
 end
 
+to_field 'ht_availability' do |record, acc, context|
+  context.clipboard[:ht][:items].each do |item|
+    acc << item.us_availability
+  end
+  acc.compact!
+  acc.uniq!
+end
 
-    
+to_field 'ht_availability_intl' do |record, acc, context|
+  context.clipboard[:ht][:items].each do |item|
+    acc << item.us_availability
+  end
+  acc.compact!
+  acc.uniq!
+end
 
+to_field 'htsource' do |record, acc, context|
+  context.clipboard[:ht][:items].each do |item|
+    acc << item.source
+  end
+  acc.compact!
+  acc.uniq!
+end
 
-
-
+to_field 'ht_id_update' do |record, acc, context|
+  context.clipboard[:ht][:items].each do |item|
+    acc << item.last_update_date
+  end
+  acc.uniq!
+  acc.compact!
+end
 
 
 
@@ -329,32 +364,32 @@ end
 #         # Loop through the fields to get what we need
 #         fields.each do |f|
 # 
-#           # Get the rights code
-#           rc = f['r']
-#           rights << rc
-# 
-#           # Set availability based on the rights code
-#           us_avail = tmaps['availability_map_ht'][rc]
-#           intl_avail =  tmaps['availability_map_ht_intl'][rc]
-#           avail[:us] << us_avail
-#           avail[:intl] << intl_avail
-# 
-#           # Get the ID and make sure it's lowercase.
-#           # Put it in a local array (htids) because we have to return it
-#           id = f['u']
-#           lc_id = id.downcase
-#           if id != lc_id
-#             log.error "#{id} needs to be lowecase";
-#             id = lc_id
-#           end
-#           htids << id
-# 
-# 
-#           sources << HTSOURCEMAP[m[1]]
-# 
-#           # Update date
-#           udate = f['d'] || defaultDate
-#           doc.add 'ht_id_update', udate
+        #           # Get the rights code
+        #           rc = f['r']
+        #           rights << rc
+        # 
+        #           # Set availability based on the rights code
+        #           us_avail = tmaps['availability_map_ht'][rc]
+        #           intl_avail =  tmaps['availability_map_ht_intl'][rc]
+        #           avail[:us] << us_avail
+        #           avail[:intl] << intl_avail
+        # 
+        #           # Get the ID and make sure it's lowercase.
+        #           # Put it in a local array (htids) because we have to return it
+        #           id = f['u']
+        #           lc_id = id.downcase
+        #           if id != lc_id
+        #             log.error "#{id} needs to be lowecase";
+        #             id = lc_id
+        #           end
+        #           htids << id
+        # 
+        # 
+        #           sources << HTSOURCEMAP[m[1]]
+        # 
+        #           # Update date
+        #           udate = f['d'] || defaultDate
+        #           doc.add 'ht_id_update', udate
 # 
 #           # Start the json rec.
 #           jsonrec = {
@@ -388,28 +423,28 @@ end
 #         end
 # 
 # 
-#         # Done processing the items. Add aggreage info
-# 
-#         # If we've got nothing in ht_rightscode but 'nobody', we
-#         # need to mark it as a tombstone.
-# 
-#         rights.uniq!    #make uniq
-#         rights.compact! #remove nil
-#       
-#         if rights.size == 1 && rights[0] == 'nobody'
-#           rights << 'tombstone'
-#         end
-# 
-# 
-#         doc.add 'ht_availability',  avail[:us].uniq
-#         doc.add 'ht_availability_intl', avail[:intl].uniq
-#         doc.add 'ht_rightscode', rights
-#         doc.add 'htsource', sources.uniq
-# 
-# 
-# 
-# 
-# 
+        #         # Done processing the items. Add aggreage info
+        # 
+        #         # If we've got nothing in ht_rightscode but 'nobody', we
+        #         # need to mark it as a tombstone.
+        # 
+        #         rights.uniq!    #make uniq
+        #         rights.compact! #remove nil
+        #       
+        #         if rights.size == 1 && rights[0] == 'nobody'
+        #           rights << 'tombstone'
+        #         end
+        # 
+        # 
+        #         doc.add 'ht_availability',  avail[:us].uniq
+        #         doc.add 'ht_availability_intl', avail[:intl].uniq
+        #         doc.add 'ht_rightscode', rights
+        #         doc.add 'htsource', sources.uniq
+        # 
+        # 
+        # 
+        # 
+        # 
 #         # Now we need to do record-level
 #         # stuff.
 # 
