@@ -27,7 +27,7 @@ settings do
   store "writer_class_name", "Traject::DebugWriter"
   store "output_file", "debug.out"
   store "log.batch_progress", 5_000
-  store 'processing_thread_pool', 0
+  store 'processing_thread_pool', 3
   provide "mock_reader.limit", 100
   
 end
@@ -49,30 +49,10 @@ each_record HathiTrust::Traject::Macros.setup
 ################################
 
 to_field "id", extract_marc("001", :first => true)
-
-
-      #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-      #******  COMMENTED OUT  
-      #******  FOR TESTING ONLY
-      #******  DON'T FORGET TO REENGAGE!!!
-
-      
-      to_field 'fullrecord' do |record, acc| 
-        # xmlos = java.io.ByteArrayOutputStream.new
-        # writer = org.marc4j.MarcXmlWriter.new(xmlos)
-        # writer.setUnicodeNormalization(true)
-        # writer.write(record.original_marc4j) 
-        # writer.writeEndDocument();
-        # acc << xmlos.toString
-        acc << MARC::FastXMLWriter.encode(record)
-      end
-
-      #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+to_field 'fullrecord', macr4j_as_xml
 to_field "allfields", extract_all_marc_values
 
 # Get a formatter
-Traject::Util.require_marc4j_jars({})
 require 'MARCFormat.jar'
 format_extractor = Java::org.marc4j::GetFormat.new
 format_map       = Traject::TranslationMap.new("formats")
@@ -291,36 +271,36 @@ to_field 'language008', extract_marc('008[35-37]')
 # and stick it in ht_fields
 each_record do |r, context|
   
-  ht_fields = []
-  r.each_by_tag('974') do |f|
-    
-    # Get the easy stuff
-    
-    ##### NO NO NO Do this with a class, for god's sake #####
-    h = {
-      :rights => f['r'],
-      :htid   => f['u'],
-      :last_update_date => f['d'],
-      :enum_chron => f['z']
-    }
-    
-    # Get the namespace
-    if ns_match = /^(.*?)\./.match(h[:htid])
-      h[:namespace] = ns_match[1]
-    else
-      context.skip!("Malformed htid #{htid} in record #{r['001']}")
-    end
-    
-    ht_fields << h
+  itemset = HathiTrust::Traject::ItemSet.new
+  
+  r.each_by_tag('974').map do |f|
+    itemset.add HathiTrust::Traject::Item.new_from_field(f)
   end
   
-  if ht_fields.size == 0
+  if itemset.size == 0
     context.skip!("No 974s in record  #{r['001']}")
   else
-    context.clipboard[:ht][:fields] = ht_fields
+    context.clipboard[:ht][:items] = itemset
   end
     
 end
+
+
+to_field 'ht_count' do |record, acc, context|
+  acc << context.clipboard[:ht][:items].size
+end
+
+to_field 'ht_id' do |record, acc, context|
+  context.clipboard[:ht][:items].each do |item|
+    acc << item.htid
+  end
+end
+
+to_field 'ht_rightscode' do |record, acc, context|
+  acc.concat context.clipboard[:ht][:items].rights
+end
+
+
     
 
 
@@ -328,34 +308,7 @@ end
 
 
 
-# 
-# 
-#       ###############################################
-#       # The hathitrust stuff is a disaster. Just put
-#       # it all in one big method and use side effects.
-#       #################################################
-# 
-#       def self.fillHathi doc, r, tmaps
-#         # Set some defaults
-#         defaultDate = '00000000'
-# 
-#         # Get the 974s
-#         fields = r.find_by_tag('974');
-# 
-#         # How many of them are there?
-#         ht_count = fields.size
-#         
-# #puts "HT_COUNT is #{ht_count}"
-#         # If zero, just set HTSO to false and bail. Nothing to do
-#         if ht_count == 0
-#           doc['ht_searchonly'] = false
-#           doc['ht_searchonly_intl'] = false
-#           doc['id'] = nil
-#           return nil
-#         end
-# 
-#         # ...otherwise, set it
-#         doc['ht_count'] = ht_count
+
 # 
 #         # Start off by assuming that it's HTSO for both us and intl
 #         htso      = true
@@ -396,12 +349,6 @@ end
 #           end
 #           htids << id
 # 
-#           # Extract the source
-#           m = /^(.*?+)\./.match id
-#           unless m and m[1]
-#             log.error "Bad htid '#{id}' in record #{ r['001'].value}"
-#             next
-#           end
 # 
 #           sources << HTSOURCEMAP[m[1]]
 # 
