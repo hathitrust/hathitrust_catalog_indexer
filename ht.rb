@@ -13,6 +13,7 @@ extend Traject::Macros::MarcFormats
 
 
 require 'ht_macros'
+require 'ruby_marc_to_marc4j'
 require 'ht_item'
 extend HathiTrust::Traject::Macros
 
@@ -49,7 +50,15 @@ end
 ###### Setup ###################
 ################################
 
+# Set up an area in the clipboard for use storing intermediate stuff
 each_record HathiTrust::Traject::Macros.setup
+
+
+# Get a marc4j record if we don't have one already
+marc_converter = HathiTrust::MARC2MARC4J.new({})
+each_record do |rec|
+  rec.original_marc4j ||= marc_converter.convert_to_marc4j(rec)
+end
 
 
 ################################
