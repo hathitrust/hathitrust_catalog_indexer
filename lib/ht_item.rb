@@ -1,5 +1,6 @@
 require 'traject'
 require 'match_map'
+require 'ht_constants'
 
 module HathiTrust
   module Traject
@@ -45,6 +46,7 @@ module HathiTrust
         end
       end
       
+      
       def rights_list
         unless @rights_list
           @rights_list = self.map(&:rights)
@@ -84,6 +86,19 @@ module HathiTrust
         @intl
       end
       
+      
+      # The whole set (record) is considered Full Text iff there is at
+      # least one item whose status is fulltext
+      
+      def us_fulltext?
+        self.any? {|item| item.us_availability == HathiTrust::Constants::FT}
+      end
+      
+      def intl_fulltext?
+        self.any?  {|item| item.intl_availability == HathiTrust::Constants::FT}
+      end
+      
+      
       def ht_ids
         unless @ids
           @ids = self.map {|i| i.htid.downcase }
@@ -91,7 +106,6 @@ module HathiTrust
         @ids
       end
       
-            
     end
     
     class Item
@@ -118,14 +132,13 @@ module HathiTrust
       def source
         ::Traject::TranslationMap.new('ht_namespace_map')[namespace]
       end
-      
-      
+
       def us_availability
-        ::Traject::TranslationMap.new('availability_map_ht')[rights]
+        ::Traject::TranslationMap.new('availability_map_ht')[rights].first
       end
 
       def intl_availability
-        ::Traject::TranslationMap.new('availability_map_ht_intl')[rights]
+        ::Traject::TranslationMap.new('availability_map_ht_intl')[rights].first
       end
       
       

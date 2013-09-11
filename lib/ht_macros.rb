@@ -26,12 +26,14 @@ module HathiTrust::Traject::Macros
       end
 
       if trim_punctuation
-        accumulator.collect! {|s| Traject::Macros::Marc21.trim_punctuation(s)}
+        accumulator.map! {|s| Traject::Macros::Marc21.trim_punctuation(s)}
       end
 
       if default_value && accumulator.empty?
         accumulator << default_value
       end
+      
+      accumulator.uniq!
       
     end
     
@@ -80,10 +82,13 @@ module HathiTrust::Traject::Macros
         str = ext.collect_subfields(field, spec).first
         next unless str
         non_filing = field.indicator2.to_i
+        non_filing_string = str[non_filing..-1]
         rv << str
-        rv << str.slice(non_filing, str.length)
+        rv << non_filing_string unless str == non_filing_string
       end
-      rv.uniq.compact
+      rv.uniq!
+      rv.compact!
+      rv
     end
     
     # Get a date from a record, as best you can

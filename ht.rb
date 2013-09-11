@@ -25,11 +25,18 @@ require 'traject/debug_writer'
 settings do
   store "reader_class_name", "Traject::Marc4JReader"
   store "marc4j_reader.keep_marc4j", true
-  store "writer_class_name", "Traject::DebugWriter"
-  store "output_file", "debug.out"
-  store "log.batch_progress", 5_000
-  store 'processing_thread_pool', 0
   provide "mock_reader.limit", 100
+  
+  provide "solr.url", "http://mojito.umdl.umich.edu:8024/solr/biblio"
+  provide "solrj_writer.parser_class_name", "XMLResponseParser"
+  provide "solrj_writer.commit_on_close", "true"
+  
+  store "writer_class_name", "Traject::SolrJWriter"
+  store "output_file", "debug.out"
+  
+  store "log.batch_progress", 5_000
+  
+  store 'processing_thread_pool', 0
   
 end
 
@@ -279,7 +286,7 @@ each_record do |r, context|
   end
   
   if itemset.size == 0
-    context.skip!("No 974s in record  #{r['001']}")
+    # context.skip!("No 974s in record  #{r['001']}")
   end
   context.clipboard[:ht][:items] = itemset
     
@@ -319,6 +326,24 @@ to_field 'ht_id_display' do |record, acc, context|
     acc << item.display_string
   end
 end
+
+to_field 'ht_searchonly' do |record, acc, context|
+  acc << context.clipboard[:ht][:items].us_fulltext? ? 'false' : 'true'
+end
+
+to_field 'ht_searchonly_intl' do |record, acc, context|
+  acc << context.clipboard[:ht][:items].intl_fulltext? ? 'false' : 'true'
+end
+
+# Get the list of holding institutions and stash it
+
+# Use the list of holding instituions
+
+# Now have enough information to build the ht_json object
+
+
+
+
 
 
 # 
