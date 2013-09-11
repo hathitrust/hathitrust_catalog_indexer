@@ -1,4 +1,3 @@
-require 'ht_utils'
 
 module HathiTrust
   module Traject

@@ -13,6 +13,7 @@ extend Traject::Macros::MarcFormats
 
 
 require 'ht_macros'
+require 'ht_item'
 extend HathiTrust::Traject::Macros
 
  
@@ -27,7 +28,7 @@ settings do
   store "writer_class_name", "Traject::DebugWriter"
   store "output_file", "debug.out"
   store "log.batch_progress", 5_000
-  store 'processing_thread_pool', 3
+  store 'processing_thread_pool', 0
   provide "mock_reader.limit", 100
   
 end
@@ -273,15 +274,14 @@ each_record do |r, context|
   
   itemset = HathiTrust::Traject::ItemSet.new
   
-  r.each_by_tag('974').map do |f|
-    itemset.add HathiTrust::Traject::Item.new_from_field(f)
+  r.each_by_tag('974') do |f|
+    itemset.add HathiTrust::Traject::Item.new_from_974(f)
   end
   
   if itemset.size == 0
     context.skip!("No 974s in record  #{r['001']}")
-  else
-    context.clipboard[:ht][:items] = itemset
   end
+  context.clipboard[:ht][:items] = itemset
     
 end
 
@@ -291,57 +291,34 @@ to_field 'ht_count' do |record, acc, context|
 end
 
 to_field 'ht_id' do |record, acc, context|
-  context.clipboard[:ht][:items].each do |item|
-    lcid = item.htid.downcase
-    if lcid != item.htid
-      logger.error "#{item.htid} needs to be lowecase";
-    end
-    acc << lcid
-  end
+  acc << context.clipboard[:ht][:items].ht_ids
 end
 
 to_field 'ht_rightscode' do |record, acc, context|
-  rightcodes = context.clipboard[:ht][:items].map{|item| item.rights}
-  rightcodes.compact!
-  rightcodes.uniq!
-  if rightcodes.size == 1 && rights[0] == 'nobody'
-    rightcodes << 'tombstone'
-  end
-  acc.concat rightcodes
+  acc.concat context.clipboard[:ht][:items].rights_list
 end
 
 to_field 'ht_availability' do |record, acc, context|
-  context.clipboard[:ht][:items].each do |item|
-    acc << item.us_availability
-  end
-  acc.compact!
-  acc.uniq!
+  acc.concat context.clipboard[:ht][:items].us_availability
 end
 
 to_field 'ht_availability_intl' do |record, acc, context|
-  context.clipboard[:ht][:items].each do |item|
-    acc << item.us_availability
-  end
-  acc.compact!
-  acc.uniq!
+  acc.concat context.clipboard[:ht][:items].intl_availability
 end
 
 to_field 'htsource' do |record, acc, context|
-  context.clipboard[:ht][:items].each do |item|
-    acc << item.source
-  end
-  acc.compact!
-  acc.uniq!
+  acc.concat context.clipboard[:ht][:items].sources
 end
 
 to_field 'ht_id_update' do |record, acc, context|
-  context.clipboard[:ht][:items].each do |item|
-    acc << item.last_update_date
-  end
-  acc.uniq!
-  acc.compact!
+  acc.concat context.clipboard[:ht][:items].last_update_dates
 end
 
+to_field 'ht_id_display' do |record, acc, context|
+  context.clipboard[:ht][:items].each do |item|
+    acc << item.display_string
+  end
+end
 
 
 # 
@@ -407,8 +384,8 @@ end
 #           end
 # 
 # 
-#           # Display
-#           doc.add 'ht_id_display', [id, udate, echron].join("|")
+        #           # Display
+        #           doc.add 'ht_id_display', [id, udate, echron].join("|")
 # 
 #           # Add the current item's information to the json array,
 #           # and keep a pointer to it in jsonindex so we can easily
