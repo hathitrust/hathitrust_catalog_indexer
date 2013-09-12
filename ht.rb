@@ -1,8 +1,5 @@
-$:.unshift '/Users/dueberb/devel/ruby/ruby-marc/lib'
 $:.unshift  "#{File.dirname(__FILE__)}/lib"
 
-require 'marc/fast_xmlwriter'
-require 'marc/nokogiri_writer'
 require 'library_stdnums'
 
 require 'traject/macros/marc21_semantics'
@@ -11,9 +8,8 @@ extend  Traject::Macros::Marc21Semantics
 require 'traject/macros/marc_format_classifier'
 extend Traject::Macros::MarcFormats
 
-
+require 'marc/marc4j'
 require 'ht_macros'
-require 'ruby_marc_to_marc4j'
 require 'ht_item'
 extend HathiTrust::Traject::Macros
 
@@ -37,13 +33,13 @@ settings do
   
   store "log.batch_progress", 5_000
   
-  store 'processing_thread_pool', 3
+  store 'processing_thread_pool', 4
   
 end
 
 # Get ready to map marc4j record into an xml string
 unless defined?(MarcPermissiveStreamReader) && defined?(MarcXmlReader)
-  Traject::Util.require_marc4j_jars(settings)
+  marc_converter = MARC::MARC4J.new(:jardir => settings['marc4j_reader.jar_dir'])
 end
 
 ################################
@@ -55,9 +51,8 @@ each_record HathiTrust::Traject::Macros.setup
 
 
 # Get a marc4j record if we don't have one already
-marc_converter = HathiTrust::MARC2MARC4J.new({})
 each_record do |rec|
-  rec.original_marc4j ||= marc_converter.convert_to_marc4j(rec)
+  rec.original_marc4j ||= marc_converter.rubymarc_to_marc4j(rec)
 end
 
 
@@ -272,7 +267,7 @@ to_field 'publishDateRange' do |rec, acc, context|
 ########### MISC ###############
 ################################
 
-to_field "publisher", extract_marc('260b:533c')
+to_field "publisher", extract_marc('260b:264|*1|:533c')
 to_field "edition", extract_marc('250a')
 
 to_field 'language', marc_languages("008[35-37]:041a:041d:041e:041j")
