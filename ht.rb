@@ -37,7 +37,7 @@ settings do
   
   store "log.batch_progress", 5_000
   
-  store 'processing_thread_pool', 0
+  store 'processing_thread_pool', 3
   
 end
 
@@ -132,7 +132,7 @@ to_field 'sudoc', extract_marc('086az')
 to_field 'mainauthor', extract_marc('100abcd:110abcd:111abc')
 to_field 'author', extract_marc("100abcd:110abcd:111abc:700abcd:710abcd:711abc")
 to_field 'author2', extract_marc("110ab:111ab:700abcd:710ab:711ab")
-to_field "authorSort", extract_marc("100abcd:110abcd:111abc:110ab:700abcd:710ab:711ab")
+to_field "authorSort", extract_marc("100abcd:110abcd:111abc:110ab:700abcd:710ab:711ab", :first=>true)
 to_field "author_top", extract_marc("100abcdefgjklnpqtu0:110abcdefgklnptu04:111acdefgjklnpqtu04:700abcdejqux034:710abcdeux034:711acdegjnqux034:720a:765a:767a:770a:772a:774a:775a:776a:777a:780a:785a:786a:787a:245c")
 to_field "author_rest", extract_marc("505r")
 

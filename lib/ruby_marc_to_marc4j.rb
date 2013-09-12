@@ -39,7 +39,7 @@ class MARC2MARC4J
     r.original_marc4j = self.convert_to_marc4j(r)
   end
     
+  end
 end
-
     
 
