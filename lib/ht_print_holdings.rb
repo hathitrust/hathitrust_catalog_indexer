@@ -15,7 +15,7 @@ module HathiTrust
       htids = Array(htids)
       Thread.current[:phdbdbh] ||= JDBCHelper::Connection.new(
                     :driver=>'com.mysql.jdbc.Driver',
-                    :url=>'jdbc:mysql://' + self.db_machine + '/' + self.db_db
+                    :url=>'jdbc:mysql://' + self.db_machine + '/' + self.db_db,
                     :user => self.db_user
                     :password => self.db_password
                   )
@@ -42,26 +42,6 @@ module HathiTrust
     def self.commaify(a)
       return *a.map{|v| "\"#{v}\""}.join(', ')
     end
-
-      #       def self.fromHTID htids
-      #         Thread.current[:phdbdbh] ||= JDBCHelper::Connection.new(
-      #           :driver=>'com.mysql.jdbc.Driver',
-      #           :url=>'jdbc:mysql://' + MDP_DB_MACHINE + '/ht',
-      #           :user => MDP_USER,
-      #           :password => MDP_PASSWORD
-      #         )
-      # 
-      #         q = @htidsnippet + "IN (#{commaify htids})"
-      #         return Thread.current[:phdbdbh].query(q)
-      #       end
-      # 
-      #       # Produce a comma-delimited list. We presume there aren't any double-quotes
-      #       # in the values
-      # 
-      #       def self.commaify a
-      #         return *a.map{|v| "\"#{v}\""}.join(', ')
-      #       end
-    
     
   end
 end
