@@ -27,7 +27,8 @@ settings do
   provide "solr.url", "http://mojito.umdl.umich.edu:8024/solr/biblio"
   provide "solrj_writer.parser_class_name", "XMLResponseParser"
   provide "solrj_writer.commit_on_close", "true"
-  # provide "solrj_writer.thread_pool", 2
+  provide "solrj_writer.thread_pool", 2
+  provide "solrj_writer.batch_size", 50
   
   store "writer_class_name", "Traject::SolrJWriter"
   store "output_file", "debug.out"
@@ -94,12 +95,12 @@ end
 to_field "lccn", extract_marc('010a')
 to_field 'rptnum', extract_marc('088a')
 
-oclc_pattern = /^(?:oclc|ocolc|ocm|ocn)(\d+)/
+oclc_pattern = /(?:oclc|ocolc|ocm|ocn)(\d+)/
 to_field 'oclc' do |record, acc|
   oh35az_spec = Traject::MarcExtractor.cached('035az', :separator=>nil)
   oh35az_spec.extract(record).each do |d|
     if m = oclc_pattern.match(d)
-      acc < m[1]
+      acc << m[1]
     end
   end
 end
@@ -218,7 +219,43 @@ end
 ######## SUBJECT / TOPIC  ######
 ################################
 
-to_field "topic", extract_marc("600abcdefghjklmnopqrstuvxyz:600a:610abcdefghklmnoprstuvxyz:610a:611acdefghjklnpqstuvxyz:611a:630adefghklmnoprstvxyz:630a:648avxyz:648a:650abcdevxyz:650a:651aevxyz:651a:653a:654abevyz:654a:655abvxyz:655a:656akvxyz:656a:657avxyz:657a:658ab:658a:662abcdefgh:662a:690abcdevxyz:690a", :trim_punctuation=>true)
+# We get the full topic (LCSH)...
+
+to_field "topic", extract_marc(%w(
+600abcdefghjklmnopqrstuvxyz
+610abcdefghklmnoprstuvxyz
+611acdefghjklnpqstuvxyz
+630adefghklmnoprstvxyz
+648avxyz
+650abcdevxyz
+651aevxyz
+654abevyz
+655abvxyz
+656akvxyz
+657avxyz
+658ab
+662abcdefgh
+690abcdevxyz
+), :trim_punctuation=>true)
+
+#...and just the subfield 'a's
+
+to_field "topic", extract_marc(%w(
+600a
+610a
+611a
+630a
+648a
+650a
+651a
+653a
+654a
+655a
+656a
+657a
+658a
+690a 
+), :trim_punctuation=>true)
 
 ###############################
 #### Genre / geography / dates
