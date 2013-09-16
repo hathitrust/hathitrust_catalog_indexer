@@ -27,15 +27,18 @@ settings do
   provide "solr.url", "http://mojito.umdl.umich.edu:8024/solr/biblio"
   provide "solrj_writer.parser_class_name", "XMLResponseParser"
   provide "solrj_writer.commit_on_close", "true"
+  # provide "solrj_writer.thread_pool", 2
   
   store "writer_class_name", "Traject::SolrJWriter"
   store "output_file", "debug.out"
   
-  store "log.batch_progress", 5_000
+  store "log.batch_progress", 10_000
   
   store 'processing_thread_pool', 4
   
 end
+
+logger.info RUBY_DESCRIPTION
 
 # Get ready to map marc4j record into an xml string
 unless defined?(MarcPermissiveStreamReader) && defined?(MarcXmlReader)
