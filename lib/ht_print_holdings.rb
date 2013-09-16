@@ -6,11 +6,6 @@ module HathiTrust
   class PrintHoldings
     extend HathiTrust::SecureData
     
-    class << self
-      attr_accessor :htid_snippet
-      self.htid_snippet = "select volume_id, member_id from holdings_htitem_htmember where volume_id "
-    end
-    
     def self.get_print_holdings_hash(htids)
       htids = Array(htids)
       Thread.current[:phdbdbh] ||= JDBCHelper::Connection.new(
