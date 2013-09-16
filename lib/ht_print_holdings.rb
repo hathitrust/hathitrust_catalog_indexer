@@ -16,7 +16,7 @@ module HathiTrust
       Thread.current[:phdbdbh] ||= JDBCHelper::Connection.new(
                     :driver=>'com.mysql.jdbc.Driver',
                     :url=>'jdbc:mysql://' + self.db_machine + '/' + self.db_db,
-                    :user => self.db_user
+                    :user => self.db_user,
                     :password => self.db_password
                   )
                   
