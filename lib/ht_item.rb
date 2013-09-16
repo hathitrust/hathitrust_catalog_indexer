@@ -2,6 +2,7 @@ require 'traject'
 require 'match_map'
 require_relative 'ht_constants'
 require_relative 'ht_print_holdings'
+require 'json'
 
 module HathiTrust
   module Traject
@@ -33,10 +34,13 @@ module HathiTrust
         @items << item
       end
       
+      # Make it easy to get the size
       def size
         @items.size
       end
       
+      
+      # Basic iterator
       def each
         unless block_given?
           enum_for(:each)
@@ -106,8 +110,82 @@ module HathiTrust
       def print_holdings
         return @ph.values.flatten.uniq
       end
-        
       
+      
+      # Turn this item into the sort of json object
+      # we want to store in solr
+      
+      def to_json
+        rv = []
+        needs_sorting = false
+        self.each do |item|
+          jsonrec = {
+            'htid' => item.htid,
+            'ingest' => item.last_update_date,
+            'rights'  => item.rights,
+            'heldby'   => item.print_holdings
+          }
+          if item.enum_chron
+            jsonrec['enumcron'] = item.enum_chron
+            needs_sorting = true
+          end
+          rv << jsonrec
+        end
+
+       
+        if needs_sorting
+          rv = sortHathiJSON(rv)
+        end
+        rv.to_json
+      end
+     
+
+      def enumcronSort a,b
+        matcha = /(\d{4})/.match a['enumcron']
+        matchb = /(\d{4})/.match b['enumcron']
+        if (matcha and matchb)
+          return matcha[1] <=> matchb[1] unless (matcha[1] == matchb[1])
+        end
+        return a[:sortstring] <=> b[:sortstring]
+      end
+      
+      # Create a sortable string based on the digit strings present in an
+      # enumcron string
+
+      def enumcronSortString str
+        rv = '0'
+        str.scan(/\d+/).each do |nums|
+          rv += nums.size.to_s + nums
+        end
+        return rv
+      end
+      
+
+
+     
+      def sortHathiJSON arr
+        # Only one? Never mind
+        return arr if arr.size == 1
+
+        # First, add the _sortstring entries
+        arr.each do |h|
+          if h.has_key? 'enumcron'
+            h[:sortstring] = enumcronSortString(h['enumcron'])
+          else
+            h[:sortstring] = '0'
+          end
+        end
+
+        # Then sort it
+        arr.sort! {|a,b| self.enumcronSort(a, b)}
+      
+        # Then remove the sortstrings
+        arr.each do |h|
+          h.delete(:sortstring)
+        end
+        return arr
+      end
+
       
       # The whole set (record) is considered Full Text iff there is at
       # least one item whose status is fulltext
@@ -119,10 +197,9 @@ module HathiTrust
       def intl_fulltext?
         self.any?  {|item| item.intl_availability == HathiTrust::Constants::FT}
       end
-      
-      
-      
-    end
+
+
+    end # end of Items
     
     
     # An individual item
@@ -187,11 +264,10 @@ module HathiTrust
         [htid, last_update_date, enum_chron].join("|")
       end
       
-      
-    end
+    end # end of Item
     
     
     
     
-  end
+  end # end of Modules
 end
