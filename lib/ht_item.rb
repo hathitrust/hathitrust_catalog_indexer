@@ -47,6 +47,14 @@ module HathiTrust
         end
       end
       
+      # Some aggregate data
+      def ht_ids
+        unless @ids
+          @ids = self.map {|i| i.htid.downcase }
+        end
+        @ids
+      end
+      
       
       def rights_list
         unless @rights_list
@@ -88,7 +96,7 @@ module HathiTrust
       end
       
       def fill_print_holdings!
-        ids = self.map(&:ht_ids).flatten
+        ids = self.ht_ids.flatten
         @ph = HathiTrust::PrintHoldings.get_print_holdings_hash(ids)
         self.each do |item|
           item.print_holdings = @ph[item.htid]
@@ -113,12 +121,6 @@ module HathiTrust
       end
       
       
-      def ht_ids
-        unless @ids
-          @ids = self.map {|i| i.htid.downcase }
-        end
-        @ids
-      end
       
     end
     
