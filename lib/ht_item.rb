@@ -1,7 +1,7 @@
 require 'traject'
 require 'match_map'
-require 'ht_constants'
-require 'ht_print_holdings'
+require_relative 'ht_constants'
+require_relative 'ht_print_holdings'
 
 module HathiTrust
   module Traject
