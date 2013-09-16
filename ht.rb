@@ -426,12 +426,12 @@ end
 #           json << jsonrec
 #           jsonindex[id] = jsonrec
 # 
-#           # Does this item already negate HTSO?
-#           htso = false if us_avail == 'Full Text'
-#           htso_intl = false if intl_avail == 'Full Text'
-#         end
-# 
-# 
+        #           # Does this item already negate HTSO?
+        #           htso = false if us_avail == 'Full Text'
+        #           htso_intl = false if intl_avail == 'Full Text'
+        #         end
+        # 
+        # 
         #         # Done processing the items. Add aggreage info
         # 
         #         # If we've got nothing in ht_rightscode but 'nobody', we
@@ -454,18 +454,18 @@ end
         # 
         # 
         # 
-#         # Now we need to do record-level
-#         # stuff.
-# 
-#         # Figure out for real the HTSO status. It's only HTSO
-#         # if the item-level stuff is htso (as represented by htso
-#         # and htso_intl) AND the record_level stuff is also HTSO.
-# 
-#         record_htso = self.record_level_htso(r)
-#         doc['ht_searchonly'] = htso && record_htso
-#         doc['ht_searchonly_intl'] = htso_intl && record_htso
-# 
-#         # Add in the print database holdings
+        #         # Now we need to do record-level
+        #         # stuff.
+        # 
+        #         # Figure out for real the HTSO status. It's only HTSO
+        #         # if the item-level stuff is htso (as represented by htso
+        #         # and htso_intl) AND the record_level stuff is also HTSO.
+        # 
+        #         record_htso = self.record_level_htso(r)
+        #         doc['ht_searchonly'] = htso && record_htso
+        #         doc['ht_searchonly_intl'] = htso_intl && record_htso
+        # 
+        #         # Add in the print database holdings
 # 
 #          heldby = []
 #          holdings = self.fromHTID(htids)

@@ -108,12 +108,18 @@ module HathiTrust
       
     end
     
+    
+    # An individual item
     class Item
       
       DEFAULT_DATE = '00000000'
       
-      attr_accessor :rights, :enum_chron, :last_update_date
+      attr_accessor :rights, :enum_chron, :last_update_date, :print_holdings
       attr_reader :htid, :set
+      
+      def initialize
+        @print_holdings = []
+      end
       
       def self.new_from_974(f)
         inst = self.new
@@ -165,7 +171,10 @@ module HathiTrust
         [htid, last_update_date, enum_chron].join("|")
       end
       
+      
     end
+    
+    
     
     
   end
