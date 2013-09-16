@@ -43,4 +43,3 @@ module HathiTrust
 end
 
 
- $:.unshift 'lib'
