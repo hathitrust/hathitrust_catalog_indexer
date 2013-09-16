@@ -97,16 +97,17 @@ to_field 'rptnum', extract_marc('088a')
 oclc_pattern = /^(?:oclc|ocolc|ocm|ocn)(\d+)/
 to_field 'oclc' do |record, acc|
   oh35az_spec = Traject::MarcExtractor.cached('035az', :separator=>nil)
-  oh35az_spec.map_record(record).each do |d|
+  oh35az_spec.extract(record).each do |d|
     if m = oclc_pattern.match(d)
       acc < m[1]
     end
   end
 end
 
+sdr_pattern = /^sdr-/
 to_field 'sdrnum' do |record, acc|
   oh35a_spec = Traject::MarcExtractor.cached('035a')
-  acc.concat oh35a_spec.map_record(record).grep(/^sdr-?(.*)/)
+  acc.concat oh35a_spec.extract(record).grep(sdr_pattern)
 end
 
 
