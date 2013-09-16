@@ -1,6 +1,7 @@
 require 'traject'
 require 'match_map'
 require 'ht_constants'
+require 'ht_print_holdings'
 
 module HathiTrust
   module Traject
@@ -85,6 +86,19 @@ module HathiTrust
         end
         @intl
       end
+      
+      def fill_print_holdings!
+        ids = self.map(&:ht_ids).flatten
+        @ph = HathiTrust::PrintHoldings.get_print_holdings_hash(ids)
+        self.each do |item|
+          item.print_holdings = @ph[item.htid]
+        end
+      end
+      
+      def print_holdings
+        return @ph.values.flatten.uniq
+      end
+        
       
       
       # The whole set (record) is considered Full Text iff there is at

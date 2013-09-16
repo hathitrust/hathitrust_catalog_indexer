@@ -283,7 +283,9 @@ to_field 'language008', extract_marc('008[35-37]')
 
 
 # Start off by building up a data structure representing all the 974s
-# and stick it in ht_fields
+# and stick it in ht_fields. Also, query the database for the print
+# holdings along the way with #fill_print_holdings!
+
 each_record do |r, context|
   
   itemset = HathiTrust::Traject::ItemSet.new
@@ -293,24 +295,16 @@ each_record do |r, context|
   end
   
   if itemset.size == 0
-    # context.skip!("No 974s in record  #{r['001']}")
+    context.skip!("No 974s in record  #{r['001']}")
+  else
+    itemset.fill_print_holdings!
+    context.clipboard[:ht][:items] = itemset
   end
-  context.clipboard[:ht][:items] = itemset
     
 end
 
-
-to_field 'ht_count' do |record, acc, context|
-  acc << context.clipboard[:ht][:items].size
-end
-
-to_field 'ht_id' do |record, acc, context|
-  acc << context.clipboard[:ht][:items].ht_ids
-end
-
-to_field 'ht_rightscode' do |record, acc, context|
-  acc.concat context.clipboard[:ht][:items].rights_list
-end
+# make use of the HathiTrust::ItemSet object stuffed into
+# [:ht][:items] to pull out all the other stuff we need.
 
 to_field 'ht_availability' do |record, acc, context|
   acc.concat context.clipboard[:ht][:items].us_availability
@@ -320,12 +314,16 @@ to_field 'ht_availability_intl' do |record, acc, context|
   acc.concat context.clipboard[:ht][:items].intl_availability
 end
 
-to_field 'htsource' do |record, acc, context|
-  acc.concat context.clipboard[:ht][:items].sources
+to_field 'ht_count' do |record, acc, context|
+  acc << context.clipboard[:ht][:items].size
 end
 
-to_field 'ht_id_update' do |record, acc, context|
-  acc.concat context.clipboard[:ht][:items].last_update_dates
+to_field 'ht_heldby' do |record, acc, context|
+  acc.concat context.clipboard[:ht][:items].print_holdings
+end
+
+to_field 'ht_id' do |record, acc, context|
+  acc.concat context.clipboard[:ht][:items].ht_ids
 end
 
 to_field 'ht_id_display' do |record, acc, context|
@@ -333,6 +331,19 @@ to_field 'ht_id_display' do |record, acc, context|
     acc << item.display_string
   end
 end
+
+to_field 'ht_id_update' do |record, acc, context|
+  acc.concat context.clipboard[:ht][:items].last_update_dates
+end
+
+to_field 'ht_json' do |record, acc, context|
+  acc << context.clipboard[:ht][:items].to_json
+end
+
+to_field 'ht_rightscode' do |record, acc, context|
+  acc.concat context.clipboard[:ht][:items].rights_list
+end
+
 
 to_field 'ht_searchonly' do |record, acc, context|
   acc << context.clipboard[:ht][:items].us_fulltext? ? 'false' : 'true'
@@ -342,203 +353,7 @@ to_field 'ht_searchonly_intl' do |record, acc, context|
   acc << context.clipboard[:ht][:items].intl_fulltext? ? 'false' : 'true'
 end
 
-# Get the list of holding institutions and stash it
+to_field 'htsource' do |record, acc, context|
+  acc.concat context.clipboard[:ht][:items].sources
+end
 
-# Use the list of holding instituions
-
-# Now have enough information to build the ht_json object
-
-
-
-
-
-
-# 
-#         # Start off by assuming that it's HTSO for both us and intl
-#         htso      = true
-#         htso_intl = true
-# 
-#         # Presume no enumchron
-#         gotEnumchron = false
-# 
-# 
-#         # Places to stash things
-#         htids = []
-#         json = []
-#         jsonindex = {}
-#         avail = {:us => [], :intl => []}
-#         rights = []
-#         sources = []
-# 
-#         # Loop through the fields to get what we need
-#         fields.each do |f|
-# 
-        #           # Get the rights code
-        #           rc = f['r']
-        #           rights << rc
-        # 
-        #           # Set availability based on the rights code
-        #           us_avail = tmaps['availability_map_ht'][rc]
-        #           intl_avail =  tmaps['availability_map_ht_intl'][rc]
-        #           avail[:us] << us_avail
-        #           avail[:intl] << intl_avail
-        # 
-        #           # Get the ID and make sure it's lowercase.
-        #           # Put it in a local array (htids) because we have to return it
-        #           id = f['u']
-        #           lc_id = id.downcase
-        #           if id != lc_id
-        #             log.error "#{id} needs to be lowecase";
-        #             id = lc_id
-        #           end
-        #           htids << id
-        # 
-        # 
-        #           sources << HTSOURCEMAP[m[1]]
-        # 
-        #           # Update date
-        #           udate = f['d'] || defaultDate
-        #           doc.add 'ht_id_update', udate
-# 
-#           # Start the json rec.
-#           jsonrec = {
-#             'htid' => id,
-#             'ingest' => udate,
-#             'rights'  => rc,
-#             'heldby'   => [] # fill in later
-#           }
-# 
-#           # enumchron
-#           echron = f['z']
-#           if echron
-#             jsonrec['enumcron'] = echron
-#             gotEnumchron = true
-#           end
-# 
-# 
-        #           # Display
-        #           doc.add 'ht_id_display', [id, udate, echron].join("|")
-# 
-#           # Add the current item's information to the json array,
-#           # and keep a pointer to it in jsonindex so we can easily
-#           # update the holdings later.
-# 
-#           json << jsonrec
-#           jsonindex[id] = jsonrec
-# 
-        #           # Does this item already negate HTSO?
-        #           htso = false if us_avail == 'Full Text'
-        #           htso_intl = false if intl_avail == 'Full Text'
-        #         end
-        # 
-        # 
-        #         # Done processing the items. Add aggreage info
-        # 
-        #         # If we've got nothing in ht_rightscode but 'nobody', we
-        #         # need to mark it as a tombstone.
-        # 
-        #         rights.uniq!    #make uniq
-        #         rights.compact! #remove nil
-        #       
-        #         if rights.size == 1 && rights[0] == 'nobody'
-        #           rights << 'tombstone'
-        #         end
-        # 
-        # 
-        #         doc.add 'ht_availability',  avail[:us].uniq
-        #         doc.add 'ht_availability_intl', avail[:intl].uniq
-        #         doc.add 'ht_rightscode', rights
-        #         doc.add 'htsource', sources.uniq
-        # 
-        # 
-        # 
-        # 
-        # 
-        #         # Now we need to do record-level
-        #         # stuff.
-        # 
-        #         # Figure out for real the HTSO status. It's only HTSO
-        #         # if the item-level stuff is htso (as represented by htso
-        #         # and htso_intl) AND the record_level stuff is also HTSO.
-        # 
-        #         record_htso = self.record_level_htso(r)
-        #         doc['ht_searchonly'] = htso && record_htso
-        #         doc['ht_searchonly_intl'] = htso_intl && record_htso
-        # 
-        #         # Add in the print database holdings
-# 
-#          heldby = []
-#          holdings = self.fromHTID(htids)
-#          holdings.each do |a|
-#            htid, inst = *a
-#            heldby << inst
-#            jsonindex[htid]['heldby'] << inst
-#          end
-#          
-#          doc['ht_heldby'] = heldby.uniq
-# 
-#         # Sort and JSONify the json structure
-# 
-#         json = sortHathiJSON json if gotEnumchron
-#         doc['ht_json'] = json.to_json
-# 
-#         # Finally, return the ids
-#         return htids
-# 
-#       end
-# 
-# 
-#       ############################################################
-#       # Get record-level boolean for whether or not this is HTSO
-#       ###########################################################
-#       def self.record_level_htso r
-#         # Check to see if we have an online or circ holding
-#         r.find_by_tag('973').each do |f|
-#           return false if f['b'] == 'avail_online';
-#           return false if f['b'] == 'avail_circ';
-#         end
-# 
-#         # Check to see if we have a local holding that's not SDR
-#         r.find_by_tag('852').each do |f|
-#           return false if f['b'] and f['b'] != 'SDR'
-#         end
-# 
-#         # otherwise
-#         return true
-#       end
-# 
-# 
-# 
-# 
-# 
-#       ########################################################
-#       # PRINT HOLDINGS
-#       ########################################################
-#       # Get the print holdings from the phdb, based on
-#       # hathitrust IDs.
-#       #
-# 
-#       # Log in
-# 
-#       @htidsnippet = "
-#         select volume_id, member_id from holdings_htitem_htmember
-#         where volume_id "
-# 
-#       def self.fromHTID htids
-#         Thread.current[:phdbdbh] ||= JDBCHelper::Connection.new(
-#           :driver=>'com.mysql.jdbc.Driver',
-#           :url=>'jdbc:mysql://' + MDP_DB_MACHINE + '/ht',
-#           :user => MDP_USER,
-#           :password => MDP_PASSWORD
-#         )
-# 
-#         q = @htidsnippet + "IN (#{commaify htids})"
-#         return Thread.current[:phdbdbh].query(q)
-#       end
-# 
-#       # Produce a comma-delimited list. We presume there aren't any double-quotes
-#       # in the values
-# 
-#       def self.commaify a
-#         return *a.map{|v| "\"#{v}\""}.join(', ')
-#       end
