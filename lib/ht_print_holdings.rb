@@ -35,8 +35,12 @@ module HathiTrust
     # double-quotes in them.
     
     def self.commaify(a)
-      return *a.map{|v| "\"#{v}\""}.join(', ')
+      a = Array(a)
+      return a.map{|v| "\"#{v}\""}.join(', ')
     end
     
   end
 end
+
+
+ $:.unshift 'lib'
