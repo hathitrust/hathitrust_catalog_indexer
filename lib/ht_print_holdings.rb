@@ -19,7 +19,7 @@ module HathiTrust
       
       
       htid_map = {}
-      Thread.current[:phdbdbh].query(q).each do |pair|
+      Thread.current[:phdbdbh].query(query).each do |pair|
         htid, inst = *pair
         htid_map[htid] ||= []
         htid_map[htid] << inst
