@@ -19,15 +19,16 @@ module HathiTrust
       class << self
         attr_accessor :ht_ns, :ht_avail_us, :ht_avail_intl
       end
-      self.ht_ns         = ::Traject::TranslationMap.new('ht_namespace_map')
-      self.ht_avail_us   = ::Traject::TranslationMap.new('availability_map_ht')
-      self.ht_avail_intl = ::Traject::TranslationMap.new('availability_map_ht_intl')
+      self.ht_ns         = ::Traject::TranslationMap.new('ht/ht_namespace_map')
+      self.ht_avail_us   = ::Traject::TranslationMap.new('ht/availability_map_ht')
+      self.ht_avail_intl = ::Traject::TranslationMap.new('ht/availability_map_ht_intl')
         
       
       
       attr_reader :items
       def initialize
         @items = []
+        @ph = {}
       end
       
       def add(item)
@@ -229,15 +230,15 @@ module HathiTrust
       end
       
       def source
-        ::Traject::TranslationMap.new('ht_namespace_map')[namespace]
+        ItemSet.ht_ns[namespace]
       end
 
       def us_availability
-        ::Traject::TranslationMap.new('availability_map_ht')[rights].first
+        ItemSet.ht_avail_us[rights].first
       end
 
       def intl_availability
-        ::Traject::TranslationMap.new('availability_map_ht_intl')[rights].first
+        ItemSet.ht_avail_intl[rights].first
       end
       
       

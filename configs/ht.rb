@@ -8,43 +8,20 @@ extend  Traject::Macros::Marc21Semantics
 require 'traject/macros/marc_format_classifier'
 extend Traject::Macros::MarcFormats
 
-require 'marc/marc4j'
 require 'ht_macros'
 require 'ht_item'
 extend HathiTrust::Traject::Macros
 
  
-require 'traject/marc4j_reader'
-require 'traject/mock_reader'
-require 'traject/mock_writer'
-require 'traject/debug_writer'
 
 settings do
-  store "reader_class_name", "Traject::Marc4JReader"
-  store "marc4j_reader.keep_marc4j", true
-  provide "mock_reader.limit", 100
-  
-  provide "solr.url", "http://mojito.umdl.umich.edu:8024/solr/biblio"
-  provide "solrj_writer.parser_class_name", "XMLResponseParser"
-  provide "solrj_writer.commit_on_close", "true"
-  provide "solrj_writer.thread_pool", 2
-  provide "solrj_writer.batch_size", 50
-  
-  store "writer_class_name", "Traject::SolrJWriter"
-  store "output_file", "debug.out"
-  
   store "log.batch_progress", 10_000
-  
-  store 'processing_thread_pool', 4
-  
 end
 
 logger.info RUBY_DESCRIPTION
 
 # Get ready to map marc4j record into an xml string
-unless defined?(MarcPermissiveStreamReader) && defined?(MarcXmlReader)
-  marc_converter = MARC::MARC4J.new(:jardir => settings['marc4j_reader.jar_dir'])
-end
+marc_converter = MARC::MARC4J.new(:jardir => settings['marc4j_reader.jar_dir'])
 
 ################################
 ###### Setup ###################
@@ -55,8 +32,8 @@ each_record HathiTrust::Traject::Macros.setup
 
 
 # Get a marc4j record if we don't have one already
-each_record do |rec|
-  rec.original_marc4j ||= marc_converter.rubymarc_to_marc4j(rec)
+each_record do |rec, context|
+  context.clipboard[:ht][:marc4j] = marc_converter.rubymarc_to_marc4j(rec)
 end
 
 
@@ -71,10 +48,10 @@ to_field "allfields", extract_all_marc_values
 # Get a formatter
 require 'MARCFormat.jar'
 format_extractor = Java::org.marc4j::GetFormat.new
-format_map       = Traject::TranslationMap.new("formats")
+format_map       = Traject::TranslationMap.new("ht/formats")
 
 to_field "format" do |record, acc, context|
-  f = format_extractor.get_content_types_and_media_types(record.original_marc4j).map{|c| format_map[c.to_s]}
+  f = format_extractor.get_content_types_and_media_types(context.clipboard[:ht][:marc4j]).map{|c| format_map[c.to_s]}
   f.flatten!
   f.compact!
   f.uniq!
@@ -281,7 +258,7 @@ to_field 'era', extract_marc("600y:610y:611y:630y:650y:651y:654y:655y:656y:657y:
 # country from the 008; need processing until I fix the AlephSequential reader
 
 to_field "country_of_pub" do |r, acc|
-  country_map = Traject::TranslationMap.new("country_map")
+  country_map = Traject::TranslationMap.new("ht/country_map")
   if r['008']
     [r['008'].value[15..17], r['008'].value[17..17]].each do |s|
       country = country_map[s.gsub(/[^a-z]/, '')]
@@ -344,11 +321,17 @@ each_record do |r, context|
   if itemset.size == 0
     context.skip!("No 974s in record  #{r['001']}")
   else
-    itemset.fill_print_holdings!
     context.clipboard[:ht][:items] = itemset
   end
     
 end
+
+unless ENV['SKIP_PH']
+  each_record do |r, context|
+    context.clipboard[:ht][:items].fill_print_holdings!
+  end
+end
+
 
 # make use of the HathiTrust::ItemSet object stuffed into
 # [:ht][:items] to pull out all the other stuff we need.

@@ -40,11 +40,11 @@ module HathiTrust::Traject::Macros
   end
   
   def macr4j_as_xml
-    lambda do |r, acc|
+    lambda do |r, acc, context|
       xmlos = java.io.ByteArrayOutputStream.new
       writer = org.marc4j.MarcXmlWriter.new(xmlos)
       writer.setUnicodeNormalization(true)
-      writer.write(r.original_marc4j) 
+      writer.write(context.clipboard[:ht][:marc4j]) 
       writer.writeEndDocument();
       acc << xmlos.toString
     end
