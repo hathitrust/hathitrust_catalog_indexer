@@ -278,6 +278,7 @@ to_field "country_of_pub" do |r, acc|
   country_map = Traject::TranslationMap.new("ht/country_map")
   if r['008']
     [r['008'].value[15..17], r['008'].value[17..17]].each do |s|
+      next unless s # skip if the 008 just isn't long enough
       country = country_map[s.gsub(/[^a-z]/, '')]
       acc << country if country
     end
