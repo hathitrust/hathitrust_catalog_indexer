@@ -31,10 +31,23 @@ marc_converter = MARC::MARC4J.new(:jardir => settings['marc4j_reader.jar_dir'])
 each_record HathiTrust::Traject::Macros.setup
 
 
+# Force rights if we're working without
+
+if ENV['FORCE_RIGHTS']
+  each_record do |rec|
+    rec.fields('974').each do |f|
+      sf = MARC::Subfield.new('r', 'ic')
+      f.append sf
+    end
+  end
+end
+
+
 # Get a marc4j record if we don't have one already
 each_record do |rec, context|
   context.clipboard[:ht][:marc4j] = marc_converter.rubymarc_to_marc4j(rec)
 end
+
 
 
 ################################
