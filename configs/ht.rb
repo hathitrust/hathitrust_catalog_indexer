@@ -1,6 +1,5 @@
 $:.unshift  "#{File.dirname(__FILE__)}/../lib"
 
-require 'library_stdnums'
 
 require 'traject/macros/marc21_semantics'
 extend  Traject::Macros::Marc21Semantics
@@ -82,8 +81,6 @@ end
 ######## IDENTIFIERS ###########
 ################################
 
-to_field "lccn", extract_marc('010a')
-to_field 'rptnum', extract_marc('088a')
 
 oclc_pattern = /(?:oclc|ocolc|ocm|ocn)(\d+)/
 to_field 'oclc' do |record, acc|
@@ -102,27 +99,34 @@ to_field 'sdrnum' do |record, acc|
 end
 
 
+# Get both 10- and 13-character ISBNs
+# You could do this, and it'd work fine, but you're bettter off using
+# the solr-side code at https://github.com/billdueber/solr-libstdnum-normalize
+# to do it all on both query and index
+#
+# to_field 'isbn' do |record, acc|
+#   isbn_spec = Traject::MarcExtractor.cached('020az', :separator=>nil) # 
+#   vals = []
+#   isbn_spec.extract(record).each do |v|
+#     std = StdNum::ISBN.allNormalizedValues(v)
+#     if std.size > 0
+#       vals.concat std
+#     else
+#       vals << v
+#     end
+#   end
+#   vals.uniq! # If it already has both a 10 and a 13, each will have generated the other
+#   acc.concat vals
+# end
 
-to_field 'isbn' do |record, acc|
-  isbn_spec = Traject::MarcExtractor.cached('020az', :separator=>nil) # 
-  vals = []
-  isbn_spec.extract(record).each do |v|
-    std = StdNum::ISBN.allNormalizedValues(v)
-    if std.size > 0
-      vals.concat std
-    else
-      vals << v
-    end
-  end
-  vals.uniq! # If it already has both a 10 and a 13, each will have generated the other
-  acc.concat vals
-end
-
+to_field 'isbn', extract_marc('020az', :separator=>nil)
 to_field 'issn', extract_marc('022a:022l:022m:022y:022z:247x')
 to_field 'isn_related', extract_marc("400x:410x:411x:440x:490x:500x:510x:534xz:556z:581z:700x:710x:711x:730x:760x:762x:765xz:767xz:770xz:772x:773xz:774xz:775xz:776xz:777x:780xz:785xz:786xz:787xz")
 to_field 'callnumber', extract_marc('050ab:090ab')
 to_field 'callnoletters', extract_marc('050ab:090ab', :first=>true)
 to_field 'sudoc', extract_marc('086az')
+to_field "lccn", extract_marc('010a')
+to_field 'rptnum', extract_marc('088a')
 
 ################################
 ######### AUTHOR FIELDS ########
