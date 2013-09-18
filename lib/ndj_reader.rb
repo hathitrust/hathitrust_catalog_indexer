@@ -3,11 +3,16 @@ require 'traject'
 require 'json'
 require 'zlib'
 
+
+# Read newline-delimited JSON file, where each line is a marc-in-json string.
+# UTF-8 encoding is required.
+
 class Traject::NDJReader < Traject::MarcReader
   
   def initialize(input_stream, settings)
     super
     @settings = settings
+    @input_stream = input_stream
     if settings['command_line.filename'] =~ /\.gz$/
       @input_stream = Zlib::GzipReader.new(@input_stream, :external_encoding => "UTF-8")
     end
@@ -26,7 +31,7 @@ class Traject::NDJReader < Traject::MarcReader
       begin
         yield MARC::Record.new_from_hash(JSON.parse(json))
       rescue Exception => e
-        self.logger.error("Problem with JSON record online #{i}: #{e.message}")
+        self.logger.error("Problem with JSON record on line #{i}: #{e.message}")
       end
     end
   end
