@@ -149,7 +149,9 @@ to_field 'title',     extract_with_and_without_filing_characters('245abdefghknp'
 to_field 'title_a',   extract_with_and_without_filing_characters('245a', :trim_punctuation => true)
 to_field 'title_ab',  extract_with_and_without_filing_characters('245ab', :trim_punctuation => true)
 to_field 'title_c',   extract_marc('245c')
-to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only)
+to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true) do |r, acc|
+  acc.uniq!
+end
 to_field 'title',     extract_marc('245')
 
 # Sortable title
@@ -230,7 +232,7 @@ to_field "topic", extract_marc(%w(
 658ab
 662abcdefgh
 690abcdevxyz
-), :trim_punctuation=>true)
+), :trim_punctuation=>true) 
 
 #...and just the subfield 'a's
 
@@ -250,6 +252,14 @@ to_field "topic", extract_marc(%w(
 658a
 690a 
 ), :trim_punctuation=>true)
+
+
+# OK, so this is weird. I'm using two steps to put stuff into "topic". Now I'm
+# going to use an each_record to dedup them
+
+each_record do |rec, context|
+  context.output_hash['topic'].uniq!
+end
 
 ###############################
 #### Genre / geography / dates
@@ -316,7 +326,10 @@ to_field "publisher", extract_marc('260b:264|*1|:533c')
 to_field "edition", extract_marc('250a')
 
 to_field 'language', marc_languages("008[35-37]:041a:041d:041e:041j")
-to_field 'language008', extract_marc('008[35-37]')
+to_field 'language008', extract_marc('008[35-37]') do |r, acc|
+  acc.reject! {|x| x !~ /\S/} # ditch only spaces
+  acc.uniq!
+end
 
 #####################################
 ############ HATHITRUST STUFF #######
