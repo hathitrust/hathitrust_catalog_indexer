@@ -4,7 +4,7 @@ require 'socket'
 
 settings do
   if Socket.gethostname =~ /waffle/
-    provide "solr.url", "http://localhost:8983/solr/collection1"
+    provide "solr.url", "http://localhost:8983/solr/catalog"
   else
     provide "solr.url", "http://solr-sdr-catalog:9033/catalog"
   end
