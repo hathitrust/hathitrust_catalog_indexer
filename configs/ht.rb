@@ -258,7 +258,7 @@ to_field "topic", extract_marc(%w(
 # going to use an each_record to dedup them
 
 each_record do |rec, context|
-  context.output_hash['topic'].uniq!
+  context.output_hash['topic'].uniq! if context.output_hash['topic']
 end
 
 ###############################
