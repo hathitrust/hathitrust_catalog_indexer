@@ -1,5 +1,4 @@
 require 'traject'
-require 'ndj_reader'
 
 
 settings do

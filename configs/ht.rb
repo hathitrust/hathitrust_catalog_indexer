@@ -145,14 +145,15 @@ to_field "author_rest", extract_marc("505r")
 ################################
 
 # For titles, we want with and without
-to_field 'title',     extract_with_and_without_filing_characters('245abdefghknp', :trim_punctuation => true)
-to_field 'title_a',   extract_with_and_without_filing_characters('245a', :trim_punctuation => true)
-to_field 'title_ab',  extract_with_and_without_filing_characters('245ab', :trim_punctuation => true)
+
+to_field 'title',     extract_marc_filing_version('245abdefghknp', :include_original => true)
+to_field 'title_a',   extract_marc_filing_version('245a', :include_original => true)
+to_field 'title_ab',  extract_marc_filing_version('245ab', :include_original => true)
 to_field 'title_c',   extract_marc('245c')
+
 to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true) do |r, acc|
   acc.uniq!
 end
-to_field 'title',     extract_marc('245')
 
 # Sortable title
 to_field "titleSort", marc_sortable_title
@@ -218,48 +219,22 @@ end
 # We get the full topic (LCSH)...
 
 to_field "topic", extract_marc(%w(
-600abcdefghjklmnopqrstuvxyz
-610abcdefghklmnoprstuvxyz
-611acdefghjklnpqstuvxyz
-630adefghklmnoprstvxyz
-648avxyz
-650abcdevxyz
-651aevxyz
-654abevyz
-655abvxyz
-656akvxyz
-657avxyz
-658ab
-662abcdefgh
-690abcdevxyz
-), :trim_punctuation=>true) 
-
-#...and just the subfield 'a's
-
-to_field "topic", extract_marc(%w(
-600a
-610a
-611a
-630a
-648a
-650a
-651a
-653a
-654a
-655a
-656a
-657a
-658a
-690a 
-), :trim_punctuation=>true)
-
-
-# OK, so this is weird. I'm using two steps to put stuff into "topic". Now I'm
-# going to use an each_record to dedup them
-
-each_record do |rec, context|
-  context.output_hash['topic'].uniq! if context.output_hash['topic']
-end
+  600a  600abcdefghjklmnopqrstuvxyz
+  610a  610abcdefghklmnoprstuvxyz
+  611a  611acdefghjklnpqstuvxyz
+  630a  630adefghklmnoprstvxyz
+  648a  648avxyz
+  650a  650abcdevxyz
+  651a  651aevxyz
+  653a  654abevyz
+  654a  655abvxyz
+  655a  656akvxyz
+  656a  657avxyz
+  657a  658ab
+  658a  662abcdefgh
+  690a   690abcdevxyz
+  ), :trim_punctuation=>true)
+      
 
 ###############################
 #### Genre / geography / dates
@@ -271,7 +246,7 @@ to_field "genre", extract_marc('655ab')
 # Look into using Traject default geo field
 to_field "geographic" do |record, acc|
   marc_geo_map = Traject::TranslationMap.new("marc_geographic")
-  extractor_043a      = MarcExtractor.cached("043a", :seperator => nil)
+  extractor_043a  = MarcExtractor.cached("043a", :separator => nil)
   acc.concat(
     extractor_043a.extract(record).collect do |code|
       # remove any trailing hyphens, then map
@@ -357,6 +332,9 @@ each_record do |r, context|
     
 end
 
+
+# Skip calling out to teh print holdings database if I'm
+# on a machine that doesn't have access
 unless ENV['SKIP_PH']
   each_record do |r, context|
     context.clipboard[:ht][:items].fill_print_holdings!
