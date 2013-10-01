@@ -6,6 +6,7 @@ module HathiTrust
   class PrintHoldings
     extend HathiTrust::SecureData
     
+    # I use a db driver per thread to avoid any conflicts
     def self.get_print_holdings_hash(htids)
       htids = Array(htids)
       Thread.current[:phdbdbh] ||= JDBCHelper::Connection.new(
