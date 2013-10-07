@@ -197,6 +197,7 @@ module HathiTrust
     #                                         007   F01-01     EQUAL      d
     #                                         300   a          MATCH      *SOUND DISC*
     #                                         300   b          MATCH      *33 1/3 RPM*
+    #
     # TYP   RL Audio LP                       8524  j          MATCH      LP*
     #                                         8524  c          EQUAL      MUSI
     # TYP   RL Audio LP                       8524  j          MATCH      LP*
@@ -237,10 +238,10 @@ module HathiTrust
       end
       
       # RL
-      if  (bib_format == 'MU') && %w[i,j].include?(ldr6) && self['007[1]'].include?('d')
+      
+      if  (bib_format == 'MU') && %w[i j].include?(ldr6) && self['007[1]'].include?('d')
         record.fields('300').each do |f|
-          if ((f['a'] =~ /SOUND DISC/i) && 
-              (f['b'] =~ /33 1\/3 RPM/i))
+          if ((f['a'] =~ /SOUND DISC/i) && (f['b'] =~ /33 1\/3 RPM/i))
             types << 'RL'
             break
           end
@@ -289,6 +290,7 @@ module HathiTrust
 
     
     def microform_types
+      next unless record['008']
       types = ['WM']
       f8_23 = record['008'].value[23]
       return types if %w[BK MU SE MX].include?(bib_format) && %w[a b c].include?(f8_23)
@@ -447,7 +449,7 @@ module HathiTrust
     def conference_types
       # Get the easy stuff done first
       
-      return ['XC'] if  (record['008'].value[29] == '1') || record.fields(['111', '711', '811']).size > 0
+      return ['XC'] if  (record['008'] && (record['008'].value[29] == '1')) || record.fields(['111', '711', '811']).size > 0
       
       if  (bib_format == 'CF') &&
           ((self['006[0]'] & %w[a s]).size > 0) &&
@@ -483,7 +485,7 @@ module HathiTrust
     def statistics_types
       
       if bib_format == 'BK'
-        return ['XS'] if record['008'].value[24..27] =~ /s/
+        return ['XS'] if record['008'] && record['008'].value[24..27] =~ /s/
       end
       
       return ['XS'] if @xv6XX.match /\AStatistic/i
@@ -510,25 +512,25 @@ module HathiTrust
       types = []
       
       # Will need the 008[24] and 006[7]
-      f8_24 = record['008'].value[24]
+      f8_24 =  self['008[24]']
       f6_7 = self['006[7]']
       
       
       
-      if (f8_24 == 'e') || (f6_7 == 'e')
+      if (f8_24.include? 'e') || (f6_7.include? 'e')
         types << 'EN'
       end
       
-      if f6_7 == 'd'
+      if f6_7.include? 'd'
         types << 'DI'
         types << 'DR'
       end
       
-      if f8_24 == 'd'
+      if f8_24.include? 'd'
         types << 'DI'
       end
       
-      if f8_24 == 'r'
+      if f8_24.include? 'r'
         types << 'DR'
       end
       
@@ -546,7 +548,7 @@ module HathiTrust
     # TYP   BI Biography                      006   F17-01     EQUAL      [a,b,c]
     
     def biography_types
-      return ['BI'] if %w[a b c].include?(record['008'].value[34])
+      return ['BI'] if record['008'] && %w[a b c].include?(record['008'].value[34])
       return ['BI'] if (%w[a b c ] & self['006[17]']).size > 0
       
       return ['BI'] if @xv6XX.match /(?:biography|diaries)/i
@@ -601,7 +603,7 @@ module HathiTrust
     #                                         008   F26-01     EQUAL      g
     
     def videogame_types
-      if (bib_format == 'CF') && (record['008'].value[26] == 'g')
+      if (bib_format == 'CF') && (self['008[26]'].include? 'g')
         return ['VG']
       else
         return []
