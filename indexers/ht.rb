@@ -11,6 +11,10 @@ require 'ht_macros'
 require 'ht_item'
 extend HathiTrust::Traject::Macros
 
+require 'traject/umich_format'
+extend Traject::UMichFormat::Macros
+
+require 'fast_xmlwriter'
  
 
 settings do
@@ -20,7 +24,7 @@ end
 logger.info RUBY_DESCRIPTION
 
 # Get ready to map marc4j record into an xml string
-marc_converter = MARC::MARC4J.new(:jardir => settings['marc4j_reader.jar_dir'])
+# marc_converter = MARC::MARC4J.new(:jardir => settings['marc4j_reader.jar_dir'])
 
 ################################
 ###### Setup ###################
@@ -30,22 +34,10 @@ marc_converter = MARC::MARC4J.new(:jardir => settings['marc4j_reader.jar_dir'])
 each_record HathiTrust::Traject::Macros.setup
 
 
-# Force rights if we're working without
-
-if ENV['FORCE_RIGHTS']
-  each_record do |rec|
-    rec.fields('974').each do |f|
-      sf = MARC::Subfield.new('r', 'ic')
-      f.append sf
-    end
-  end
-end
-
-
 # Get a marc4j record if we don't have one already
-each_record do |rec, context|
-  context.clipboard[:ht][:marc4j] = marc_converter.rubymarc_to_marc4j(rec)
-end
+# each_record do |rec, context|
+#   context.clipboard[:ht][:marc4j] = marc_converter.rubymarc_to_marc4j(rec)
+# end
 
 
 
@@ -54,26 +46,34 @@ end
 ################################
 
 to_field "id", extract_marc("001", :first => true)
-to_field 'fullrecord', macr4j_as_xml
 to_field "allfields", extract_all_marc_values
+# to_field 'fullrecord', macr4j_as_xml
+
+to_field 'fullrecord' do |rec, acc|
+  acc << MARC::FastXMLWriter.encode(rec)
+end
+
 
 # Get a formatter
-require 'MARCFormat.jar'
-format_extractor = Java::org.marc4j::GetFormat.new
-format_map       = Traject::TranslationMap.new("ht/formats")
+# require 'MARCFormat.jar'
+# format_extractor = Java::org.marc4j::GetFormat.new
+# format_map       = Traject::TranslationMap.new("ht/formats")
+# 
+# to_field "format" do |record, acc, context|
+#   f = format_extractor.get_content_types_and_media_types(context.clipboard[:ht][:marc4j]).map{|c| format_map[c.to_s]}
+#   f.flatten!
+#   f.compact!
+#   f.uniq!
+#   acc.concat f
+#   
+#   # We need to know for later if this is a serial/journal type
+#   if acc.include? "Journal"
+#     context.clipboard[:ht][:journal] = true
+#   end
+# end
 
-to_field "format" do |record, acc, context|
-  f = format_extractor.get_content_types_and_media_types(context.clipboard[:ht][:marc4j]).map{|c| format_map[c.to_s]}
-  f.flatten!
-  f.compact!
-  f.uniq!
-  acc.concat f
-  
-  # We need to know for later if this is a serial/journal type
-  if acc.include? "Journal"
-    context.clipboard[:ht][:journal] = true
-  end
-end
+# Use the ruby-based, Aleph-mimicing version
+to_field 'format', umich_format_and_types
 
   
 
