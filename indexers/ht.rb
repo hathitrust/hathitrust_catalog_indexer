@@ -131,8 +131,9 @@ to_field 'title_a',   extract_marc_filing_version('245a', :include_original => t
 to_field 'title_ab',  extract_marc_filing_version('245ab', :include_original => true)
 to_field 'title_c',   extract_marc('245c')
 
-to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true) do |r, acc|
+to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true) do |r, acc, context|
   acc.uniq!
+  context.output_hash['vtitle_count'] = [acc.size] if acc.size > 0
 end
 
 # Sortable title
