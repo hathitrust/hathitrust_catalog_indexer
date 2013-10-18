@@ -50,7 +50,7 @@ module HathiTrust::Traject::Macros
       only_four_digits = /\A\d{4}\Z/
       contains_four_digits = /(\d{4})/
       
-      if r['008'] and r['008'].size > 10
+      if r['008'] and r['008'].value.size > 10
         ohoh8 = r['008'].value
         date1 = ohoh8[7..10].downcase
         datetype = ohoh8[6]
