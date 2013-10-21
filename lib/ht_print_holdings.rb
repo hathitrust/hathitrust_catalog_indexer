@@ -1,20 +1,11 @@
-require 'jdbc-helper'
-require_relative 'ht_secure_data'
-require_relative "mysql-connector-java-5.1.17-bin.jar"
-
+require_relative 'ht_dbh.rb'
 module HathiTrust
   class PrintHoldings
-    extend HathiTrust::SecureData
     
     # I use a db driver per thread to avoid any conflicts
     def self.get_print_holdings_hash(htids)
       htids = Array(htids)
-      Thread.current[:phdbdbh] ||= JDBCHelper::Connection.new(
-                    :driver=>'com.mysql.jdbc.Driver',
-                    :url=>'jdbc:mysql://' + self.db_machine + '/' + self.db_db,
-                    :user => self.db_user,
-                    :password => self.db_password
-                  )
+      Thread.current[:phdbdbh] ||= HathiTrust::DBH.new
                   
       query = "select volume_id, member_id from holdings_htitem_htmember where volume_id IN (#{self.commaify(htids)})"
       
