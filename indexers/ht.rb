@@ -1,6 +1,5 @@
 $:.unshift  "#{File.dirname(__FILE__)}/../lib"
 
-
 require 'traject/macros/marc21_semantics'
 extend  Traject::Macros::Marc21Semantics
 
@@ -372,7 +371,10 @@ to_field 'ht_searchonly_intl' do |record, acc, context|
   acc << context.clipboard[:ht][:items].intl_fulltext? ? 'false' : 'true'
 end
 
+
+
 to_field 'htsource' do |record, acc, context|
-  acc.concat context.clipboard[:ht][:items].sources
+  cc_to_of = Traject::TranslationMap.new('ht/collection_code_to_original_from')
+  acc.concat context.clipboard[:ht][:items].collection_codes.map{|x| cc_to_of[x]}
 end
 

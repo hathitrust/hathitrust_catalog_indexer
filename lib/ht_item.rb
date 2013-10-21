@@ -79,11 +79,17 @@ module HathiTrust
         @last_update_dates
       end
       
-      def sources
-        unless @sources
-          @sources = self.map(&:source).uniq
+      def collection_codes
+        unless @collection_codes
+          @collection_codes = self.map(&:collection_code).uniq
         end
-        @sources
+        @collection_codes
+      end
+      
+      def collections
+        unless @collections
+          @collections = self.map(&:collection).uniq
+        end
       end
       
       def us_availability
@@ -124,7 +130,8 @@ module HathiTrust
             'htid' => item.htid,
             'ingest' => item.last_update_date,
             'rights'  => item.rights,
-            'heldby'   => item.print_holdings
+            'heldby'   => item.print_holdings,
+            'collection_code' => item.collection_code
           }
           if item.enum_chron
             jsonrec['enumcron'] = item.enum_chron
@@ -208,7 +215,7 @@ module HathiTrust
       
       DEFAULT_DATE = '00000000'
       
-      attr_accessor :rights, :enum_chron, :last_update_date, :print_holdings
+      attr_accessor :rights, :enum_chron, :last_update_date, :print_holdings, :collection_code
       attr_reader :htid, :set
       
       def initialize
@@ -221,6 +228,7 @@ module HathiTrust
         inst.htid   = f['u']
         inst.last_update_date = f['d'] || DEFAULT_DATE
         inst.enum_chron = f['z']
+        inst.collection_code = f['c'].downcase
         inst
       end
       
