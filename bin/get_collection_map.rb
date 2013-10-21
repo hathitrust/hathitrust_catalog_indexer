@@ -5,7 +5,12 @@ url = 'http://mirlyn-aleph.lib.umich.edu/hathitrust_collection_map.yaml'
 
 tmap_dir = File.expand_path(File.join("..", 'lib', 'translation_maps', 'ht'), File.dirname(__FILE__))
 
-data = YAML.load(open(url).read)
+begin
+  data = YAML.load(open(url).read)
+rescue OpenURI::HTTPError => e
+  $stderr.puts "Problem getting #{url}: #{e}" 
+  exit
+end
 
 # Create the "collection_code_to_original_from.yaml" map
 
