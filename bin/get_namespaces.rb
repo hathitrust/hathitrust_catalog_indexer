@@ -1,5 +1,4 @@
-$:.unshift '../lib'
-require 'ht_dbh'
+require_relative '../lib/ht_dbh'
 
 dbh = HathiTrust::DBH.new
 
