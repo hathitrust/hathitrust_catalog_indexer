@@ -1,6 +1,6 @@
 require 'jdbc-helper'
-require_relative 'ht_secure_data'
-require_relative "mysql-connector-java-5.1.17-bin.jar"
+require 'ht_secure_data'
+require "mysql-connector-java-5.1.17-bin.jar"
 
 module HathiTrust
   class DBH
