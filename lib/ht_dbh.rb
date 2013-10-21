@@ -6,7 +6,7 @@ module HathiTrust
   class DBH
     extend HathiTrust::SecureData
     
-    def initialize
+    def self.new
       JDBCHelper::Connection.new(
                           :driver=>'com.mysql.jdbc.Driver',
                           :url=>'jdbc:mysql://' + self.db_machine + '/' + self.db_db,
