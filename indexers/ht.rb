@@ -364,11 +364,11 @@ end
 
 
 to_field 'ht_searchonly' do |record, acc, context|
-  acc << context.clipboard[:ht][:items].us_fulltext? ? 'false' : 'true'
+  acc << !context.clipboard[:ht][:items].us_fulltext?
 end
 
 to_field 'ht_searchonly_intl' do |record, acc, context|
-  acc << context.clipboard[:ht][:items].intl_fulltext? ? 'false' : 'true'
+  acc << !context.clipboard[:ht][:items].intl_fulltext? 
 end
 
 
@@ -377,4 +377,5 @@ to_field 'htsource' do |record, acc, context|
   cc_to_of = Traject::TranslationMap.new('ht/collection_code_to_original_from')
   acc.concat context.clipboard[:ht][:items].collection_codes.map{|x| cc_to_of[x]}
 end
+
 
