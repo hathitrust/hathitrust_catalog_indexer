@@ -6,8 +6,9 @@ group :development do
   gem 'minitest'
 end
 
-gem 'traject'
+gem 'traject', '>1.0.0.beta'
 gem 'traject_umich_format'
 gem 'match_map'
 gem 'traject_alephsequential_reader'
 gem 'marc-marc4j'
+gem 'jdbc-helper'

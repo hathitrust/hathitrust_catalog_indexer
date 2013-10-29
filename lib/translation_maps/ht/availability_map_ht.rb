@@ -1,4 +1,4 @@
-require 'ht_constants'
+require 'ht_traject/ht_constants'
 require 'match_map'
 
 

@@ -6,14 +6,14 @@ extend  Traject::Macros::Marc21Semantics
 require 'traject/macros/marc_format_classifier'
 extend Traject::Macros::MarcFormats
 
-require 'ht_macros'
-require 'ht_item'
+require 'ht_traject/ht_macros'
+require 'ht_traject/ht_item'
 extend HathiTrust::Traject::Macros
 
 require 'traject/umich_format'
 extend Traject::UMichFormat::Macros
 
-require 'fast_xmlwriter'
+require 'ht_traject/fast_xmlwriter'
  
 
 settings do

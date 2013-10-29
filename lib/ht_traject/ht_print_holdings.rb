@@ -1,4 +1,4 @@
-require_relative 'ht_dbh.rb'
+require 'ht_traject/ht_dbh.rb'
 module HathiTrust
   class PrintHoldings
     

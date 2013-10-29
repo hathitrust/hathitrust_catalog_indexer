@@ -1,7 +1,7 @@
 require 'traject'
 require 'match_map'
-require_relative 'ht_constants'
-require_relative 'ht_print_holdings'
+require 'ht_traject/ht_constants'
+require 'ht_traject/ht_print_holdings'
 require 'json'
 
 module HathiTrust
@@ -228,7 +228,7 @@ module HathiTrust
         inst.htid   = f['u']
         inst.last_update_date = f['d'] || DEFAULT_DATE
         inst.enum_chron = f['z']
-        inst.collection_code = f['c'].downcase
+        inst.collection_code = f['c'] ? f['c'].downcase : inst.namespace
         inst
       end
       
