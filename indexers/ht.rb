@@ -266,7 +266,7 @@ to_field 'publishDateRange' do |rec, acc, context|
     dr = HathiTrust::Traject::Macros::HTMacros.compute_date_range(d)
     acc << dr if dr
   else
-    log.debug "No valid date for record #{context.output_hash['id'].first}"
+    logger.debug "No valid date for record #{context.output_hash['id'].first}"
   end
 end
 
