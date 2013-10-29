@@ -1,8 +1,11 @@
 require 'traject'
 require 'traject/debug_writer'
 require 'traject/null_writer'
-require_relative '../lib/ht_format'
 require 'thread'
+
+require 'traject/umich_format'
+extend Traject::UMichFormat::Macros
+
 
 
 settings do
@@ -19,7 +22,7 @@ difffile = $stderr
 write_mutex  = Mutex.new
 
 each_record do |rec, context|
-  ex = Traject::MarcExtractor.new('970a')
+  ex = Traject::MarcExtractor.cached('970a')
   begin
     orig = ex.extract(rec)
   
@@ -30,8 +33,8 @@ each_record do |rec, context|
     context.output_hash['O_Format'] = [orig.shift]
     context.output_hash['O_Type'] = orig
   
-    fd = HathiTrust::Format_Detector.new(rec)
-    new_all =  [fd.bib_format, fd.types].flatten.sort.dup
+    fd = Traject::UMichFormat.new(rec)
+    new_all =  fd.format_and_types
     context.output_hash['N_All'] = new_all
     context.output_hash['N_Format'] = [fd.bib_format]
     context.output_hash['N_Type'] = fd.types.dup
