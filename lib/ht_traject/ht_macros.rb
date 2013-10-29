@@ -24,6 +24,14 @@ module HathiTrust::Traject::Macros
   end
       
   
+  def get_date
+    lambda do |r, acc, context|
+      d = HTMacros.get_date(r)
+      acc << d if d
+    end
+  end
+      
+  
   # Stick some dates into the context object for later use
   def extract_date_into_context
     
