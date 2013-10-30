@@ -84,7 +84,7 @@ to_field 'format', umich_format_and_types
 ################################
 
 
-oclc_pattern = /(?:oclc|ocolc|ocm|ocn)(\d+)/
+oclc_pattern = /(?:oclc|ocolc|ocm|ocn).*?(\d+)/i
 to_field 'oclc' do |record, acc|
   oh35az_spec = Traject::MarcExtractor.cached('035az', :separator=>nil)
   oh35az_spec.extract(record).each do |d|
