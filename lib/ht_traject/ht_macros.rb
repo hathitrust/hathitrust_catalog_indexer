@@ -51,7 +51,7 @@ module HathiTrust::Traject::Macros
     def self.get_date(r)
       bad_date_types = {
         'n' => true,
-        # 'u' => true,
+        'u' => true,
         'b' => true
       }
     
