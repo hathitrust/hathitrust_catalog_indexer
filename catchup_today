@@ -11,7 +11,9 @@ else
   TDIR="/htsolr/catalog/bin/ht_traject"
 fi
 
+echo
 echo Working on $host in $TDIR
+echo
 
 DDIR=/htsolr/catalog/prep
 
