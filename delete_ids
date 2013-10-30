@@ -6,8 +6,19 @@ url = 'http://localhost:9033/catalog/update'
 
 client = HTTPClient.new
 
-x = client.get(url,
-    :header=>[{'Content-Type' => 'text/xml', :content=>"<commit/>"}]
-)
-
-puts "X is #{x.to_s}";
+total = 0
+begin
+  body = "<delete>"
+  File.open(filename).each do |l|
+    body << "<id>#{l.chomp}</id>"
+    total += 1
+  end
+  body << "</delete>"
+  if total > 0
+    client.post(url, body, {'Content-Type' => 'text/xml'})  
+  end
+  puts "Deleted #{total} ids from solr\n\n"
+rescue Exception => e
+  puts "Problem deleting: #{e}"
+end
+    

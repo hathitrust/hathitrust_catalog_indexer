@@ -10,7 +10,6 @@ $JRUBY --server --fast -S traject \
   -c $TDIR/readers/ndj.rb\
   -c $TDIR/writers/localhost.rb\
   -c $TDIR/indexers/ht.rb \
-  -s log.file="$TDIR/logs/$filebase.log" \
-  -s log.level=debug \
+  -s log.file=STDOUT\
   $filename
 

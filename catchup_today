@@ -1,5 +1,7 @@
 #!/bin/bash
 
+JRUBY="/htsolr/catalog/bin/jruby-1.7.6/bin/jruby"
+TDIR="/htsolr/catalog/bin/ht_traject"
 DDIR=/htsolr/catalog/prep
 
 # Find yesterday's date
@@ -9,7 +11,22 @@ marcfile="${DDIR}/zephir_upd_${datestr}.json.gz"
 delfile="${DDIR}/zephir_upd_${datestr}_delete.txt"
 
 
-echo Deleting from $delfile
+if [ -f $delfile ] 
+then
+  echo Deleting from $delfile
+  $JRUBY $TDIR/delete_ids $delfile
+else
+  echo "No Deletes: Could not find file '$delfile'"
+fi
 
-echo Indexing from $marcfile
+
+if [ -f $marcfile ] 
+then
+  echo Indexing from $marcfile
+  $TDIR/tindex.sh $marcfile
+else
+  echo "No indexing: Could not find file '$marcfile'"
+fi
+
+
 
