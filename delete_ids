@@ -1,5 +1,7 @@
 
 require 'httpclient'
+require 'zlib'
+
 filename = ARGV[0]
 
 url = 'http://localhost:9033/catalog/update'
@@ -8,8 +10,13 @@ client = HTTPClient.new
 
 total = 0
 begin
+  file = File.open(filename)
+  if /\.gz\Z/.match(filename)
+    file = Zlib::GzipReader.new(file)
+  end
+
   body = "<delete>"
-  File.open(filename).each do |l|
+  file.each do |l|
     body << "<id>#{l.chomp}</id>"
     total += 1
   end

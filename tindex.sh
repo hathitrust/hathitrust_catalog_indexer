@@ -1,7 +1,15 @@
 #!/bin/bash
 
 JRUBY="/htsolr/catalog/bin/jruby-1.7.6/bin/jruby"
-TDIR="/htsolr/catalog/bin/ht_traject"
+
+host=`hostname -s`
+
+if [ $host = "alamo" ]
+then
+  TDIR="/htsolr/catalog-dev/bin/ht_traject"
+else
+  TDIR="/htsolr/catalog/bin/ht_traject"
+fi
 
 filename=$1
 filebase=`basename "$filename"`

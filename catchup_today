@@ -1,14 +1,25 @@
 #!/bin/bash
 
 JRUBY="/htsolr/catalog/bin/jruby-1.7.6/bin/jruby"
-TDIR="/htsolr/catalog/bin/ht_traject"
+
+host=`hostname -s`
+
+if [ $host = "alamo" ]
+then
+  TDIR="/htsolr/catalog-dev/bin/ht_traject"
+else
+  TDIR="/htsolr/catalog/bin/ht_traject"
+fi
+
+echo Working on $host in $TDIR
+
 DDIR=/htsolr/catalog/prep
 
 # Find yesterday's date
 datestr=`date --date "now -1 day" "+%Y%m%d"`
 
 marcfile="${DDIR}/zephir_upd_${datestr}.json.gz"
-delfile="${DDIR}/zephir_upd_${datestr}_delete.txt"
+delfile="${DDIR}/zephir_upd_${datestr}_delete.txt.gz"
 
 
 if [ -f $delfile ] 
