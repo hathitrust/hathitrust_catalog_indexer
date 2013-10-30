@@ -1,0 +1,15 @@
+#!/bin/bash
+
+DDIR=/htsolr/catalog/prep
+
+# Find yesterday's date
+datestr=`date --date "now -1 day" "+%Y%m%d"`
+
+marcfile="${DDIR}/zephir_upd_${datestr}.json.gz"
+delfile="${DDIR}/zephir_upd_${datestr}_delete.txt"
+
+
+echo Deleting from $delfile
+
+echo Indexing from $marcfile
+

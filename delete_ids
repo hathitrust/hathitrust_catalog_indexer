@@ -1,0 +1,13 @@
+
+require 'httpclient'
+filename = ARGV[0]
+
+url = 'http://localhost:9033/catalog/update'
+
+client = HTTPClient.new
+
+x = client.get(url,
+    :header=>[{'Content-Type' => 'text/xml', :content=>"<commit/>"}]
+)
+
+puts "X is #{x.to_s}";
