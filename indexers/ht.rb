@@ -52,7 +52,7 @@ end
 # to_field 'fullrecord', macr4j_as_xml
 
 to_field 'fullrecord' do |rec, acc|
-  acc << MARC::FastXMLWriter.encode(rec)
+  acc << MARC::FastXMLWriter.single_record_document(rec)
 end
 
 

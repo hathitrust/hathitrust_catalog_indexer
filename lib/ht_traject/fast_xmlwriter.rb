@@ -3,6 +3,7 @@ require 'marc'
 module MARC
   class FastXMLWriter < MARC::XMLWriter
 
+    @xml_header = '<?xml version="1.0" encoding="UTF-8"?>'
     @open_record = "<record>" # or "<marc:record">
     @open_record_namespace = "<marc:record>"
     
@@ -20,6 +21,15 @@ module MARC
     
     class << self
       
+      
+      def single_record_document(r, opts={})
+        xml = @xml_header.dup
+        xml << '<collection>'
+        xml << encode(r, opts)
+        xml << '</collection>'
+        xml
+      end
+      
       def open_datafield(tag, ind1, ind2)
         # return "\n  <datafield tag=\"#{tag}\" ind1=\"#{ind1}\" ind2=\"#{ind2}\">"
         return "<datafield tag=\"#{tag}\" ind1=\"#{ind1}\" ind2=\"#{ind2}\">"
@@ -36,7 +46,7 @@ module MARC
       end
     
       def encode(r, opts={})
-        xml = opts[:include_namespace] ? @open_record_namespace.dup : @open_record.dup
+        xml = (opts[:include_namespace] ? @open_record_namespace.dup : @open_record.dup)
       
         # MARCXML only allows alphanumerics or spaces in the leader
         lead = r.leader.gsub(/[^\w|^\s]/, 'Z').encode(:xml=>:text)
