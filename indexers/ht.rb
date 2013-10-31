@@ -120,8 +120,8 @@ to_field "author_rest", extract_marc("505r")
 # For titles, we want with and without
 
 to_field 'title',     extract_marc_filing_version('245abdefghknp', :include_original => true)
-to_field 'title_a',   extract_marc_filing_version('245ak', :include_original => true)
-to_field 'title_ab',  extract_marc_filing_version('245abk', :include_original => true)
+to_field 'title_a',   extract_marc_filing_version('245a', :include_original => true)
+to_field 'title_ab',  extract_marc_filing_version('245ab', :include_original => true)
 to_field 'title_c',   extract_marc('245c')
 
 to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true, :first=>true)
