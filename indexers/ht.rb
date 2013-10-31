@@ -83,7 +83,7 @@ to_field 'format', umich_format_and_types
 ######## IDENTIFIERS ###########
 ################################
 
-to_field 'oclc', oclcnum
+to_field 'oclc', oclcnum('035a:035z')
 
 #oclc_pattern = /(?:oclc|ocolc|ocm|ocn).*?(\d+)/i
 #to_field 'oclc' do |record, acc|
