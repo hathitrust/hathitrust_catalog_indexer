@@ -83,17 +83,16 @@ to_field 'format', umich_format_and_types
 ######## IDENTIFIERS ###########
 ################################
 
-to_field 'oclc', oclcnum('035a:035z')
 
-#oclc_pattern = /(?:oclc|ocolc|ocm|ocn).*?(\d+)/i
-#to_field 'oclc' do |record, acc|
-# oh35az_spec = Traject::MarcExtractor.cached('035az', :separator=>nil)
-#  oh35az_spec.extract(record).each do |d|
-#    if m = oclc_pattern.match(d)
-#      acc << m[1]
-#    end
-#  end
-#end
+oclc_pattern = /(?:oclc|ocolc|ocm|ocn)(\d+)/
+to_field 'oclc' do |record, acc|
+  oh35az_spec = Traject::MarcExtractor.cached('035az', :separator=>nil)
+  oh35az_spec.extract(record).each do |d|
+    if m = oclc_pattern.match(d)
+      acc << m[1]
+    end
+  end
+end
 
 sdr_pattern = /^sdr-/
 to_field 'sdrnum' do |record, acc|
@@ -130,8 +129,8 @@ to_field "author_rest", extract_marc("505r")
 # For titles, we want with and without
 
 to_field 'title',     extract_marc_filing_version('245abdefghknp', :include_original => true)
-to_field 'title_a',   extract_marc_filing_version('245a', :include_original => true)
-to_field 'title_ab',  extract_marc_filing_version('245ab', :include_original => true)
+to_field 'title_a',   extract_marc_filing_version('245ak', :include_original => true)
+to_field 'title_ab',  extract_marc_filing_version('245abk', :include_original => true)
 to_field 'title_c',   extract_marc('245c')
 
 to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true, :first=>true)
