@@ -236,6 +236,7 @@ each_record do |r, context|
     itemset.add HathiTrust::Traject::Item.new_from_974(f)
   end
   
+  context.clipboard[:ht][:has_items] = (itemset.size > 0)
   context.clipboard[:ht][:items] = itemset
     
 end
@@ -248,29 +249,29 @@ end
 # on a machine that doesn't have access
 unless ENV['SKIP_PH']
   each_record do |r, context|
-    context.clipboard[:ht][:items].fill_print_holdings!
+    context.clipboard[:ht][:items].fill_print_holdings! if context.clipboard[:ht][:has_items]
   end
 end
 
 
 to_field 'ht_availability' do |record, acc, context|
-  acc.concat context.clipboard[:ht][:items].us_availability
+  acc.concat context.clipboard[:ht][:items].us_availability  if context.clipboard[:ht][:has_items]
 end
 
 to_field 'ht_availability_intl' do |record, acc, context|
-  acc.concat context.clipboard[:ht][:items].intl_availability
+  acc.concat context.clipboard[:ht][:items].intl_availability if context.clipboard[:ht][:has_items]
 end
 
 to_field 'ht_count' do |record, acc, context|
-  acc << context.clipboard[:ht][:items].size
+  acc << context.clipboard[:ht][:items].size if context.clipboard[:ht][:has_items]
 end
 
 to_field 'ht_heldby' do |record, acc, context|
-  acc.concat context.clipboard[:ht][:items].print_holdings
+  acc.concat context.clipboard[:ht][:items].print_holdings if context.clipboard[:ht][:has_items]
 end
 
 to_field 'ht_id' do |record, acc, context|
-  acc.concat context.clipboard[:ht][:items].ht_ids
+  acc.concat context.clipboard[:ht][:items].ht_ids if context.clipboard[:ht][:has_items]
 end
 
 to_field 'ht_id_display' do |record, acc, context|
@@ -280,21 +281,21 @@ to_field 'ht_id_display' do |record, acc, context|
 end
 
 to_field 'ht_id_update' do |record, acc, context|
-  acc.concat context.clipboard[:ht][:items].last_update_dates
+  acc.concat context.clipboard[:ht][:items].last_update_dates if context.clipboard[:ht][:has_items]
 end
 
 to_field 'ht_json' do |record, acc, context|
-  acc << context.clipboard[:ht][:items].to_json
+  acc << context.clipboard[:ht][:items].to_json if context.clipboard[:ht][:has_items]
 end
 
 to_field 'ht_rightscode' do |record, acc, context|
-  acc.concat context.clipboard[:ht][:items].rights_list
+  acc.concat context.clipboard[:ht][:items].rights_list if context.clipboard[:ht][:has_items]
 end
 
 
 to_field 'htsource' do |record, acc, context|
   cc_to_of = Traject::TranslationMap.new('ht/collection_code_to_original_from')
-  acc.concat context.clipboard[:ht][:items].collection_codes.map{|x| cc_to_of[x]}
+  acc.concat context.clipboard[:ht][:items].collection_codes.map{|x| cc_to_of[x]} if context.clipboard[:ht][:has_items]
 end
 
 
