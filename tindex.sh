@@ -6,11 +6,11 @@ JRUBY="/htsolr/catalog/bin/jruby-1.7.6/bin/jruby"
 filename=$1
 filebase=`basename "$filename"`
 
-if [ -n $2 ]
+if [ ! -z $2 ]
 then
-  LOGFILE=$2
+  LOGFILE_DIRECTIVE="-s log.file=$2"
 else
-  LOGFILE=STDOUT
+  LOGFILE_DIRECTIVE=""
 fi
 
 host=`hostname -s`
@@ -23,10 +23,10 @@ else
 fi
 
 
-$JRUBY --server --fast -S traject \
+$JRUBY --server -S traject \
   -c $TDIR/readers/ndj.rb\
   -c $TDIR/writers/localhost.rb\
   -c $TDIR/indexers/ht.rb \
-  -s log.file=$LOGFILE\
+  $LOGFILE_DIRECTIVE \
   $filename
 
