@@ -62,7 +62,7 @@ fi
 echo Indexing from $marcfile into $WRITER
 
 
-echo $JRUBY --server --fast -S traject \
+$JRUBY --server --fast -S traject \
   -c $TDIR/readers/$READER\
   -c $TDIR/writers/$WRITER.rb\
   -c $TDIR/indexers/$TENV.rb \
