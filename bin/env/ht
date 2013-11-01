@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export SOLR_URL="http://localhost:9033/catalog/update"
+export SOLR_URL="http://solr-sdr-catalog:9033/catalog"
 
 if [ -z `type -t jruby` ]
 then
