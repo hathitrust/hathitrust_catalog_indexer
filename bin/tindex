@@ -59,7 +59,7 @@ else
   LOGFILE_DIRECTIVE=""
 fi
 
-echo Indexing from $marcfile into $WRITER
+echo Indexing from $filename into $WRITER
 
 
 $JRUBY --server --fast -S traject \
