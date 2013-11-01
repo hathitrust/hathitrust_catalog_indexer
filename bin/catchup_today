@@ -19,17 +19,15 @@ export TENV=$1 # umich or ht
 source $SCRIPTDIR/env/$TENV 
 
 
-
 echo
 echo Working on $HOSTNAME in $TDIR
 echo
 
-#### &&&&& ####
-export delfile=Rakefile
 
 if [ -f $delfile ] 
 then
   echo Deleting from $delfile
+  echo Targeting $SOLR_URL
   $JRUBY $SCRIPTDIR/delete_ids $delfile
 else
   echo "No Deletes: Could not find file '$delfile'"
