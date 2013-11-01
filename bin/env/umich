@@ -1,0 +1,43 @@
+#!/bin/bash
+
+if [ -z $SOLR_PORT ]
+then
+  echo
+  echo "Need to call with the solr port defined"
+  echo "e.g.,"
+  echo "   SOLR_PORT=8026 catchup_today umich"
+  echo
+  exit 1
+fi
+
+export SOLR_URL="http://localhost:${SOLR_PORT}/solr/biblio"
+
+if [ -z `type -t jruby` ]
+then
+  export JRUBY="/l/solr-vufind/apps/jruby/bin"
+else
+  export JRUBY=jruby
+fi
+  
+export TDIR=/l/solr-vufind/apps/ht_traject
+
+export DDIR=/l/solr-vufind/data
+
+
+# Find yesterday's date, allowing for different implementations of "date"
+
+export datestr=`date --date "now -1 day" "+%Y%m%d" 2>/dev/null`
+if [ -z $datestr ]
+then
+  export datestr=` date -v -1d "+%Y%m%d"`
+fi
+
+20131029.seq
+
+export marcfile="${DDIR}/vufind_upd_${datestr}.seq"
+export delfile="${DDIR}/vufind_upd_${datestr}_delete.log"
+
+if [ -z $READER ]
+then
+  export READER="alephsequential"
+fi

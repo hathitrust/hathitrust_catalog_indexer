@@ -36,5 +36,5 @@ export delfile="${DDIR}/zephir_upd_${datestr}_delete.txt.gz"
 
 if [ -z $READER ]
 then
-  export READER="ndj.rb"
+  export READER="ndj"
 fi

@@ -63,7 +63,7 @@ echo Indexing from $marcfile into $WRITER
 
 
 $JRUBY --server --fast -S traject \
-  -c $TDIR/readers/$READER \
+  -c $TDIR/readers/$READER.rb \
   -c $TDIR/writers/$WRITER.rb \
   -c $TDIR/indexers/common.rb \
   -c $TDIR/indexers/$TENV.rb \
