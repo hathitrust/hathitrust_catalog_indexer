@@ -4,11 +4,8 @@ require 'socket'
 
 
 settings do
-  if Socket.gethostname =~ /waffle/
-    provide "solr.url", "http://localhost:8983/solr/catalog"
-  else
-    provide "solr.url", "http://solr-sdr-catalog:9033/catalog"
-  end
+  provide "solr.url", ENV["SOLR_URL"]
+
 #  provide "solrj_writer.parser_class_name", "BinaryResponseParser"
   provide "solrj_writer.parser_class_name", "XMLResponseParser"
   provide "solrj_writer.commit_on_close", "true"
