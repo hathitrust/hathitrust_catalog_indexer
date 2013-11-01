@@ -1,0 +1,20 @@
+#!/bin/bash
+
+HTJRUBY=/htsolr/catalog/bin/jruby/bin
+UMJRUBY=/l/solr-vufind/apps/jruby-1.7.6/bin
+
+if [ `type -t jruby` ]
+then
+  JRUBY=jruby
+elif [ -f $HTJRUBY ]
+then
+  JRUBY=$HTJRUBY
+elif [ -f UMJRUBY ]
+then
+  JRUBY=$UMJRUBY
+else
+  exit 1
+fi
+
+echo $JRUBY
+
