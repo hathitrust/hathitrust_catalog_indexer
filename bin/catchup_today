@@ -1,5 +1,17 @@
 #!/bin/bash
 
+if [ $# -ne 1 ] 
+then
+  echo
+  echo "catchup_today: run the catchup (delete and index) for last night's files"
+  echo
+  echo "USAGE:"
+  echo "    catchup_today ht      # for hathitrust"
+  echo "    catchup_today umich   # for UMich/Mirlyn"
+  echo
+  exit
+fi
+
 export SCRIPTDIR=`dirname $0`
 export TENV=$1 # umich or ht
 
