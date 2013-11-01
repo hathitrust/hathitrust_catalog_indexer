@@ -28,7 +28,7 @@ begin
   if total > 0
     client.post(url, body, {'Content-Type' => 'text/xml'})  
   end
-  puts "Deleted #{total} ids from solr\n\n"
+  puts "Deleted #{total} ids from #{url}\n\n"
 rescue Exception => e
   puts "Problem deleting: #{e}"
 end
