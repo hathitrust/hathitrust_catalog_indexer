@@ -1,23 +1,69 @@
 #!/bin/bash
 
-JRUBY="/htsolr/catalog/bin/jruby-1.7.6/bin/jruby"
+# Need at least three arguments:
+#  - the environment (ht or umich)
+#  - the name of the writer (ht_localhost, debug, etc.)
+#  - the name of the file
+#  - (optional) the logfile
 
-host=`hostname -s`
 
-if [ $host = "alamo" ]
+if [ $# -lt 3 -o $# -gt 4 ]
 then
-  TDIR="/htsolr/catalog-dev/bin/ht_traject"
-else
-  TDIR="/htsolr/catalog/bin/ht_traject"
+  echo
+  echo "tindex: Use traject to index"
+  echo "USAGE:"
+  echo "  tindex env writer filename [logfile]"
+  echo
+  echo "...where"
+  echo "  - 'env' is umich or ht"
+  echo "  - 'writer' is the name of the writer config (in ht_traject/writers/, without the 'rb')"
+  echo "  - 'filename' is the name of the file of MARC records"
+  echo "  - 'logfile' is the name of the log file"
+  echo 
+  echo "You can set the environment variable READER to the name of the reader config file (without"
+  echo "the .rb) if you want to override whatever is normally used (ndj for HT, alephsequential for UM)"
+  echo
+  exit 1
 fi
 
-filename=$1
+
+SCRIPTDIR=`dirname $0`
+
+TENV=$1 # umich or ht
+WRITER=$2
+
+# Set up JRUBY, TDIR, DDIR, $marcfile, $delfile
+source $SCRIPTDIR/env/$TENV 
+
+if [ ! -f $TDIR/writers/$WRITER.rb ]
+then
+  echo "Can't find writer $WRITER.rb at $TDIR/writers/$WRITER.rb"
+  exit 1
+fi
+
+
+filename=$3
 filebase=`basename "$filename"`
 
+if [ ! -f $filename ]
+then
+  echo "Can't find file $filename"
+  exit 1
+fi
+
+
+if [ ! -z $4 ]
+then
+  LOGFILE_DIRECTIVE="-s log.file=$4"
+else
+  LOGFILE_DIRECTIVE=""
+fi
+
+
 $JRUBY --server --fast -S traject \
-  -c $TDIR/readers/ndj.rb\
-  -c $TDIR/writers/localhost.rb\
-  -c $TDIR/indexers/ht.rb \
-  -s log.file=STDOUT\
+  -c $TDIR/readers/$READER\
+  -c $TDIR/writers/$WRITER.rb\
+  -c $TDIR/indexers/$TENV.rb \
+  $LOGFILE_DIRECTIVE \
   $filename
 

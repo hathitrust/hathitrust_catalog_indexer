@@ -4,7 +4,11 @@ require 'zlib'
 
 filename = ARGV[0]
 
-url = 'http://localhost:9033/catalog/update'
+url = ENV['SOLR_URL']
+
+unless url
+  raise "SOLR_URL environment variable not defined"
+end
 
 client = HTTPClient.new
 

@@ -1,33 +1,24 @@
 #!/bin/bash
 
-JRUBY="/htsolr/catalog/bin/jruby-1.7.6/bin/jruby"
+export SCRIPTDIR=`dirname $0`
+export TENV=$1 # umich or ht
 
-host=`hostname -s`
+# Set up JRUBY, TDIR, DDIR, $marcfile, $delfile
+source $SCRIPTDIR/env/$TENV 
 
-if [ $host = "alamo" ]
-then
-  TDIR="/htsolr/catalog-dev/bin/ht_traject"
-else
-  TDIR="/htsolr/catalog/bin/ht_traject"
-fi
+
 
 echo
-echo Working on $host in $TDIR
+echo Working on $HOSTNAME in $TDIR
 echo
 
-DDIR=/htsolr/catalog/prep
-
-# Find yesterday's date
-datestr=`date --date "now -1 day" "+%Y%m%d"`
-
-marcfile="${DDIR}/zephir_upd_${datestr}.json.gz"
-delfile="${DDIR}/zephir_upd_${datestr}_delete.txt.gz"
-
+#### &&&&& ####
+export delfile=Rakefile
 
 if [ -f $delfile ] 
 then
   echo Deleting from $delfile
-  $JRUBY $TDIR/delete_ids $delfile
+  $JRUBY $SCRIPTDIR/delete_ids $delfile
 else
   echo "No Deletes: Could not find file '$delfile'"
 fi
@@ -36,7 +27,7 @@ fi
 if [ -f $marcfile ] 
 then
   echo Indexing from $marcfile
-  $TDIR/tindex.sh $marcfile
+  $SCRIPTDIR/tindex $TENV localhost $marcfile
 else
   echo "No indexing: Could not find file '$marcfile'"
 fi
