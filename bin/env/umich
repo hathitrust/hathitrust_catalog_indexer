@@ -32,8 +32,6 @@ then
   export datestr=` date -v -1d "+%Y%m%d"`
 fi
 
-20131029.seq
-
 export marcfile="${DDIR}/vufind_upd_${datestr}.seq"
 export delfile="${DDIR}/vufind_upd_${datestr}_delete.log"
 
