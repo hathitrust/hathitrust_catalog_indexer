@@ -1,5 +1,34 @@
 #!/bin/bash
 
+# Where are we working?
+
+export TDIR=/l/solr-vufind/apps/ht_traject
+export DDIR=/l/solr-vufind/data
+
+
+# A simple function to look for a file, gzipped and not gzipped,
+# in both the data dir and the processed dir
+
+function find_data_file() {
+  local f="$1"
+  local gzf="$1.gz"
+  local PDDIR="${DDIR}/processed"
+  
+  local dn="$DDIR/$f"
+  local dz="$DDIR/$gzf"
+  local pn="$PDDIR/$f"
+  local pz="$PDDIR/$gzf"
+  
+  for i in "$dn" "$dz" "$pn" "$pz"; do
+    if [ -f $i ] 
+    then
+      echo $i;
+      return 0
+    fi
+  done
+}
+
+
 if [ -z $SOLR_PORT ]
 then
   echo
@@ -24,9 +53,12 @@ else
   export JRUBY=jruby
 fi
 
-export TDIR=/l/solr-vufind/apps/ht_traject
 
-export DDIR=/l/solr-vufind/data
+# Set the reader to Aleph Sequential unless it's being overridden
+if [ -z $READER ]
+then
+  export READER="alephsequential"
+fi
 
 
 # Find yesterday's date, allowing for different implementations of "date"
@@ -37,10 +69,14 @@ then
   export datestr=` date -v -1d "+%Y%m%d"`
 fi
 
-export marcfile="${DDIR}/vufind_upd_${datestr}.seq"
-export delfile="${DDIR}/vufind_upd_${datestr}_delete.log"
 
-if [ -z $READER ]
-then
-  export READER="alephsequential"
-fi
+# Base file names:
+
+marcfilebase=vufind_upd_${datestr}.seq
+delfilebase=vufind_upd_${datestr}_delete.log
+
+# Use find_data_file to get the actual files
+
+export marcfile=`find_data_file "$marcfilebase"`
+export delfile=`find_data_file "$delfilebase"`
+
