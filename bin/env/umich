@@ -29,6 +29,18 @@ function find_data_file() {
 }
 
 
+function find_marc_file_for_date() {
+  local datestr=$1
+  local marcfilebase=vufind_upd_${datestr}.seq
+  find_data_file '$marcfilebase'
+}
+
+function find_del_file_for_date() {
+  local datestr=$1
+  local delfilebase=vufind_upd_${datestr}_delete.log
+  find_data_file '$delfilebase'
+}
+
 if [ -z $SOLR_PORT ]
 then
   echo
@@ -72,11 +84,9 @@ fi
 
 # Base file names:
 
-marcfilebase=vufind_upd_${datestr}.seq
-delfilebase=vufind_upd_${datestr}_delete.log
 
 # Use find_data_file to get the actual files
 
-export marcfile=`find_data_file "$marcfilebase"`
-export delfile=`find_data_file "$delfilebase"`
+export marcfile=`find_marc_file_for_date $datestr`
+export delfile=`find_del_file_for_date $datestr`
 
