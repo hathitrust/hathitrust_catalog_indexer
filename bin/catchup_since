@@ -24,7 +24,7 @@ echo Working on $HOSTNAME in $TDIR
 echo
 
 for i in $(seq -f '%.0f' $DATESTR `date --date "now - 1 day" +%Y%m%d`); do
-  local delfile=`find_del_file_for_date $i`
+  delfile=`find_del_file_for_date $i`
   if [ -f $delfile ] 
   then
     echo Deleting from $delfile
@@ -34,7 +34,7 @@ for i in $(seq -f '%.0f' $DATESTR `date --date "now - 1 day" +%Y%m%d`); do
     echo "No Deletes: Could not find file '$delfile'"
   fi
 
-  local marcfile=`find_marc_file_for_date $i`
+  marcfile=`find_marc_file_for_date $i`
   if [ -f $marcfile ] 
   then
     $SCRIPTDIR/tindex $TENV localhost $marcfile
