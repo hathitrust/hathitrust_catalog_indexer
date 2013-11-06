@@ -31,8 +31,20 @@ then
   export datestr=` date -v -1d "+%Y%m%d"`
 fi
 
-export marcfile="${DDIR}/zephir_upd_${datestr}.json.gz"
-export delfile="${DDIR}/zephir_upd_${datestr}_delete.txt.gz"
+
+function find_marc_file_for_date() {
+  local datestr=$1
+  echo "${DDIR}/zephir_upd_${datestr}.json.gz"
+}
+
+function find_del_file_for_date() {
+  local datestr=$1
+  echo "${DDIR}/zephir_upd_${datestr}_delete.txt.gz"
+}
+
+
+export marcfile=`find_marc_file_for_date "$datestr"`
+export delfile=`find_del_file_for_date "$datestr"`
 
 if [ -z $READER ]
 then
