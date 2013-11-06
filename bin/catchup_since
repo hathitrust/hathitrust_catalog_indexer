@@ -1,0 +1,45 @@
+if [ $# -ne 2 ] 
+then
+  echo
+  echo "catchup_today: run the catchup (delete and index) for last night's files"
+  echo
+  echo "USAGE:"
+  echo "    catchup_subce ht YYYYMMDD     # for hathitrust"
+  echo "    catchup_today umich YYYYMMDD  # for UMich/Mirlyn"
+  echo
+  exit
+fi
+
+
+export SCRIPTDIR=`dirname $0`
+export TENV=$1 # umich or ht
+DATESTR=$2
+
+# Set up JRUBY, TDIR, DDIR, $marcfile, $delfile
+source $SCRIPTDIR/env/$TENV 
+
+
+echo
+echo Working on $HOSTNAME in $TDIR
+echo
+
+for i in $(seq -f '%.0f' $DATESTR `date --date "now - 1 day" +%Y%m%d`); do
+  delfile=`find_del_file_for_date $i`
+  if [ -f $delfile ] 
+  then
+    echo Deleting from $delfile
+    echo Targeting $SOLR_URL
+    $JRUBY $SCRIPTDIR/delete_ids $delfile
+  else
+    echo "No Deletes: Could not find file '$delfile'"
+  fi
+
+  marcfile=`find_marc_file_for_date $i`
+  if [ -f $marcfile ] 
+  then
+    $SCRIPTDIR/tindex $TENV localhost $marcfile
+  else
+    echo "No indexing: Could not find file '$marcfile'"
+  fi
+done
+  

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if [ $# -ne 1 ] 
+then
+  echo
+  echo "catchup_today: run the catchup (delete and index) for last night's files"
+  echo
+  echo "USAGE:"
+  echo "    catchup_today ht      # for hathitrust"
+  echo "    catchup_today umich   # for UMich/Mirlyn"
+  echo
+  exit
+fi
+
+export SCRIPTDIR=`dirname $0`
+export TENV=$1 # umich or ht
+
+# Set up JRUBY, TDIR, DDIR, $marcfile, $delfile
+source $SCRIPTDIR/env/$TENV 
+
+
+echo
+echo Working on $HOSTNAME in $TDIR
+echo
+
+
+if [ -f $delfile ] 
+then
+  echo Deleting from $delfile
+  echo Targeting $SOLR_URL
+  $JRUBY $SCRIPTDIR/delete_ids $delfile
+else
+  echo "No Deletes: Could not find file '$delfile'"
+fi
+
+
+if [ -f $marcfile ] 
+then
+  $SCRIPTDIR/tindex $TENV localhost $marcfile
+else
+  echo "No indexing: Could not find file '$marcfile'"
+fi
+
+
+
