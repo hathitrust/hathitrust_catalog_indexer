@@ -43,7 +43,7 @@ end
 # to_field 'fullrecord', macr4j_as_xml
 
 to_field 'fullrecord' do |rec, acc|
-  acc << MARC::FastXMLWriter.encode(rec)
+  acc << MARC::FastXMLWriter.single_record_document(rec)
 end
 
 to_field 'format', umich_format_and_types
@@ -83,11 +83,15 @@ to_field 'rptnum', extract_marc('088a')
 ######### AUTHOR FIELDS ########
 ################################
 
-to_field 'mainauthor', extract_marc('100abcd:110abcd:111abc')
-to_field 'author', extract_marc("100abcd:110abcd:111abc:700abcd:710abcd:711abc")
-to_field 'author2', extract_marc("110ab:111ab:700abcd:710ab:711ab")
-to_field "authorSort", extract_marc("100abcd:110abcd:111abc:110ab:700abcd:710ab:711ab", :first=>true)
-to_field "author_top", extract_marc("100abcdefgjklnpqtu0:110abcdefgklnptu04:111acdefgjklnpqtu04:700abcdejqux034:710abcdeux034:711acdegjnqux034:720a:765a:767a:770a:772a:774a:775a:776a:777a:780a:785a:786a:787a:245c")
+# We need to skip all the 710 with a $9 == 'WaSeSS'
+
+skipWaSeSS = ->(f) { f.tag == '710' && f['9'] == 'WaSeSS' }
+
+to_field 'mainauthor', extract_marc_unless('100abcd:110abcd:111abc',skipWaSeSS)
+to_field 'author', extract_marc_unless("100abcd:110abcd:111abc:700abcd:710abcd:711abc",skipWaSeSS )
+to_field 'author2', extract_marc_unless("110ab:111ab:700abcd:710ab:711ab",skipWaSeSS)
+to_field "authorSort", extract_marc_unless("100abcd:110abcd:111abc:110ab:700abcd:710ab:711ab",skipWaSeSS, :first=>true)
+to_field "author_top", extract_marc_unless("100abcdefgjklnpqtu0:110abcdefgklnptu04:111acdefgjklnpqtu04:700abcdejqux034:710abcdeux034:711acdegjnqux034:720a:765a:767a:770a:772a:774a:775a:776a:777a:780a:785a:786a:787a:245c",skipWaSeSS)
 to_field "author_rest", extract_marc("505r")
 
 

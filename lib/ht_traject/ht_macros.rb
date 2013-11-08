@@ -4,6 +4,75 @@ module HathiTrust
 end
 
 module HathiTrust::Traject::Macros
+  
+  # Need a way to skip some fields, notably 710s with a $9 == 'WaSeSS'
+  # because we've got JSTOR showing up as an author
+  #
+  
+  def extract_marc_unless(spec, skipif, options={})
+    unless (options.keys - Traject::Macros::Marc21::EXTRACT_MARC_VALID_OPTIONS).empty?
+      raise RuntimeError.new("Illegal/Unknown argument '#{(options.keys - EXTRACT_MARC_VALID_OPTIONS).join(', ')}' in extract_marc at #{Traject::Util.extract_caller_location(caller.first)}")
+    end
+    
+    
+    if translation_map_arg  = options.delete(:translation_map)
+      translation_map = Traject::TranslationMap.new(translation_map_arg)
+    else
+      translation_map = nil
+    end
+    
+    extractor = Traject::MarcExtractor.new(spec, options).dup
+    
+    # Redefine the each_matching_line on this (and only this!) extractor
+    # to skip fields that match the passed lambda
+    #
+    # This isn't deep, deep magic, but it's not exactly intuitive.
+    # Basically, we're opening up the eigenclass for this one
+    # instance and redefining the method that deterines if
+    # a field matches the spec
+    #
+    # Most of it is copied from the original implementation
+    
+    
+    # First, give us a place to put the skip lambda
+    def extractor.skipif=(skipif)
+      @skipif = skipif
+    end
+    
+    # And a eml that uses it
+    def extractor.each_matching_line(marc_record)
+      marc_record.fields(@interesting_tags_hash.keys).each do |field|
+        
+        # skip if lmdba.call(field) returns true
+        next if @skipif[field]
+        
+        # Make sure it matches indicators too, specs_covering_field
+        # doesn't check that.
+        specs_covering_field(field).each do |spec|
+          if spec.matches_indicators?(field)
+            yield(field, spec, self)
+          end
+        end
+
+      end
+    end
+    
+    # Set the skipif
+    extractor.skipif = skipif
+    
+    # Now return a normal marc extractor-type lambda
+    lambda do |record, accumulator, context|
+      accumulator.concat extractor.extract(record)
+      Traject::Macros::Marc21.apply_extraction_options(accumulator, options, translation_map)
+    end
+    
+    
+  end
+    
+
+      
+    
+    
     
   # Get a namespaced place to put all the ht stuff
   def self.setup
