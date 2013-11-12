@@ -66,6 +66,7 @@ $JRUBY --server --fast -S traject \
   -c $TDIR/readers/$READER.rb \
   -c $TDIR/writers/$WRITER.rb \
   -c $TDIR/indexers/common.rb \
+  -c $TDIR/indexers/common_ht.rb \
   -c $TDIR/indexers/$TENV.rb \
   $LOGFILE_DIRECTIVE \
   $filename
