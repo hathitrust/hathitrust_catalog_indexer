@@ -8,7 +8,13 @@ module HathiTrust::Traject::Macros
   # Need a way to skip some fields, notably 710s with a $9 == 'WaSeSS'
   # because we've got JSTOR showing up as an author
   #
-  
+  # Takes the same first and last arguments as extract_marc, but throws in a second argument
+  # that is a lambda of the form 
+  #
+  #  func(marc_record, field) => boolean
+  #
+  # All record/field combinations that return true from that func will be skipped.
+  #
   def extract_marc_unless(spec, skipif, options={})
     unless (options.keys - Traject::Macros::Marc21::EXTRACT_MARC_VALID_OPTIONS).empty?
       raise RuntimeError.new("Illegal/Unknown argument '#{(options.keys - EXTRACT_MARC_VALID_OPTIONS).join(', ')}' in extract_marc at #{Traject::Util.extract_caller_location(caller.first)}")
@@ -44,7 +50,7 @@ module HathiTrust::Traject::Macros
       marc_record.fields(@interesting_tags_hash.keys).each do |field|
         
         # skip if lmdba.call(field) returns true
-        next if @skipif[field]
+        next if @skipif[marc_record, field]
         
         # Make sure it matches indicators too, specs_covering_field
         # doesn't check that.
