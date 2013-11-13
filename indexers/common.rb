@@ -85,7 +85,7 @@ to_field 'rptnum', extract_marc('088a')
 
 # We need to skip all the 710 with a $9 == 'WaSeSS'
 
-skipWaSeSS = ->(f) { f.tag == '710' && f['9'] == 'WaSeSS' }
+skipWaSeSS = ->(rec,field) { field.tag == '710' && field['9'] == 'WaSeSS' }
 
 to_field 'mainauthor', extract_marc_unless('100abcd:110abcd:111abc',skipWaSeSS)
 to_field 'author', extract_marc_unless("100abcd:110abcd:111abc:700abcd:710abcd:711abc",skipWaSeSS )
@@ -168,9 +168,15 @@ end
 ######## SUBJECT / TOPIC  ######
 ################################
 
-# We get the full topic (LCSH)...
+# We get the full topic (LCSH), but currently want to ignore
+# entries that are FAST entries (those having second-indicator == 7)
 
-to_field "topic", extract_marc(%w(
+
+skip_FAST = ->(rec,field) do
+  field.indicator2 == '7'
+end
+  
+to_field "topic", extract_marc_unless(%w(
   600a  600abcdefghjklmnopqrstuvxyz
   610a  610abcdefghklmnoprstuvxyz
   611a  611acdefghjklnpqstuvxyz
@@ -185,7 +191,7 @@ to_field "topic", extract_marc(%w(
   657a  658ab
   658a  662abcdefgh
   690a   690abcdevxyz
-  ), :trim_punctuation=>true)
+  ), skip_FAST, :trim_punctuation=>true)
       
 
 ###############################
