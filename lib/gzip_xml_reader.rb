@@ -16,6 +16,8 @@ class Traject::GZipXMLReader < Traject::Marc4JReader
     when "xml"
       if @settings['command_line.filename'] =~ /\.gz$/
         @input_stream =  Java::java.util.zip.GZIPInputStream.new(@input_stream.to_inputstream)
+      else
+        @input_stream = @input_stream.to_inputstream
       end
       
       MarcXmlReader.new(@input_stream)
