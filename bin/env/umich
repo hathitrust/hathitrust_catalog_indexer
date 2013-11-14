@@ -58,7 +58,10 @@ export SOLR_URL="http://localhost:${SOLR_PORT}/solr/biblio"
 # and use the newer one
 
 jrversion=`jruby -v|grep -o 'jruby 1..'`
-if [ -z `type -t jruby`]  -o  "$jrversion" = "jruby 1.6" ]
+if [ -z `type -t jruby` ]
+then
+  export JRUBY="/l/solr-vufind/apps/jruby/bin/jruby"
+elif  [ "$jrversion" = "jruby 1.6" ]
 then
   export JRUBY="/l/solr-vufind/apps/jruby/bin/jruby"
 else
