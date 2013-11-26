@@ -6,7 +6,6 @@ group :development do
   gem 'minitest'
 end
 
-gem 'traject', '>=0.8.1'
 gem 'traject', '~>1'
 gem 'traject_umich_format'
 gem 'match_map'
