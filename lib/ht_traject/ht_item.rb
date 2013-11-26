@@ -233,6 +233,7 @@ module HathiTrust
       end
       
       def htid=(s)
+        return unless s
         @htid = s.downcase
         @namespace = namespace_for(@htid)
       end
