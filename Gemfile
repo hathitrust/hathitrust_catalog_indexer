@@ -6,7 +6,7 @@ group :development do
   gem 'minitest'
 end
 
-gem 'traject', '>1.0.0.beta'
+gem 'traject', '~>1'
 gem 'traject_umich_format'
 gem 'match_map'
 gem 'traject_alephsequential_reader'
