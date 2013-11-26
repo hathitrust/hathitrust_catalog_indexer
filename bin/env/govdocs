@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# First, get the basics from the ht setup
+
+SCRIPTDIR=`dirname $0`
+source $SCRIPTDIR/env/ht
+
+# Govdocs needs a different solr URL than the normal catalog
+export SOLR_URL="http://solr-sdr-catalog:9031/catalog"
