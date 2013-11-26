@@ -59,10 +59,9 @@ else
   LOGFILE_DIRECTIVE=""
 fi
 
-echo Indexing from $filename into $WRITER
+echo "Indexing from $filename into $WRITER ($SOLR_URL)"
 
-
-$JRUBY --server --fast -S traject \
+$JRUBY --server -S traject \
   -c $TDIR/readers/$READER.rb \
   -c $TDIR/writers/$WRITER.rb \
   -c $TDIR/indexers/common.rb \

@@ -1,25 +1,48 @@
 require 'yaml'
 
-# Make sure we've got an ID
-aint = java.util.concurrent.atomic::AtomicInteger.new(400_000_000)
-each_record do |r, context|
-  if context.output_hash['id'].nil? or context.output_hash['id'].empty?
+# Make sure we've got a unique ID
+filename = ARGV[-1]
+
+if filename =~ /all_minn_records/i
+  aint = java.util.concurrent.atomic::AtomicInteger.new(400_000_000)
+elsif filename =~ /itemless/i
+  aint = java.util.concurrent.atomic::AtomicInteger.new(450_000_000)
+elsif filename =~ /umich/
+  aint = nil
+elsif filename =~ /cic/i
+  aint = java.util.concurrent.atomic::AtomicInteger.new(500_000_000)
+end
+
+if aint
+  each_record do |r, context|
+    if context.output_hash['id']
+      context.output_hash['original_id'] = context.output_hash['id']
+    end
     context.output_hash['id'] = [aint.getAndIncrement]
   end
 end
     
 
 # Get the source based on the filename
-filename = ARGV[-1]
 if filename =~ /umich/
   to_field 'source' do |r,a|
     a << 'UMICH'
   end
 end
 
-if filename =~ /minn_/ 
+if filename =~ /minn/ 
   to_field 'source' do |r, a|
     a << 'MINNESOTA'
+  end
+end
+
+if filename =~ /cic/i
+  to_field 'source' do |r, a|
+    a << 'CIC'
+  end
+
+  to_field 'oclc', extract_marc('001') do |r,a, c|
+    a.map!{|x| x.gsub! /\D/, ''}
   end
 end
 

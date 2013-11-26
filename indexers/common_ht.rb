@@ -11,7 +11,7 @@ each_record do |r, context|
   itemset = HathiTrust::Traject::ItemSet.new
   
   r.each_by_tag('974') do |f|
-    itemset.add HathiTrust::Traject::Item.new_from_974(f)
+    itemset.add HathiTrust::Traject::Item.new_from_974(f) if f['u']
   end
   
   context.clipboard[:ht][:has_items] = (itemset.size > 0)

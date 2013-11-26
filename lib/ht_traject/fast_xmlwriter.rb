@@ -52,7 +52,7 @@ module MARC
         lead = r.leader.gsub(/[^\w|^\s]/, 'Z').encode(:xml=>:text)
 
         # MARCXML is particular about last four characters; ILSes aren't
-        lead[20..23] = "4500"
+        lead.ljust(23, ' ')[20..23] = "4500"
 
         # MARCXML doesn't like a space here so we need a filler character: Z
         if (lead[6..6] == " ")
