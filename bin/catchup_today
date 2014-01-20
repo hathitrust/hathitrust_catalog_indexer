@@ -18,7 +18,6 @@ export TENV=$1 # umich or ht
 # Set up JRUBY, TDIR, DDIR, $marcfile, $delfile
 source $SCRIPTDIR/env/$TENV 
 
-
 echo
 echo Working on $HOSTNAME in $TDIR
 echo
@@ -33,7 +32,6 @@ else
   echo "No Deletes: Could not find file '$delfile'"
 fi
 
-
 if [ -f $marcfile ] 
 then
   $SCRIPTDIR/tindex $TENV localhost $marcfile
@@ -41,5 +39,7 @@ else
   echo "No indexing: Could not find file '$marcfile'"
 fi
 
-
+# commit
+#
+# echo `curl "${SOLR_URL}/update?commit=true"`
 
