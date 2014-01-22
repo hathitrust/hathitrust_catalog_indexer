@@ -59,6 +59,10 @@ else
   LOGFILE_DIRECTIVE=""
 fi
 
+# Update the tmaps
+
+$JRUBY $SCRIPTDIR/get_collection_map.rb
+
 echo "Indexing from $filename into $WRITER ($SOLR_URL)"
 
 $JRUBY --server -S traject \
