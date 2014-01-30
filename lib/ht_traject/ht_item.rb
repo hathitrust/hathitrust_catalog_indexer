@@ -63,7 +63,7 @@ module HathiTrust
       
       def rights_list
         unless @rights_list
-          @rights_list = self.map(&:rights)
+          @rights_list = self.map(&:rights).uniq
           if @rights_list.size == 1 && @rights_list[0] == 'nobody'
             @rights_list = ['tombstone']
           end
