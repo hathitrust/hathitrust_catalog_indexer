@@ -13,3 +13,5 @@ gem 'traject_alephsequential_reader'
 gem 'marc-marc4j'
 gem 'jdbc-helper'
 gem 'httpclient'
+
+gem 'naconormalizer'
