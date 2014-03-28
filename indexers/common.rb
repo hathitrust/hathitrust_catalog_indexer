@@ -10,6 +10,9 @@ require 'ht_traject'
 extend HathiTrust::Traject::Macros
 extend Traject::UMichFormat::Macros
 
+require 'naconormalizer'
+
+
 settings do
   store "log.batch_progress", 10_000
 end
@@ -90,9 +93,16 @@ skipWaSeSS = ->(rec,field) { field.tag == '710' && field['9'] == 'WaSeSS' }
 to_field 'mainauthor', extract_marc_unless('100abcd:110abcd:111abc',skipWaSeSS)
 to_field 'author', extract_marc_unless("100abcd:110abcd:111abc:700abcd:710abcd:711abc",skipWaSeSS )
 to_field 'author2', extract_marc_unless("110ab:111ab:700abcd:710ab:711ab",skipWaSeSS)
-to_field "authorSort", extract_marc_unless("100abcd:110abcd:111abc:110ab:700abcd:710ab:711ab",skipWaSeSS, :first=>true)
 to_field "author_top", extract_marc_unless("100abcdefgjklnpqtu0:110abcdefgklnptu04:111acdefgjklnpqtu04:700abcdejqux034:710abcdeux034:711acdegjnqux034:720a:765a:767a:770a:772a:774a:775a:776a:777a:780a:785a:786a:787a:245c",skipWaSeSS)
 to_field "author_rest", extract_marc("505r")
+
+
+# Naconormalizer for author
+author_normalizer = NacoNormalizer.new
+to_field "authorSort", extract_marc_unless("100abcd:110abcd:111abc:110ab:700abcd:710ab:711ab",skipWaSeSS, :first=>true) do |rec, acc, context|
+  acc.map!{|a| author_normalizer.normalize(a)}
+  acc.compact!  
+end
 
 
 ################################
@@ -107,8 +117,16 @@ to_field 'title_ab',  extract_marc_filing_version('245ab', :include_original => 
 to_field 'title_c',   extract_marc('245c')
 
 to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true, :first=>true)
+
+
 # Sortable title
 to_field "titleSort", marc_sortable_title
+#title_normalizer  = NacoNormalizer.new(:keep_first_comma => false)
+#to_field "titleSort", extract_marc_filing_version('245abk') do |rec, acc, context|
+#  acc.replace [acc[0]] # get only the first one
+#  acc.map!{|a| title_normalizer.normalize(a)}
+#  acc.compact!
+#end
 
 
 to_field "title_top", extract_marc("240adfghklmnoprs0:245abfghknps:247abfghknps:111acdefgjklnpqtu04:130adfghklmnoprst0")
