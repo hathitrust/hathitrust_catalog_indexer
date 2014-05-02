@@ -18,6 +18,7 @@ marcfile=$2
 
 if [ -f $marcfile ] 
 then
+  echo "Indexing $marcfile"
 else
   echo "No indexing: Could not find file '$marcfile'"
   exit 1
@@ -26,6 +27,11 @@ fi
 
 # Set up JRUBY, TDIR, DDIR, $marcfile
 source $SCRIPTDIR/env/$TENV 
+
+# So, $marcfile gets set in $TENV, so we need to *re* set it here.
+# Dumb, I know.
+
+marcfile=$2
 
 echo
 echo Working on $HOSTNAME in $TDIR
