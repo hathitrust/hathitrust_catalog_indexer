@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $# -ne 2 ] 
+if [ $# -lt 2 ] 
 then
   echo
   echo "fullindex: empty the catalog and index the given file"
@@ -15,6 +15,7 @@ fi
 export SCRIPTDIR=`dirname $0`
 export TENV=$1 # umich or ht
 marcfile=$2
+logfile=$3
 
 if [ -f $marcfile ] 
 then
@@ -47,7 +48,7 @@ else
   exit 1
 fi
 
-$SCRIPTDIR/tindex $TENV localhost $marcfile
+$SCRIPTDIR/tindex $TENV localhost $marcfile $logfile
 
 # commit
 
