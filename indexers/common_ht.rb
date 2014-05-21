@@ -60,6 +60,7 @@ end
 
 to_field 'ht_id_update' do |record, acc, context|
   acc.concat context.clipboard[:ht][:items].last_update_dates if context.clipboard[:ht][:has_items]
+  acc.delete_if {|x| x = ''}
 end
 
 to_field 'ht_json' do |record, acc, context|

@@ -11,6 +11,7 @@ include_class Java::edu.umich.lib.hlb::HLB
 # cat_date -- the maximum value in a 972c
 
 to_field 'cat_date', extract_marc('972c') do |rec, acc, context|
+  acc << '00000000'
   acc.replace [acc.max]
 end
   
