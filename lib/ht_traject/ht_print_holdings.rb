@@ -1,36 +1,31 @@
-require 'ht_traject/ht_dbh.rb'
+require_relative '../ht_secure_data'
+require 'sequel'
+
 module HathiTrust
+
+  class PHDB_Query
+    def initialize(sd = HathiTrust::SecureData.new)
+      connection =
+      q = connection[:holdings_htitem_htmember].select(:volume_id, :member_id)
+    end
+  end
+
   class PrintHoldings
+
+    DB = Sequel.connect("jdbc:mysql://#{sd.db_machine}/#{sd.db_db}?user=#{sd.db_user}&password=#{sd.db_password}")
+    PHDB_Query = DB[:holdings_htitem_htmember].select(:volume_id, :member_id)
     
     # I use a db driver per thread to avoid any conflicts
     def self.get_print_holdings_hash(htids)
       htids = Array(htids)
-      Thread.current[:phdbdbh] ||= HathiTrust::DBH.new
-                  
-      query = "select volume_id, member_id from holdings_htitem_htmember where volume_id IN (#{self.commaify(htids)})"
-      
-      
-      htid_map = {}
-      Thread.current[:phdbdbh].query(query).each do |pair|
-        htid, inst = *pair
-        htid_map[htid] ||= []
-        htid_map[htid] << inst
+      htid_map = Hash.new {|h,k| h[k] = []}
+      PHDB_QUERY.where(:volume_id=>htids).each do |r|
+        htid_map[r.volume_id] << r[:member_id]
       end
       
       htid_map
     end
-    
-  
-    
-    # A simple "commaify" to (naively) quote values and make a list for SQL "IN"
-    # NOT SAFE for general data, but just fine for HathiTrust IDs, which have no 
-    # double-quotes in them.
-    
-    def self.commaify(a)
-      a = Array(a)
-      return a.map{|v| "\"#{v}\""}.join(', ')
-    end
-    
+        
   end
 end
 
