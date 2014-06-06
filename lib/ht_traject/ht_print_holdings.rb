@@ -4,8 +4,8 @@ require 'sequel'
 module HathiTrust
 
   class PrintHoldings
-
-    DB = Sequel.connect("jdbc:mysql://#{sd.db_machine}/#{sd.db_db}?user=#{sd.db_user}&password=#{sd.db_password}")
+    extend HathiTrust::SecureData
+    DB = Sequel.connect("jdbc:mysql://#{db_machine}/#{db_db}?user=#{db_user}&password=#{db_password}")
     PHDB_Query = DB[:holdings_htitem_htmember].select(:volume_id, :member_id)
     
     # I use a db driver per thread to avoid any conflicts
