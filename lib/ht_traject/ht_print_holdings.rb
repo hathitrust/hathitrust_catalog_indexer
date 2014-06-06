@@ -12,7 +12,7 @@ module HathiTrust
     def self.get_print_holdings_hash(htids)
       htids = Array(htids)
       htid_map = Hash.new {|h,k| h[k] = []}
-      PHDB_QUERY.where(:volume_id=>htids).each do |r|
+      PHDB_Query.where(:volume_id=>htids).each do |r|
         htid_map[r.volume_id] << r[:member_id]
       end
       
