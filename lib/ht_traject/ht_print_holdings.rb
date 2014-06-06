@@ -3,13 +3,6 @@ require 'sequel'
 
 module HathiTrust
 
-  class PHDB_Query
-    def initialize(sd = HathiTrust::SecureData.new)
-      connection =
-      q = connection[:holdings_htitem_htmember].select(:volume_id, :member_id)
-    end
-  end
-
   class PrintHoldings
 
     DB = Sequel.connect("jdbc:mysql://#{sd.db_machine}/#{sd.db_db}?user=#{sd.db_user}&password=#{sd.db_password}")
@@ -25,7 +18,7 @@ module HathiTrust
       
       htid_map
     end
-        
+
   end
 end
 
