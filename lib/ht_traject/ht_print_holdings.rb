@@ -13,7 +13,7 @@ module HathiTrust
       htids = Array(htids)
       htid_map = Hash.new {|h,k| h[k] = []}
       PHDB_Query.where(:volume_id=>htids).each do |r|
-        htid_map[r.volume_id] << r[:member_id]
+        htid_map[r[:volume_id]] << r[:member_id]
       end
       
       htid_map
