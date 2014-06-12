@@ -136,47 +136,31 @@ to_field "series2", extract_marc("490a")
 
 # Serial titles count on the format alreayd being set and having the string 'Serial' in it.
 
+each_record do |rec, context|
+  context.clipboard[:ht][:journal] = true if context.output_hash['format'].include? 'Serial'
+end
+
 to_field "serialTitle" do |r, acc, context|
-  if context.clipboard[:ht][:journal]
-    extract_with_and_without_filing_characters('245abdefghknp', :trim_punctuation => true).call(r, acc, context)
+ if context.clipboard[:ht][:journal]
+    acc.replace Array(context.output_hash['title'])
   end
 end
 
 to_field('serialTitle_ab') do |r, acc, context|
   if context.clipboard[:ht][:journal]
-    extract_with_and_without_filing_characters('245ab', :trim_punctuation => true).call(r, acc, context)
+    acc.replace Array(context.output_hash['title_ab'])
   end
 end  
 
 to_field('serialTitle_a') do |r, acc, context|
   if context.clipboard[:ht][:journal]
-    extract_with_and_without_filing_characters('245a', :trim_punctuation => true).call(r, acc, context)
+    acc.replace Array(context.output_hash['title_a'])
   end
 end  
   
 to_field('serialTitle_rest') do |r, acc, context|
   if context.clipboard[:ht][:journal]
-    extract_with_and_without_filing_characters(%w[
-      130adfgklmnoprst
-      210ab
-      222ab
-      240adfgklmnprs
-      246abdenp
-      247abdenp
-      730anp
-      740anp
-      765st
-      767st
-      770st
-      772st
-      775st
-      776st
-      777st
-      780st
-      785st
-      786st
-      787st  
-    ], :trim_punctuation => true).call(r, acc, context)
+    acc.replace Array(context.output_hash['title_rest'])
   end
 end  
 
