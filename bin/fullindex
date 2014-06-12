@@ -48,7 +48,7 @@ else
   exit 1
 fi
 
-$SCRIPTDIR/tindex $TENV localhost $marcfile $logfile
+$JRUBY -S bundle exec $SCRIPTDIR/tindex $TENV localhost $marcfile $logfile
 
 # commit
 
