@@ -17,9 +17,8 @@ include_class Java::edu.umich.lib.hlb::HLB
 #end
 
 
-#### Availability ####
 
-# availability
+
 
 ### Last time the record was changed ####
 # cat_date -- the maximum value in a 972c
@@ -88,17 +87,17 @@ end
 
 
 # First we'll figure out whether we have holdings
+F973b = Traject::MarcExtractor.cached('973b')
+F852b = Traject::MarcExtractor.cached('852b')
 
 each_record do |rec, context|
   has_non_ht_holding = false
-  f973b = Traject::MarcExtractor.cached('973b')
-  f852b = Traject::MarcExtractor.cached('852b')
   
-  f973b.extract(rec).each do |val|
+  F973b.extract(rec).each do |val|
     has_non_ht_holding = true if ['avail_online', 'avail_circ'].include? val
   end
   
-  f852b.extract(rec).each do |val|
+  F852b.extract(rec).each do |val|
     has_non_ht_holding = true unless val == 'SDR'
   end
   
@@ -123,3 +122,8 @@ to_field 'ht_searchonly_intl' do |record, acc, context|
     acc << true
   end
 end
+
+
+#### Availability ####
+#
+to_field 'availability', extract_marc('973b', :translation_map => 'umich/availability_map_umich')
