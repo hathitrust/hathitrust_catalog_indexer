@@ -57,16 +57,7 @@ export SOLR_URL="http://localhost:${SOLR_PORT}/solr/biblio"
 # If we're seeing the old version of jruby , ignore it
 # and use the newer one
 
-jrversion=`jruby -v|grep -o 'jruby 1..'`
-if [ -z `type -t jruby` ]
-then
-  export JRUBY="/l/solr-vufind/apps/jruby/bin/jruby"
-elif  [ "$jrversion" = "jruby 1.6" ]
-then
-  export JRUBY="/l/solr-vufind/apps/jruby/bin/jruby"
-else
-  export JRUBY=jruby
-fi
+export JRUBY="/l/solr-vufind/apps/jruby/bin/jruby"
 
 
 # Set the reader to Aleph Sequential unless it's being overridden
