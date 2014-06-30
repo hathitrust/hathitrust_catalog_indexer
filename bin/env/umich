@@ -69,10 +69,10 @@ fi
 
 # Find yesterday's date, allowing for different implementations of "date"
 
-export datestr=`date --date "now -1 day" "+%Y%m%d" 2>/dev/null`
+export datestr=`date --date "now" "+%Y%m%d" 2>/dev/null`
 if [ -z $datestr ]
 then
-  export datestr=` date -v -1d "+%Y%m%d"`
+  export datestr=` date -v "+%Y%m%d"`
 fi
 
 

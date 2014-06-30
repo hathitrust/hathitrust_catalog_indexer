@@ -15,6 +15,14 @@ export SCRIPTDIR=`dirname $0`
 export TENV=$1 # umich or ht
 DATESTR=$2
 
+# Hathitrust uses yesterday's date as the last day
+LASTDATE=`date --date "now - 1 day" +%Y%m%d`
+
+# UMich uses the current date
+if [ "$TENV" == "umich" ]; then
+  LASTDATE=`date --date "now" +%Y%m%d`
+  fi
+
 # Set up JRUBY, TDIR, DDIR, $marcfile, $delfile
 source $SCRIPTDIR/env/$TENV 
 
@@ -23,7 +31,7 @@ echo
 echo Working on $HOSTNAME in $TDIR
 echo
 
-for i in $(seq -f '%.0f' $DATESTR `date --date "now - 1 day" +%Y%m%d`); do
+for i in $(seq -f '%.0f' $DATESTR $LASTDATE ); do
   delfile=`find_del_file_for_date $i`
   if [ -f $delfile ] 
   then
@@ -43,4 +51,3 @@ for i in $(seq -f '%.0f' $DATESTR `date --date "now - 1 day" +%Y%m%d`); do
   fi
 done
 
-  
