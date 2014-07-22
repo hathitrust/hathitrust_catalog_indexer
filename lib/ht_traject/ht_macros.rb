@@ -166,10 +166,14 @@ module HathiTrust::Traject::Macros
     #
     # Returns 'nil' for dates after 2100, presuming they're just wrong
     def self.compute_date_range(date)
-      return nil unless date
-      if date < "1500"
-        return "Pre-1500"
-      end
+      return nil if date.nil?
+
+      date = date.to_s
+
+        if date.to_i < 1500
+          return "Pre-1500"
+        end
+
 
       case date.to_i
       when 1500..1800 then
@@ -180,6 +184,7 @@ module HathiTrust::Traject::Macros
         return decade + "0-" + decade + "9";
       end
       return nil # default
+
     end
     
     

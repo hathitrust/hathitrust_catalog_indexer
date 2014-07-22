@@ -1,7 +1,12 @@
 require 'traject'
 require 'match_map'
 require 'ht_traject/ht_constants'
-require 'ht_traject/ht_print_holdings'
+
+unless ENV['SKIP_PH']
+  require 'ht_traject/ht_print_holdings'
+end
+
+require 'ht_traject/ht_macros'
 require 'json'
 
 module HathiTrust
@@ -140,6 +145,7 @@ module HathiTrust
 
           if item.enum_pubdate
             jsonrec['enum_pubdate'] = item.enum_pubdate
+            jsonrec['enum_pubdate_range'] = HathiTrust::Traject::Macros::HTMacros.compute_date_range(item.enum_pubdate.to_i)
           end
 
           rv << jsonrec
@@ -221,7 +227,7 @@ module HathiTrust
       DEFAULT_DATE = '00000000'
 
       attr_accessor :rights, :enum_chron, :last_update_date, :print_holdings, :collection_code
-      attr_reader :htid, :set, :enum_pubdate
+      attr_reader :htid, :set, :enum_pubdate, :enum_pubdate_range
 
       def initialize
         @print_holdings = []
@@ -247,8 +253,10 @@ module HathiTrust
       def enum_pubdate=(e)
         if e and (e =~ /\d/)
           @enum_pubdate = ('%04d' % e.to_i)
+          @enum_pubdate_range = HathiTrust::Traject::Macros::HTMacros.compute_date_range(@enum_pubdate)
         else
           @enum_pubdate = nil
+          @enum_pubdate_range = nil
         end
       end
 
@@ -285,7 +293,7 @@ module HathiTrust
       end
 
       def display_string
-        [htid, last_update_date, enum_chron, enum_pubdate ].join("|")
+        [htid, last_update_date, enum_chron, enum_pubdate, enum_pubdate_range ].join("|")
       end
 
     end # end of Item
