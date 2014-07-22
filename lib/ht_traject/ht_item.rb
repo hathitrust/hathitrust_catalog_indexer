@@ -246,7 +246,7 @@ module HathiTrust
 
       def enum_pubdate=(e)
         if e and (e =~ /\d/)
-          @enum_pubdate = ('%04d' % e)
+          @enum_pubdate = ('%04d' % e.to_i)
         else
           @enum_pubdate = nil
         end
