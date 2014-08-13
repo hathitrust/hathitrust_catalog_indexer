@@ -86,7 +86,7 @@ skipWaSeSS = ->(rec,field) { field.tag == '710' && field['9'] == 'WaSeSS' }
 
 to_field 'mainauthor', extract_marc('100abcd:110abcd:111abc')
 to_field 'mainauthor_role', extract_marc('100e:110e:111e')
-to_field 'mainauthor_role', extract_marc('1004:1104:1114', :translation_map => "ht/relators"))
+to_field 'mainauthor_role', extract_marc('1004:1104:1114', :translation_map => "ht/relators")
 
 
 to_field 'author', extract_marc_unless("100abcd:110abcd:111abc:700abcdt:710abcd:711abc",skipWaSeSS )
