@@ -3,6 +3,19 @@ require 'umich_traject'
 include_class Java::edu.umich.lib.hlb::HLB
 
 
+# callnumber from the items
+to_field 'callnumber', extract_marc('852hij')
+to_field 'callnoletters', extract_marc('852hij:050ab:090ab', :first=>true) do |rec, acc|
+  unless acc.empty?
+    m = /\A([A-Za-z]+)/.match(acc[0])
+    acc[0] = m[1] if m
+  end
+end
+
+
+
+
+
 ### Place of Publication, for facet use
 #
 #to_field "place_of_publication" do |r, acc|

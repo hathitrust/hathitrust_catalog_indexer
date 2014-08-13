@@ -70,13 +70,7 @@ to_field 'isbn', extract_marc('020az', :separator=>nil)
 to_field 'issn', extract_marc('022a:022l:022m:022y:022z:247x')
 to_field 'isn_related', extract_marc("400x:410x:411x:440x:490x:500x:510x:534xz:556z:581z:700x:710x:711x:730x:760x:762x:765xz:767xz:770xz:772x:773xz:774xz:775xz:776xz:777x:780xz:785xz:786xz:787xz")
 
-to_field 'callnumber', extract_marc('050ab:090ab')
-to_field 'callnoletters', extract_marc('050ab:090ab', :first=>true) do |rec, acc|
-  unless acc.empty?
-    m = /\A([A-Za-z]+)/.match(acc[0])
-    acc[0] = m[1] if m
-  end
-end
+
   
 to_field 'sudoc', extract_marc('086az')
 to_field "lccn", extract_marc('010a')
@@ -90,8 +84,12 @@ to_field 'rptnum', extract_marc('088a')
 
 skipWaSeSS = ->(rec,field) { field.tag == '710' && field['9'] == 'WaSeSS' }
 
-to_field 'mainauthor', extract_marc_unless('100abcd:110abcd:111abc',skipWaSeSS)
-to_field 'author', extract_marc_unless("100abcd:110abcd:111abc:700abcd:710abcd:711abc",skipWaSeSS )
+to_field 'mainauthor', extract_marc('100abcd:110abcd:111abc')
+to_field 'mainauthor_role', extract_marc('100e:110e:111e')
+to_field 'mainauthor_role', extract_marc('1004:1104:1114', :translation_map => "ht/relators"))
+
+
+to_field 'author', extract_marc_unless("100abcd:110abcd:111abc:700abcdt:710abcd:711abc",skipWaSeSS )
 to_field 'author2', extract_marc_unless("110ab:111ab:700abcd:710ab:711ab",skipWaSeSS)
 to_field "author_top", extract_marc_unless("100abcdefgjklnpqtu0:110abcdefgklnptu04:111acdefgjklnpqtu04:700abcdejqux034:710abcdeux034:711acdegjnqux034:720a:765a:767a:770a:772a:774a:775a:776a:777a:780a:785a:786a:787a:245c",skipWaSeSS)
 to_field "author_rest", extract_marc("505r")
