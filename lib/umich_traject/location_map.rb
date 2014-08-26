@@ -8,10 +8,12 @@ module Traject
       m[/^SPEC RCLC/]   = "SPEC CHIL"
       m[/^SPEC GOSL/]   = "SPEC CHIL"
       m[/^SPEC CHIL.*/] = "SPEC CHIL"
+      m[/^SPEC CUL.*/]  = "SPEC CUL"
       m[/^SPEC WALP.*/] = "SPEC CHIL"
       m[/^SPEC FAUL.*/] = "SPEC FAUL"
       m[/^SPEC RAR.*/]  = "SPEC RARE"
       m[/^SPEC SCI$/]   = "SPEC RARE"
+      m[/^SPEC BUHR.*]  = "SPEC RARE"
       m[/^SPEC$/]       = "SPEC RARE"
       m[/^SPEC TAUB.*/] = "SPEC TAUB"
       m[/^SPEC LA.*/]   = "SPEC LABD"
@@ -29,6 +31,7 @@ module Traject
       m[/^HATCH AOVR/]  = "HATCH ASIA"
       m[/^HATCH AOFF/]  = "HATCH ASIA"
       m[/^HATCH AMIC/]  = "HATCH ASIA"
+      m[/^HATCH ASPEC/] = 'HATCH ASIA'
       m[/^MiU-H/]       = "BENT"
       m[/^MiU-C/]       = "CLEM"
       m[/^MiFliC/]      = "FLINT"
@@ -56,8 +59,7 @@ module Traject
       m[/^FLINT FSPAM/] = "FLINT MAIN"
       m[/^FLINT BUSP/]  = "FLINT PERI"
       m[/^FLINT BUSB/]  = "FLINT MAIN"
-      m[/^FLINT ATLAS/] = "FLINT REF"
-      
+      m[/^FLINT ATLAS/] = "FLINT REF"      
       return m
     end
   end
