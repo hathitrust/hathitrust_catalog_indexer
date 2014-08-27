@@ -13,7 +13,7 @@ module Traject
       m[/^SPEC FAUL.*/] = "SPEC FAUL"
       m[/^SPEC RAR.*/]  = "SPEC RARE"
       m[/^SPEC SCI$/]   = "SPEC RARE"
-      m[/^SPEC BUHR.*]  = "SPEC RARE"
+      m[/^SPEC BUHR.*/]  = "SPEC RARE"
       m[/^SPEC$/]       = "SPEC RARE"
       m[/^SPEC TAUB.*/] = "SPEC TAUB"
       m[/^SPEC LA.*/]   = "SPEC LABD"
