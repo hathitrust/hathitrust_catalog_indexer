@@ -14,7 +14,7 @@ module Traject
       m[/^SPEC RAR.*/]  = "SPEC RARE"
       m[/^SPEC SCI$/]   = "SPEC RARE"
       m[/^SPEC BUHR.*/]  = "SPEC RARE"
-      m[/^SPEC$/]       = "SPEC RARE"
+      m[/^SPEC$/]       = "SPEC"
       m[/^SPEC TAUB.*/] = "SPEC TAUB"
       m[/^SPEC LA.*/]   = "SPEC LABD"
       m[/^SPEC MYR.*/]  = "SPEC MYERS"
