@@ -15,5 +15,5 @@ gem 'sequel'
 gem 'jdbc-mysql'
 #gem 'jdbc-helper'
 gem 'httpclient'
-
+gem 'library_stdnums'
 gem 'naconormalizer'
