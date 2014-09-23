@@ -1,5 +1,7 @@
 $:.unshift  "#{File.dirname(__FILE__)}/../lib"
 
+require 'library_stdnums'
+
 require 'traject/macros/marc21_semantics'
 extend  Traject::Macros::Marc21Semantics
 
@@ -66,7 +68,15 @@ to_field 'sdrnum' do |record, acc|
 end
 
 
-to_field 'isbn', extract_marc('020az', :separator=>nil)
+to_field 'isbn', extract_marc('020az', :separator=>nil) do |rec, acc|
+     orig = acc.dup
+     acc.map!{|x| StdNum::ISBN.allNormalizedValues(x)}
+     acc << orig
+     acc.flatten!
+     acc.uniq!
+end
+
+
 to_field 'issn', extract_marc('022a:022l:022m:022y:022z:247x')
 to_field 'isn_related', extract_marc("400x:410x:411x:440x:490x:500x:510x:534xz:556z:581z:700x:710x:711x:730x:760x:762x:765xz:767xz:770xz:772x:773xz:774xz:775xz:776xz:777x:780xz:785xz:786xz:787xz")
 
