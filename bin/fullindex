@@ -38,10 +38,11 @@ echo
 echo Working on $HOSTNAME in $TDIR
 echo
 
+echo Targeting $SOLR_URL
+
 read -p "Deleting everying. Right? Right??? Y/N (N) > " GO_ON
 if [[ "$GO_ON" == [Yy]  ]]
 then
-  echo Targeting $SOLR_URL
   $JRUBY $SCRIPTDIR/delete_all
 else
   echo "OK. Aborting. Will not index $marcfile"
