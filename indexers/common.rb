@@ -185,7 +185,7 @@ end
 skip_FAST = ->(rec,field) do
   field.indicator2 == '7'
 end
-  
+
 to_field "topic", extract_marc_unless(%w(
   600a  600abcdefghjklmnopqrstuvxyz
   610a  610abcdefghklmnoprstuvxyz
@@ -194,12 +194,13 @@ to_field "topic", extract_marc_unless(%w(
   648a  648avxyz
   650a  650abcdevxyz
   651a  651aevxyz
-  653a  654abevyz
-  654a  655abvxyz
-  655a  656akvxyz
-  656a  657avxyz
-  657a  658ab
-  658a  662abcdefgh
+  653a  653abevyz
+  654a  654abevyz
+  655a  655abvxyz
+  656a  656akvxyz
+  657a  657avxyz
+  658a  658ab
+  662a  662abcdefgh
   690a   690abcdevxyz
   ), skip_FAST, :trim_punctuation=>true)
       
