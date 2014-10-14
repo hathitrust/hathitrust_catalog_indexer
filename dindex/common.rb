@@ -148,30 +148,30 @@ to_field "series2_mtmax", extract_marc("490a")
 ## Serial titles count on the format already being set and having the string 'Serial' in it.
 #
 each_record do |rec, context|
-  context.clipboard[:ht][:journal] = true if context.output_hash['format'].include? 'Serial'
+  context.clipboard[:ht][:journal] = true if context.output_hash['format_ms_s'].include? 'Serial'
 end
 
-to_field "serial_title_tmax_s" do |r, acc, context|
-if context.clipboard[:ht][:journal]
-    acc.replace Array(context.output_hash['title'])
+to_field "serial_title_mtmax_s" do |r, acc, context|
+  if context.clipboard[:ht][:journal]
+    acc.replace Array(context.output_hash['title_mtmax_s'])
   end
 end
 
-to_field('serialTitle_ab_tmax') do |r, acc, context|
+to_field('serialTitle_ab_mtmax') do |r, acc, context|
   if context.clipboard[:ht][:journal]
-    acc.replace Array(context.output_hash['title_ab'])
+    acc.replace Array(context.output_hash['title_ab_mtmax_s'])
   end
 end
 
-to_field('serialTitle_a_tmax') do |r, acc, context|
+to_field('serialTitle_top_mtmax') do |r, acc, context|
   if context.clipboard[:ht][:journal]
-    acc.replace Array(context.output_hash['title_a'])
+    acc.replace Array(context.output_hash['title_top_mtmax'])
   end
 end
 
-to_field('serialTitle_rest_tmax') do |r, acc, context|
+to_field('serialTitle_rest_mtmax') do |r, acc, context|
   if context.clipboard[:ht][:journal]
-    acc.replace Array(context.output_hash['title_rest'])
+    acc.replace Array(context.output_hash['title_rest_mtmax'])
   end
 end
 
@@ -223,65 +223,58 @@ to_field "geographic_mt_s" do |record, acc|
     end.compact
   )
 end
-#
-#to_field 'era', extract_marc("600y:610y:611y:630y:650y:651y:654y:655y:656y:657y:690z:691y:692z:694z:695z:696z:697z:698z:699z")
-#
+
+to_field 'era_ms_s', extract_marc("600y:610y:611y:630y:650y:651y:654y:655y:656y:657y:690z:691y:692z:694z:695z:696z:697z:698z:699z")
+
 ## country from the 008; need processing until I fix the AlephSequential reader
 #
-#to_field "country_of_pub" do |r, acc|
-#  country_map = Traject::TranslationMap.new("ht/country_map")
-#  if r['008']
-#    [r['008'].value[15..17], r['008'].value[17..17]].each do |s|
-#      next unless s # skip if the 008 just isn't long enough
-#      country = country_map[s.gsub(/[^a-z]/, '')]
-#      acc << country if country
-#    end
-#  end
-#end
-#
-## Also add the 752ab
-#to_field "country_of_pub", extract_marc('752ab')
+to_field "country_of_pub_mt_s" do |r, acc|
+  country_map = Traject::TranslationMap.new("ht/country_map")
+  if r['008']
+    [r['008'].value[15..17], r['008'].value[17..17]].each do |s|
+      next unless s # skip if the 008 just isn't long enough
+      country = country_map[s.gsub(/[^a-z]/, '')]
+      acc << country if country
+    end
+  end
+end
+
+# Also add the 752ab
+to_field "country_of_pub_mt_s", extract_marc('752ab')
 #
 ## Deal with the dates
 #
 ## First, find the date and put it into context.clipboard[:ht_date] for later use
-#each_record extract_date_into_context
+each_record extract_date_into_context
 #
 ## Now use that value
-#to_field "publishDate", get_date
+to_field "publishDate_ss_s", get_date
 #
-#to_field 'publishDateRange' do |rec, acc, context|
-#  if context.output_hash['publishDate']
-#    d =  context.output_hash['publishDate'].first
-#    dr = HathiTrust::Traject::Macros::HTMacros.compute_date_range(d)
-#    acc << dr if dr
-#  else
-#    if context.output_hash['id']
-#      id = context.output_hash['id'].first
-#    else
-#      id = "<no id in record>"
-#    end
-#    logger.debug "No valid date for record #{id}: #{rec['008']}"
-#  end
-#end
+to_field 'publishDateRange_ms_s' do |rec, acc, context|
+  if context.output_hash['publishDate']
+    d =  context.output_hash['publishDate'].first
+    dr = HathiTrust::Traject::Macros::HTMacros.compute_date_range(d)
+    acc << dr if dr
+  else
+    if context.output_hash['id']
+      id = context.output_hash['id'].first
+    else
+      id = "<no id in record>"
+    end
+    logger.debug "No valid date for record #{id}: #{rec['008']}"
+  end
+end
 #
 #
 #################################
 ############ MISC ###############
 #################################
 #
-#to_field "publisher", extract_marc('260b:264|*1|:533c')
-#to_field "edition", extract_marc('250a')
-#
-#to_field 'language', marc_languages("008[35-37]:041a:041d:041e:041j")
-#to_field 'language008', extract_marc('008[35-37]') do |r, acc|
-#  acc.reject! {|x| x !~ /\S/} # ditch only spaces
-#  acc.uniq!
-#end
-#
-#
-#
-#
-#
-#
-#
+to_field "publisher_mt_s", extract_marc('260b:264|*1|:533c')
+to_field "edition_mt_s", extract_marc('250a')
+
+to_field 'language_ms_s', marc_languages("008[35-37]:041a:041d:041e:041j")
+to_field 'language008_ss_s', extract_marc('008[35-37]') do |r, acc|
+  acc.reject! {|x| x !~ /\S/} # ditch only spaces
+  acc.uniq!
+end
