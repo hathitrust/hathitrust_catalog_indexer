@@ -195,15 +195,35 @@ to_field "topic_ms_s", extract_marc_unless(%w(
   648a  648avxyz
   650a  650abcdevxyz
   651a  651aevxyz
-  653a  654abevyz
-  654a  655abvxyz
-  655a  656akvxyz
-  656a  657avxyz
-  657a  658ab
-  658a  662abcdefgh
+  653a  653abevyz
+  654a  654abevyz
+  655a  655abvxyz
+  656a  656akvxyz
+  657a  657avxyz
+  658a  658ab
+  662a  662abcdefgh
   690a   690abcdevxyz
   ), skip_FAST, :trim_punctuation=>true)
 
+# Again, but this time put into a path-type, delimited with pipes
+
+to_field "topic_pp_s", extract_marc_unless(%w(
+  600abcdefghjklmnopqrstuvxyz
+  610abcdefghklmnoprstuvxyz
+  611acdefghjklnpqstuvxyz
+  630adefghklmnoprstvxyz
+  648avxyz
+  650abcdevxyz
+  651aevxyz
+  653abevyz
+  654abevyz
+  655abvxyz
+  656akvxyz
+  657avxyz
+  658ab
+  662abcdefgh
+  690abcdevxyz
+  ), skip_FAST, :trim_punctuation=>true, :separator => '|')
 
 ################################
 ##### Genre / geography / dates
@@ -278,3 +298,5 @@ to_field 'language008_ss_s', extract_marc('008[35-37]') do |r, acc|
   acc.reject! {|x| x !~ /\S/} # ditch only spaces
   acc.uniq!
 end
+
+to_field "physical_descriptionz", extract_marc('300abcdefghijklmnopqrstuvwxyz012345789')
