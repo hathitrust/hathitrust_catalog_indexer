@@ -16,8 +16,8 @@ require 'naconormalizer'
 
 
 settings do
-  store "log.batch_progress", 10_000
-  store 'processing_thread_pool', 0
+  store "log.batch_progress", 1_000
+  #store 'processing_thread_pool', 0
 end
 
 logger.info RUBY_DESCRIPTION
@@ -73,10 +73,11 @@ to_field 'sdrnum_ms_s' do |record, acc|
 end
 
 
+# All the ISBN forms for searching
 to_field 'isbn_mn_s', extract_marc('020az', :separator=>nil) do |rec, acc|
      orig = acc.dup
      acc.map!{|x| StdNum::ISBN.allNormalizedValues(x)}
-     acc << orig
+     #acc << orig
      acc.flatten!
      acc.uniq!
 end
@@ -124,7 +125,8 @@ end
 
 # For titles, we want with and without filing characters
 
-to_field 'title_mtmax_s',     extract_marc_filing_version('245abdefghknp', :include_original => true)
+to_field 'title_mtmax_s', extract_marc('245abdefghknp', :trim_punctuation => true)
+to_field 'title_mtmax', extract_marc_filing_version('245abdefghknp',  :include_original => false)
 to_field 'title_a_e',   extract_marc_filing_version('245a', :include_original => true)
 to_field 'title_ab_e',  extract_marc_filing_version('245ab', :include_original => true)
 to_field 'title_c_e',   extract_marc('245c')
@@ -251,7 +253,7 @@ to_field 'era_ms_s', extract_marc("600y:610y:611y:630y:650y:651y:654y:655y:656y:
 
 ## country from the 008; need processing until I fix the AlephSequential reader
 #
-to_field "country_of_pub_mt_s" do |r, acc|
+to_field "country_of_pub_smt_s" do |r, acc|
   country_map = Traject::TranslationMap.new("ht/country_map")
   if r['008']
     [r['008'].value[15..17], r['008'].value[17..17]].each do |s|
@@ -263,7 +265,7 @@ to_field "country_of_pub_mt_s" do |r, acc|
 end
 
 # Also add the 752ab
-to_field "country_of_pub_mt_s", extract_marc('752ab')
+to_field "country_of_pub_smt_s", extract_marc('752ab')
 #
 ## Deal with the dates
 #
