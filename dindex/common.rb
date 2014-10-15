@@ -43,15 +43,18 @@ each_record HathiTrust::Traject::Macros.setup
 
 to_field "id", extract_marc("001", :first => true)
 
+# Allfields in both regular and proper
 to_field "allfields_t", extract_all_marc_values do |r, acc|
   acc.replace [acc.join(' ')] # turn it into a single string
 end
-
+to_field "allfields_tp" do |rec, acc, context|
+  acc.replace context.output_hash['allfields_t']
+end
 
 # Too annoying in output for now
-#to_field 'fullrecord' do |rec, acc|
-#  acc << MARC::FastXMLWriter.single_record_document(rec)
-#end
+to_field 'fullrecord' do |rec, acc|
+  acc << MARC::FastXMLWriter.single_record_document(rec)
+end
 
 to_field 'format_ms_s', umich_format_and_types
 
@@ -101,9 +104,9 @@ to_field 'mainauthor_role_mt_s', extract_marc('100e:110e:111e', :trim_punctuatio
 to_field 'mainauthor_role_mt_s', extract_marc('1004:1104:1114', :translation_map => "ht/relators")
 
 
-to_field 'author_mt_s', extract_marc_unless("100abcd:110abcd:111abc:700abcdt:710abcd:711abc",skipWaSeSS )
-to_field 'author2_t', extract_marc_unless("110ab:111ab:700abcd:710ab:711ab",skipWaSeSS)
-to_field "author_top_t", extract_marc_unless("100abcdefgjklnpqtu0:110abcdefgklnptu04:111acdefgjklnpqtu04:700abcdejqux034:710abcdeux034:711acdegjnqux034:720a:765a:767a:770a:772a:774a:775a:776a:777a:780a:785a:786a:787a:245c",skipWaSeSS)
+to_field 'author_mtp_s', extract_marc_unless("100abcd:110abcd:111abc:700abcdt:710abcd:711abc",skipWaSeSS )
+to_field 'author2_tp', extract_marc_unless("110ab:111ab:700abcd:710ab:711ab",skipWaSeSS)
+to_field "author_top_tp", extract_marc_unless("100abcdefgjklnpqtu0:110abcdefgklnptu04:111acdefgjklnpqtu04:700abcdejqux034:710abcdeux034:711acdegjnqux034:720a:765a:767a:770a:772a:774a:775a:776a:777a:780a:785a:786a:787a:245c",skipWaSeSS)
 to_field "author_rest_mt_s", extract_marc("505r")
 
 
@@ -122,9 +125,9 @@ end
 # For titles, we want with and without filing characters
 
 to_field 'title_mtmax_s',     extract_marc_filing_version('245abdefghknp', :include_original => true)
-to_field 'title_a_mtmax',   extract_marc_filing_version('245a', :include_original => true)
-to_field 'title_ab_mtmax',  extract_marc_filing_version('245ab', :include_original => true)
-to_field 'title_c_mtmax',   extract_marc('245c')
+to_field 'title_a_e',   extract_marc_filing_version('245a', :include_original => true)
+to_field 'title_ab_e',  extract_marc_filing_version('245ab', :include_original => true)
+to_field 'title_c_e',   extract_marc('245c')
 
 to_field 'vtitle_mtmax_s',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true, :first=>true)
 
@@ -269,6 +272,7 @@ each_record extract_date_into_context
 #
 ## Now use that value
 to_field "publishDate_ss_s", get_date
+to_field 'pub_date_si_s', get_date
 #
 to_field 'publishDateRange_ms_s' do |rec, acc, context|
   if context.output_hash['publishDate']
