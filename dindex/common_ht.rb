@@ -40,7 +40,7 @@ to_field 'ht_availability_intl_ms_s' do |record, acc, context|
   acc.concat context.clipboard[:ht][:items].intl_availability if context.clipboard[:ht][:has_items]
 end
 
-to_field 'ht_count_si_s' do |record, acc, context|
+to_field 'ht_count' do |record, acc, context|
   acc << context.clipboard[:ht][:items].size if context.clipboard[:ht][:has_items]
 end
 
@@ -52,7 +52,7 @@ to_field 'ht_id_ms_s' do |record, acc, context|
   acc.concat context.clipboard[:ht][:items].ht_ids if context.clipboard[:ht][:has_items]
 end
 
-to_field 'ht_id_display_s' do |record, acc, context|
+to_field 'ht_id_display' do |record, acc, context|
   context.clipboard[:ht][:items].each do |item|
     acc << item.display_string
   end
@@ -72,7 +72,7 @@ to_field 'ht_rightscode_ms_s' do |record, acc, context|
 end
 
 
-to_field 'htsource_ms_s' do |record, acc, context|
+to_field 'htsource' do |record, acc, context|
   cc_to_of = Traject::TranslationMap.new('ht/collection_code_to_original_from')
   acc.concat context.clipboard[:ht][:items].collection_codes.map{|x| cc_to_of[x]} if context.clipboard[:ht][:has_items]
 end

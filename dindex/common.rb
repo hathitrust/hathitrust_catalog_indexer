@@ -125,13 +125,19 @@ end
 
 # For titles, we want with and without filing characters
 
+# Display title
+
+to_field 'title_display',  extract_marc('245abdefghknp', :trim_punctuation => true, :first=>true)
+
+# Searchable titles
+
 to_field 'title_mtmax_s', extract_marc('245abdefghknp', :trim_punctuation => true)
 to_field 'title_mtmax', extract_marc_filing_version('245abdefghknp',  :include_original => false)
 to_field 'title_a_e',   extract_marc_filing_version('245a', :include_original => true)
 to_field 'title_ab_e',  extract_marc_filing_version('245ab', :include_original => true)
 to_field 'title_c_e',   extract_marc('245c')
 
-to_field 'vtitle_mtmax_s',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true, :first=>true)
+to_field 'vtitle_mtmax_s',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true)
 
 
 # Sortable title
@@ -274,7 +280,7 @@ each_record extract_date_into_context
 #
 ## Now use that value
 to_field "publishDate_ss_s", get_date
-to_field 'pub_date_si_s', get_date
+to_field 'pub_date', get_date
 #
 to_field 'publishDateRange_ms_s' do |rec, acc, context|
   if context.output_hash['publishDate']
