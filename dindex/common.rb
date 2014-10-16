@@ -51,7 +51,6 @@ to_field "allfields_tp" do |rec, acc, context|
   acc.replace context.output_hash['allfields_t']
 end
 
-# Too annoying in output for now
 to_field 'fullrecord' do |rec, acc|
   acc << MARC::FastXMLWriter.single_record_document(rec)
 end
@@ -131,8 +130,8 @@ to_field 'title_display',  extract_marc('245abdefghknp', :trim_punctuation => tr
 
 # Searchable titles
 
-to_field 'title_mtmax_s', extract_marc('245abdefghknp', :trim_punctuation => true)
-to_field 'title_mtmax', extract_marc_filing_version('245abdefghknp',  :include_original => false)
+to_field 'title_tmax_s', extract_marc('245abdefghknp', :trim_punctuation => true)
+to_field 'title_tmax', extract_marc_filing_version('245abdefghknp',  :include_original => false)
 to_field 'title_a_e',   extract_marc_filing_version('245a', :include_original => true)
 to_field 'title_ab_e',  extract_marc_filing_version('245ab', :include_original => true)
 to_field 'title_c_e',   extract_marc('245c')
@@ -159,30 +158,30 @@ to_field "series2_tmax", extract_marc("490a")
 ## Serial titles count on the format already being set and having the string 'Serial' in it.
 #
 each_record do |rec, context|
-  context.clipboard[:ht][:journal] = true if context.output_hash['format_ms_s'].include? 'Serial'
+  context.clipboard[:ht][:journal] = true if context.output_hash['format_s_s'].include? 'Serial'
 end
 
 to_field "serial_title_tmax_s" do |r, acc, context|
   if context.clipboard[:ht][:journal]
-    acc.replace Array(context.output_hash['title_mtmax_s'])
+    acc.replace Array(context.output_hash['title_tmax_s'])
   end
 end
 
 to_field('serialTitle_ab_tmax') do |r, acc, context|
   if context.clipboard[:ht][:journal]
-    acc.replace Array(context.output_hash['title_ab_mtmax_s'])
+    acc.replace Array(context.output_hash['title_ab_tmax_s'])
   end
 end
 
 to_field('serialTitle_top_tmax') do |r, acc, context|
   if context.clipboard[:ht][:journal]
-    acc.replace Array(context.output_hash['title_top_mtmax'])
+    acc.replace Array(context.output_hash['title_top_tmax'])
   end
 end
 
 to_field('serialTitle_rest_tmax') do |r, acc, context|
   if context.clipboard[:ht][:journal]
-    acc.replace Array(context.output_hash['title_rest_mtmax'])
+    acc.replace Array(context.output_hash['title_rest_tmax'])
   end
 end
 
@@ -259,7 +258,7 @@ to_field 'era_s_s', extract_marc("600y:610y:611y:630y:650y:651y:654y:655y:656y:6
 
 ## country from the 008; need processing until I fix the AlephSequential reader
 #
-to_field "country_of_pub_st_s" do |r, acc|
+to_field "country_of_pub_t_s" do |r, acc|
   country_map = Traject::TranslationMap.new("ht/country_map")
   if r['008']
     [r['008'].value[15..17], r['008'].value[17..17]].each do |s|
@@ -271,7 +270,7 @@ to_field "country_of_pub_st_s" do |r, acc|
 end
 
 # Also add the 752ab
-to_field "country_of_pub_st_s", extract_marc('752ab')
+to_field "country_of_pub_t_s", extract_marc('752ab')
 #
 ## Deal with the dates
 #
@@ -283,8 +282,8 @@ to_field "publishDate_s_s", get_date
 to_field 'pub_date', get_date
 #
 to_field 'publishDateRange_s_s' do |rec, acc, context|
-  if context.output_hash['publishDate']
-    d =  context.output_hash['publishDate'].first
+  if context.output_hash['publishDate_s_s']
+    d =  context.output_hash['publishDate_s_s'].first
     dr = HathiTrust::Traject::Macros::HTMacros.compute_date_range(d)
     acc << dr if dr
   else
