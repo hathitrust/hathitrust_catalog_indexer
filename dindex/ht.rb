@@ -6,7 +6,7 @@
 #
 
 # callnumber from the bib, instead of the item
-to_field 'callnumber_ms_s', extract_marc('050ab:090ab')
+to_field 'callnumber_s_s', extract_marc('050ab:090ab')
 to_field 'callnoletters_s', extract_marc('050ab:090ab', :first=>true) do |rec, acc|
   unless acc.empty?
     m = /\A([A-Za-z]+)/.match(acc[0])

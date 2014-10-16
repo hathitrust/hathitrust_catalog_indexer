@@ -32,11 +32,11 @@ unless ENV['SKIP_PH']
 end
 
 
-to_field 'ht_availability_ms_s' do |record, acc, context|
+to_field 'ht_availability_s_s' do |record, acc, context|
   acc.concat context.clipboard[:ht][:items].us_availability  if context.clipboard[:ht][:has_items]
 end
 
-to_field 'ht_availability_intl_ms_s' do |record, acc, context|
+to_field 'ht_availability_intl_s_s' do |record, acc, context|
   acc.concat context.clipboard[:ht][:items].intl_availability if context.clipboard[:ht][:has_items]
 end
 
@@ -44,7 +44,7 @@ to_field 'ht_count' do |record, acc, context|
   acc << context.clipboard[:ht][:items].size if context.clipboard[:ht][:has_items]
 end
 
-to_field 'ht_heldby_ms_s' do |record, acc, context|
+to_field 'ht_heldby_s_s' do |record, acc, context|
   acc.concat context.clipboard[:ht][:items].print_holdings if context.clipboard[:ht][:has_items]
 end
 
@@ -58,7 +58,7 @@ to_field 'ht_id_display' do |record, acc, context|
   end
 end
 
-to_field 'ht_id_update_mi_s' do |record, acc, context|
+to_field 'ht_id_update_i_s' do |record, acc, context|
   acc.concat context.clipboard[:ht][:items].last_update_dates if context.clipboard[:ht][:has_items]
   acc.delete_if {|x| x.empty?}
 end
@@ -67,7 +67,7 @@ to_field 'ht_json' do |record, acc, context|
   acc << context.clipboard[:ht][:items].to_json if context.clipboard[:ht][:has_items]
 end
 
-to_field 'ht_rightscode_ms_s' do |record, acc, context|
+to_field 'ht_rightscode_s_s' do |record, acc, context|
   acc.concat context.clipboard[:ht][:items].rights_list if context.clipboard[:ht][:has_items]
 end
 
