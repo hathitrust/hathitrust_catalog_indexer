@@ -20,7 +20,9 @@ extend DynamicFieldDocs
 settings do
   store "log.batch_progress", 1_000
   #store 'processing_thread_pool', 0
+  provide "dynamic_field_docs.output_stream", File.open('dfield_defs.txt', 'w')
 end
+
 
 
 

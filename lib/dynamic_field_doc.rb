@@ -16,7 +16,7 @@ module DynamicFieldDocs
   }
 
   SM = {
-      :default => [:stored],
+      '_s_s' => [:stored, :string],
       '_t' => [:text],
       '_tp' => [:proper],
       '_tl' => [:left],
@@ -33,6 +33,7 @@ module DynamicFieldDocs
       '_tmax' => [:proper, :left, :text],
       '_tmax_s' => [:stored, :proper, :left, :text],
       '_e_s' => [:stored, :exactish],
+      '_n_s' => [:stored, :numeric],
       '_se_s' => [:stored, :string, :exactish],
       '_pp_s' => [:pp, :piped],
   }.to_a.sort{|a,b| b[0].size <=> a[0].size}.map{|x| [Regexp.new("\\A(.+)#{x[0]}\\Z"), x[1]]}.each_with_object({}) {|x,h| h[x[0]] = x[1]}
@@ -40,8 +41,10 @@ module DynamicFieldDocs
 
   def to_dfield(field_name, aLambda=nil, &blk)
 
+    outstream = settings["dynamic_field_docs.output_stream"]
+
     prefix = field_name
-    fielddef = SM[:default]
+    fielddef = [:stored] # default
 
     SM.each do |pair|
       suffix = pair[0]
@@ -59,7 +62,7 @@ module DynamicFieldDocs
       fieldtype = t[1]
       ind = t[2] ? "indexed" : "not indexed"
       sto = t[3] ? 'stored' : 'not stored'
-      logger.warn '%-25s %-12s %-11s %-11s' % [name, fieldtype, ind, sto]
+      outstream.puts '%-25s %-12s %-11s %-11s' % [name, fieldtype, ind, sto]
     end
 
 
