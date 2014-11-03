@@ -257,6 +257,64 @@ end
 to_field "country_of_pub", extract_marc('752ab')
 
 
+# For the more-stringent "place_of_publication", we'll take
+# only from the 008, and only those things that can be
+# resolved in the current_cop or obsolete_cop translation
+# maps, derived from the (misnamed) file at http://www.loc.gov/standards/codelists/countries.xml
+#
+# Several countries have one-letter codes that appear in character 17 of the 008
+# (u=United States, c=Canada, etc.). Any hits on these (which are in the translation
+# map as xxu, xxc, etc) will be listed as a two-fer:
+#
+#  uca => [United States, United States -- California ]
+#
+# Furthermore, we'll also special-case the USSR, since it doesn't so much
+# exist anymore. Any three-letter code that ends in 'r' will be give
+# the 'S.S.R' predicate iff the two-letter prefix doesn't exist in the
+# current_cop.yaml file
+
+to_field 'place_of_publication' do |r, acc|
+  current_map = Traject::TranslationMap.new('umich/current_cop')
+  obs_map     = Traject::TranslationMap.new('umich/obsolete_cop')
+
+  if r['008']
+    code = r['008'].value[15..17].gsub(/[^a-z]/, ' ')
+
+    # Bail if we've got an explicit "undetermined"
+    unless code == 'xx '
+      possible_single_letter_country_code = code[2]
+      if possible_single_letter_country_code == ' '
+        container = nil
+      else
+        container = current_map['xx' << possible_single_letter_country_code]
+      end
+
+      pop = current_map[code]
+      pop ||= obs_map[code]
+
+      # USSR? Check for the two-value version
+      if possible_single_letter_country_code == 'r'
+        non_ussr_country = current_map[code[0..1] << ' ']
+        if non_ussr_country
+          pop = non_ussr_country
+          container = nil
+        end
+      end
+
+      if pop
+        if container
+          acc << container
+          acc << "#{container} -- #{pop}"
+        else
+          acc << pop
+        end
+      end
+    end
+
+  end
+end
+
+
 
 
 # Deal with the dates
