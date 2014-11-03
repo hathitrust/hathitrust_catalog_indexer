@@ -13,26 +13,6 @@ to_field 'callnoletters', extract_marc('852hij:050ab:090ab', :first=>true) do |r
 end
 
 
-
-
-
-### Place of Publication, for facet use
-#
-#to_field "place_of_publication" do |r, acc|
-#  country_map = Traject::TranslationMap.new("ht/country_map")
-#  if r['008']
-#    [r['008'].value[15..17], r['008'].value[17..17]].each do |s|
-#      next unless s # skip if the 008 just isn't long enough
-#      country = country_map[s.gsub(/[^a-z]/, '')]
-#      acc << country if country
-#    end
-#  end
-#end
-
-
-
-
-
 ### Last time the record was changed ####
 # cat_date -- the maximum value in a 972c
 
