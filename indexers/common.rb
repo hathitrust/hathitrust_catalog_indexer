@@ -280,8 +280,6 @@ to_field 'place_of_publication' do |r, acc|
   if r['008']
     code = r['008'].value[15..17].gsub(/[^a-z]/, ' ')
 
-    acc << code
-
     # Bail if we've got an explicit "undetermined"
     unless code == 'xx '
       possible_single_letter_country_code = code[2]
