@@ -72,7 +72,7 @@ to_dfield 'ht_rightscode_s_s' do |record, acc, context|
 end
 
 
-to_dfield 'htsource' do |record, acc, context|
+to_dfield 'htsource_s' do |record, acc, context|
   cc_to_of = Traject::TranslationMap.new('ht/collection_code_to_original_from')
   acc.concat context.clipboard[:ht][:items].collection_codes.map{|x| cc_to_of[x]} if context.clipboard[:ht][:has_items]
 end
