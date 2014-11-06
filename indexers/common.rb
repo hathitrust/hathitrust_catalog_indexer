@@ -197,11 +197,12 @@ to_field "topic", extract_marc_unless(%w(
   651a  651aevxyz
   653a  654abevyz
   654a  655abvxyz
-  655a  656akvxyz
-  656a  657avxyz
-  657a  658ab
-  658a  662abcdefgh
-  690a   690abcdevxyz
+  655a  655akvxyz
+  656a  656avxyz
+  657a  657ab
+  658a  658ab
+  662a  662abcdefgh
+  690a  690abcdevxyz
   ), skip_FAST, :trim_punctuation=>true)
       
 
