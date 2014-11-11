@@ -228,17 +228,6 @@ end
 to_field 'era', extract_marc("600y:610y:611y:630y:650y:651y:654y:655y:656y:657y:690z:691y:692z:694z:695z:696z:697z:698z:699z")
 
 
-# A place to keep track of countries ONLY from the 008,
-# for use in the advanced search dropdown
-
-cops = Set.new
-after_processing do
-  File.open("country_of_publication.txt", 'w:utf-8') do |f|
-    cops.sort.each {|x| f.puts x}
-  end
-end
-
-
 # country from the 008; need processing until I fix the AlephSequential reader
 to_field "country_of_pub" do |r, acc|
   country_map = Traject::TranslationMap.new("ht/country_map")
