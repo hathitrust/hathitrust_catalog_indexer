@@ -36,11 +36,12 @@ marcfile=$2
 
 echo
 echo Working on $HOSTNAME in $TDIR
+echo Targeting $SOLR_URL
 echo
 
 echo Targeting $SOLR_URL
-
 read -p "Deleting everying. Right? Right??? Y/N (N) > " GO_ON
+
 if [[ "$GO_ON" == [Yy]  ]]
 then
   $JRUBY $SCRIPTDIR/delete_all

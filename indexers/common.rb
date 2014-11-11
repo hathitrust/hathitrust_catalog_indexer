@@ -1,4 +1,5 @@
 $:.unshift  "#{File.dirname(__FILE__)}/../lib"
+require 'set'
 
 require 'library_stdnums'
 
@@ -202,6 +203,7 @@ to_field "topic", extract_marc_unless(%w(
   658a  658ab
   662a  662abcdefgh
   690a   690abcdevxyz
+
   ), skip_FAST, :trim_punctuation=>true)
       
 
@@ -226,21 +228,85 @@ end
 
 to_field 'era', extract_marc("600y:610y:611y:630y:650y:651y:654y:655y:656y:657y:690z:691y:692z:694z:695z:696z:697z:698z:699z")
 
-# country from the 008; need processing until I fix the AlephSequential reader
 
+# country from the 008; need processing until I fix the AlephSequential reader
 to_field "country_of_pub" do |r, acc|
   country_map = Traject::TranslationMap.new("ht/country_map")
   if r['008']
     [r['008'].value[15..17], r['008'].value[17..17]].each do |s|
       next unless s # skip if the 008 just isn't long enough
       country = country_map[s.gsub(/[^a-z]/, '')]
-      acc << country if country
+      if country
+        acc << country
+        cops << country
+      end
     end
   end
 end
 
 # Also add the 752ab  
 to_field "country_of_pub", extract_marc('752ab')
+
+
+# For the more-stringent "place_of_publication", we'll take
+# only from the 008, and only those things that can be
+# resolved in the current_cop or obsolete_cop translation
+# maps, derived from the (misnamed) file at http://www.loc.gov/standards/codelists/countries.xml
+#
+# Several countries have one-letter codes that appear in character 17 of the 008
+# (u=United States, c=Canada, etc.). Any hits on these (which are in the translation
+# map as xxu, xxc, etc) will be listed as a two-fer:
+#
+#  uca => [United States, United States -- California ]
+#
+# Furthermore, we'll also special-case the USSR, since it doesn't so much
+# exist anymore. Any three-letter code that ends in 'r' will be give
+# the 'S.S.R' predicate iff the two-letter prefix doesn't exist in the
+# current_cop.yaml file
+
+to_field 'place_of_publication' do |r, acc|
+  current_map = Traject::TranslationMap.new('umich/current_cop')
+  obs_map     = Traject::TranslationMap.new('umich/obsolete_cop')
+
+  if r['008']
+    code = r['008'].value[15..17].gsub(/[^a-z]/, ' ')
+
+    # Bail if we've got an explicit "undetermined"
+    unless code == 'xx '
+      possible_single_letter_country_code = code[2]
+      if possible_single_letter_country_code == ' '
+        container = nil
+      else
+        container = current_map['xx' << possible_single_letter_country_code]
+      end
+
+      pop = current_map[code]
+      pop ||= obs_map[code]
+
+      # USSR? Check for the two-value version
+      if possible_single_letter_country_code == 'r'
+        container = "Soviet Union"
+        non_ussr_country = current_map[code[0..1] << ' ']
+        if non_ussr_country
+          acc <<  non_ussr_country
+        end
+      end
+
+      if pop
+        if container
+          acc << container
+          acc << "#{container} -- #{pop}" unless pop == container
+        else
+          acc << pop
+        end
+      end
+    end
+
+  end
+end
+
+
+
 
 # Deal with the dates
 
