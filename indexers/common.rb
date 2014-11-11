@@ -238,7 +238,6 @@ to_field "country_of_pub" do |r, acc|
       country = country_map[s.gsub(/[^a-z]/, '')]
       if country
         acc << country
-        cops << country
       end
     end
   end
