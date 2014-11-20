@@ -273,7 +273,7 @@ to_field 'place_of_publication' do |r, acc|
     # Bail if we've got an explicit "undetermined"
     unless code == 'xx '
       possible_single_letter_country_code = code[2]
-      if possible_single_letter_country_code == ' '
+      if possible_single_letter_country_code.nil? or possible_single_letter_country_code == ' '
         container = nil
       else
         container = current_map['xx' << possible_single_letter_country_code]
