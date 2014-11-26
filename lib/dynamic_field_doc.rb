@@ -50,40 +50,40 @@ module DynamicFieldDocs
 
   def to_dfield(field_name, aLambda=nil, &blk)
 
-    outstream = settings["dynamic_field_docs.output_stream"]
-
-
-    @efields ||= explicit_field_defs
-
-    if @efields.has_key?(field_name)
-      f = @efields[field_name]
-      fieldtype = f.type
-      ind = f.indexed ? "indexed" : ""
-      sto = f.stored ? 'stored' : ''
-      outstream.puts '%-25s %-12s %-11s %-11s' % [field_name, fieldtype, ind, sto]
-    else
-      prefix = field_name
-      fielddef = [:stored] # default
-
-      SM.each do |pair|
-        suffix = pair[0]
-        types = pair[1]
-        if match = suffix.match(field_name)
-          prefix = match[1]
-          fielddef = types
-          break
-        end
-      end
-
-      fielddef.each do |fs|
-        t = TYPES[fs]
-        name = prefix + t[0]
-        fieldtype = t[1]
-        ind = t[2] ? "indexed" : ""
-        sto = t[3] ? 'stored' : ''
-        outstream.puts '%-25s %-12s %-11s %-11s' % [name, fieldtype, ind, sto]
-      end
-    end
+    #outstream = settings["dynamic_field_docs.output_stream"]
+    #
+    #
+    #@efields ||= explicit_field_defs
+    #
+    #if @efields.has_key?(field_name)
+    #  f = @efields[field_name]
+    #  fieldtype = f.type
+    #  ind = f.indexed ? "indexed" : ""
+    #  sto = f.stored ? 'stored' : ''
+    #  outstream.puts '%-25s %-12s %-11s %-11s' % [field_name, fieldtype, ind, sto]
+    #else
+    #  prefix = field_name
+    #  fielddef = [:stored] # default
+    #
+    #  SM.each do |pair|
+    #    suffix = pair[0]
+    #    types = pair[1]
+    #    if match = suffix.match(field_name)
+    #      prefix = match[1]
+    #      fielddef = types
+    #      break
+    #    end
+    #  end
+    #
+    #  fielddef.each do |fs|
+    #    t = TYPES[fs]
+    #    name = prefix + t[0]
+    #    fieldtype = t[1]
+    #    ind = t[2] ? "indexed" : ""
+    #    sto = t[3] ? 'stored' : ''
+    #    outstream.puts '%-25s %-12s %-11s %-11s' % [name, fieldtype, ind, sto]
+    #  end
+    #end
     to_field(field_name, aLambda, &blk)
   end
 
