@@ -267,7 +267,7 @@ to_field 'place_of_publication' do |r, acc|
   current_map = Traject::TranslationMap.new('umich/current_cop')
   obs_map     = Traject::TranslationMap.new('umich/obsolete_cop')
 
-  if r['008'] and r['008'].size > 17
+  if r['008'] and r['008'].value.size > 17
     code = r['008'].value[15..17].gsub(/[^a-z]/, ' ')
 
     # Bail if we've got an explicit "undetermined"
