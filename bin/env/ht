@@ -19,6 +19,14 @@ else
   export TDIR="/htsolr/catalog/bin/ht_traject"
 fi
 
+# Wait. Are we on waffle doing testing?
+if [ $host = 'waffle' ]
+then
+	echo "Working on waffle in test mode"
+	export SKIP_PH=1
+	export TDIR="/Users/dueberb/devel/ruby/ht_traject"
+fi	
+
 
 export DDIR=/htsolr/catalog/prep
 
