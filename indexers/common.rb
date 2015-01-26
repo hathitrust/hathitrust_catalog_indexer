@@ -184,7 +184,7 @@ end
 
 
 skip_FAST = ->(rec,field) do
-  field.indicator2 == '7'
+  field.indicator2 == '7' and field['2'] =~ /fast/
 end
 
 to_field "topic", extract_marc_unless(%w(
