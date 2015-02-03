@@ -93,7 +93,7 @@ to_field 'rptnum', extract_marc('088a')
 
 # We need to skip all the 710 with a $9 == 'WaSeSS'
 
-skipWaSeSS = ->(rec,field) { field.tag == '710' && field['9'] =~ 'WaSeSS' }
+skipWaSeSS = ->(rec,field) { field.tag == '710' and field['9'] =~ /WaSeSS/ }
 
 to_field 'mainauthor', extract_marc('100abcd:110abcd:111abc')
 to_field 'mainauthor_role', extract_marc('100e:110e:111e', :trim_punctuation => true)
