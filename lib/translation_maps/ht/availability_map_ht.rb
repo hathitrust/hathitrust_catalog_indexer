@@ -11,6 +11,7 @@ mm[/^nobody$/] = HathiTrust::Constants::SO
 mm[/^und$/] = HathiTrust::Constants::SO
 mm[/^opb?$/] = HathiTrust::Constants::FT
 mm[/^cc.*/] = HathiTrust::Constants::FT
-mm[/^pd.*/] = HathiTrust::Constants::FT
+mm[/^pd(?:us)?$/] = HathiTrust::Constants::FT  # pd or pdus
+mm[/^pd-p/] = HathiTrust::Constants::SO        # pd-pvt or pd-private
 
 mm
