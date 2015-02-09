@@ -87,6 +87,8 @@ to_field 'sudoc', extract_marc('086az')
 to_field "lccn", extract_marc('010a')
 to_field 'rptnum', extract_marc('088a')
 
+to_field 'barcode', extract_marc('974b')
+
 ################################
 ######### AUTHOR FIELDS ########
 ################################
