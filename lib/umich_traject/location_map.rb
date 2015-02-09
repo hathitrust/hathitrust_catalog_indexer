@@ -6,7 +6,7 @@ module Traject
       m.echo = :onmiss
       m[/^SPEC AMS.*/]  = "SPEC AMS"
       m[/^SPEC RCLC/]   = "SPEC CHIL"
-      m[/^SPEC GOSL/]   = "SPEC CHIL"
+      m[/^SPEC GOSL/]   = ["SPEC CHIL", "SPEC GOSL"]
       m[/^SPEC CHIL.*/] = "SPEC CHIL"
       m[/^SPEC CUL.*/]  = "SPEC CUL"
       m[/^SPEC WALP.*/] = "SPEC CHIL"
