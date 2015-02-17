@@ -45,7 +45,7 @@ for i in $(seq -f '%.0f' $DATESTR $LASTDATE ); do
   marcfile=`find_marc_file_for_date $i`
   if [ -f $marcfile ] 
   then
-    $SCRIPTDIR/tindex $TENV localhost $marcfile
+    $JRUBY -S bundle exec $SCRIPTDIR/tindex $TENV localhost $marcfile
   else
     echo "No indexing: Could not find file '$marcfile'"
   fi
