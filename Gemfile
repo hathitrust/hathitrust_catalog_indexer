@@ -6,14 +6,14 @@ group :development do
   gem 'minitest'
 end
 
-gem 'traject', '~>1'
+gem 'traject', '~>2.0.0.rc.2'
 gem 'traject_umich_format'
 gem 'match_map'
 gem 'traject_alephsequential_reader'
+gem 'traject-solrj_writer'
 gem 'marc-marc4j'
 gem 'sequel'
 gem 'jdbc-mysql'
-#gem 'jdbc-helper'
 gem 'httpclient'
 gem 'library_stdnums'
 gem 'naconormalizer'
