@@ -61,11 +61,11 @@ fi
 
 # Update the tmaps
 
-$JRUBY $SCRIPTDIR/get_collection_map.rb
+$JRUBY -S bundle exec ruby $SCRIPTDIR/get_collection_map.rb
 
 echo "Indexing from $filename into $WRITER ($SOLR_URL)"
 
-$JRUBY --server -S traject \
+$JRUBY --server -S  bundle exec traject \
   -c $TDIR/readers/$READER.rb \
   -c $TDIR/writers/$WRITER.rb \
   -c $TDIR/indexers/common.rb \
