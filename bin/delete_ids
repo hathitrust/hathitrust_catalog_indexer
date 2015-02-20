@@ -1,4 +1,4 @@
-
+#!/bin/env jruby
 require 'httpclient'
 require 'zlib'
 
