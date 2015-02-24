@@ -32,7 +32,7 @@ SCRIPTDIR=`dirname $0`
 TENV=$1 # umich or ht
 WRITER=$2
 
-# Set up JRUBY, TDIR, DDIR, $marcfile, $delfile
+# Set up JRUBY, TDIR, DDIR, $marcfile, $delfile, and path
 source $SCRIPTDIR/env/$TENV 
 
 if [ ! -f $TDIR/writers/$WRITER.rb ]
@@ -61,11 +61,12 @@ fi
 
 # Update the tmaps
 
-$JRUBY -S bundle exec ruby $SCRIPTDIR/get_collection_map.rb
+cd $TDIR
+jruby -S bundle exec $JRUBY  $SCRIPTDIR/get_collection_map.rb
 
 echo "Indexing from $filename into $WRITER ($SOLR_URL)"
 
-$JRUBY --server -S  bundle exec traject \
+$TDIR/bin/traject \
   -c $TDIR/readers/$READER.rb \
   -c $TDIR/writers/$WRITER.rb \
   -c $TDIR/indexers/common.rb \

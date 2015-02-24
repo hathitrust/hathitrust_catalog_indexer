@@ -28,7 +28,7 @@ then
   echo Deleting from $delfile
   echo Targeting $SOLR_URL
   cd $TDIR
-  $JRUBY -S bundle exec $SCRIPTDIR/delete_ids $delfile
+  jruby -S bundle exec $JRUBY $SCRIPTDIR/delete_ids $delfile
 else
   echo "No Deletes: Could not find file '$delfile'"
 fi
