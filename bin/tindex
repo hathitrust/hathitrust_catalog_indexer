@@ -6,6 +6,7 @@
 #  - the name of the file
 #  - (optional) the logfile
 
+export JRUBY_OPTS="-J-Xmx2048m $JRUBY_OPTS"
 
 if [ $# -lt 3 -o $# -gt 4 ]
 then
