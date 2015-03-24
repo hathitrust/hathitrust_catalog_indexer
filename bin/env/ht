@@ -4,7 +4,9 @@ export SOLR_URL="http://solr-sdr-catalog:9033/catalog"
 
 if [ -z `type -t jruby` ]
 then
-  export JRUBY="/htsolr/catalog/bin/jruby-1.7.6/bin/jruby"
+  export JRUBY="/htsolr/catalog/bin/jruby/bin/jruby"
+  export JRUBY_BIN_DIR="/htsolr/catalog/bin/jruby/bin/"
+  export PATH=$JRUBY_BIN_DIR:$PATH
 else
   export JRUBY=jruby
 fi

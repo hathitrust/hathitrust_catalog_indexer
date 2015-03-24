@@ -58,7 +58,8 @@ export SOLR_URL="http://localhost:${SOLR_PORT}/solr/biblio"
 # and use the newer one
 
 export JRUBY="/l/solr-vufind/apps/jruby/bin/jruby"
-
+export JRUBY_BIN_DIR="/l/solr-vufind/apps/jruby/bin/"
+export PATH=$JRUBY_BIN_DIR:$PATH
 
 # Set the reader to Aleph Sequential unless it's being overridden
 if [ -z $READER ]

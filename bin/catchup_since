@@ -37,7 +37,8 @@ for i in $(seq -f '%.0f' $DATESTR $LASTDATE ); do
   then
     echo Deleting from $delfile
     echo Targeting $SOLR_URL
-    $JRUBY $SCRIPTDIR/delete_ids $delfile
+    cd $TDIR
+    jruby -S bundle exec $JRUBY $SCRIPTDIR/delete_ids $delfile
   else
     echo "No Deletes: Could not find file '$delfile'"
   fi
@@ -45,7 +46,8 @@ for i in $(seq -f '%.0f' $DATESTR $LASTDATE ); do
   marcfile=`find_marc_file_for_date $i`
   if [ -f $marcfile ] 
   then
-    $SCRIPTDIR/tindex $TENV localhost $marcfile
+   cd $TDIR
+   $SCRIPTDIR/tindex $TENV localhost $marcfile
   else
     echo "No indexing: Could not find file '$marcfile'"
   fi
