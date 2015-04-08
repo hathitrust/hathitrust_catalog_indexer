@@ -1,25 +1,15 @@
 require 'yaml'
-require 'open-uri'
+require_relative '../lib/ht_traject/ht_print_holdings'
+require 'pp'
 
-url = 'http://mirlyn-aleph.lib.umich.edu/hathitrust_collection_map.yaml'
+db = HathiTrust::PrintHoldings::DB
+sql = 'select collection, name from ht_institutions i join ht_collections c on c.original_from_inst_id = i.inst_id'
+
+ccof = {}
+db[sql].order(:collection).each do |h|
+  ccof[h[:collection].downcase] = h[:name]
+end
 
 tmap_dir = File.expand_path(File.join("..", 'lib', 'translation_maps', 'ht'), File.dirname(__FILE__))
-
-begin
-  data = YAML.load(open(url).read)
-rescue OpenURI::HTTPError => e
-  $stderr.puts "Problem getting #{url}: #{e}" 
-  exit
-end
-
-# Create the "collection_code_to_original_from.yaml" map
-
-output_file = 
-ccof = {}
-data.each_pair do |cc, h|
-  ccof[cc] = h['original_from']
-end
-
 File.open(File.join(tmap_dir, 'collection_code_to_original_from.yaml'), 'w:utf-8') {|f| f.puts ccof.to_yaml}
-
 
