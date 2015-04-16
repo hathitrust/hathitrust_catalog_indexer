@@ -101,18 +101,34 @@ module HathiTrust::Traject::Macros
   
   def get_date
     lambda do |r, acc, context|
-      d = HTMacros.get_date(r)
+      d = if defined? context.clipboard[:ht][:date] 
+            context.clipboard[:ht][:date]
+          else
+            HTMacros.get_date(r)
+          end
       acc << d if d
     end
   end
+  
+  def get_raw_date
+    lambda do |r, acc, context|
+      d = if defined? context.clipboard[:ht][:rawdate] 
+            context.clipboard[:ht][:rawdate]
+          else
+            HTMacros.get_raw_date(r)
+          end
+      acc << d if d
+    end
+  end
+  
       
   
   # Stick some dates into the context object for later use
   def extract_date_into_context
     
     lambda do |r, context|
-      if date = HTMacros.get_date(r)
-        context.clipboard[:ht][:date] = date
+        context.clipboard[:ht][:rawdate] = HTMacros.get_raw_date(r)
+        context.clipboard[:ht][:date]    = HTMacros.convert_raw_date(context.clipboard[:ht][:rawdate])
       end
     end
   end
@@ -121,44 +137,58 @@ module HathiTrust::Traject::Macros
   
   
   class HTMacros
+
+    # Some dates we're not going to bother with    
+    BAD_DATE_TYPES = {
+      'n' => true,
+      'u' => true,
+      'b' => true
+    }
+    
+    CONTAINS_FOUR_DIGITS = /(\d{4})/
     
     # Get a date from a record, as best you can
-    def self.get_date(r)
-      bad_date_types = {
-        'n' => true,
-        'u' => true,
-        'b' => true
-      }
-    
-      only_four_digits = /\A\d{4}\Z/
-      contains_four_digits = /(\d{4})/
-      
-      if r['008'] and r['008'].value.size > 10
-        ohoh8 = r['008'].value
-        date1 = ohoh8[7..10].downcase
-        datetype = ohoh8[6]
-        if bad_date_types.has_key?(datetype)
-          date1 = ''
-        else
-          date1.gsub!('u', '0')
-          date1.gsub!('|', ' ')
-          date1 = '' if date1 == '0000'
-        end
-        
-        if m = only_four_digits.match(date1)
-          return date1
-        end
-      end
-      
-      # OK. If the 008 had a good date, we've already returned
-      # it. Fall back on the 260c
-      if r['260'] && r['260']['c']
-        if m = contains_four_digits.match(r['260']['c'])
-          return m[1]
-        end
-      end
-      return nil
+    # Try to get it from the 008; if not, the 260
+    def self.get_raw_date(r)
+      get_008_date(r) or get_260_date(r)
     end
+    
+
+    def self.get_date(r)
+      raw = self.get_raw_date(r)
+      self.convert_raw_date(raw)
+    end
+    
+    def self.convert_raw_date(d)
+      d.gsub(/u/, '0')
+    end
+    
+    
+    def self.bad_date_type?(ohoh8)
+      !(BAD_DATE_TYPES[ohoh8[6]])
+    end
+    
+    def self.get_008_date(r)
+      return nil unless r['008'] and r['008'].value.size > 10
+
+      ohoh8 = r['008'].value
+
+      return nil if bad_date_type(ohoh8)
+      
+      date = ohoh8[7..10].downcase
+      return nil if date == '0000' or date =~ /\|/
+      return nil unless date =~ /\A\d[\du]{3}/
+      return date1
+    end
+    
+    def self.get_260_date(r)
+      return nil unless r['260'] and r['260']['c']
+      m = CONTAINS_FOUR_DIGITS.match(r['260']['c'])
+      return m && m[1]
+    end
+    
+      
+    
     
     # Get a date range for easier faceting. 1800+ goes to the decade,
     # before that goes to the century, pre-1500 gets the string

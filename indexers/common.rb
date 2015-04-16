@@ -315,7 +315,8 @@ end
 each_record extract_date_into_context
 
 # Now use that value
-to_field "publishDate", get_date
+to_field "publishDate", get_date  
+to_field "rawDate", get_raw_date
 
 to_field 'publishDateRange' do |rec, acc, context|
   if context.output_hash['publishDate']
