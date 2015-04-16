@@ -340,7 +340,7 @@ end
     
 
 to_field "display_date" do |rec, acc, context|
-  rd = context.output_hash['rawDate'].first
+  rd = context.clipboard[:ht][:rawdate]
   if context.output_hash['publishDate'].first  ==  rd
     acc << rd
   else
