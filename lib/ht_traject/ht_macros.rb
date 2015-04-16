@@ -127,9 +127,8 @@ module HathiTrust::Traject::Macros
   def extract_date_into_context
     
     lambda do |r, context|
-        context.clipboard[:ht][:rawdate] = HTMacros.get_raw_date(r)
-        context.clipboard[:ht][:date]    = HTMacros.convert_raw_date(context.clipboard[:ht][:rawdate])
-      end
+      context.clipboard[:ht][:rawdate] = HTMacros.get_raw_date(r)
+      context.clipboard[:ht][:date]    = HTMacros.convert_raw_date(context.clipboard[:ht][:rawdate])
     end
   end
   
@@ -165,7 +164,7 @@ module HathiTrust::Traject::Macros
     
     
     def self.bad_date_type?(ohoh8)
-      !(BAD_DATE_TYPES[ohoh8[6]])
+      BAD_DATE_TYPES.has_key? ohoh8[6]
     end
     
     def self.get_008_date(r)
@@ -173,15 +172,16 @@ module HathiTrust::Traject::Macros
 
       ohoh8 = r['008'].value
 
-      return nil if bad_date_type(ohoh8)
-      
+      return nil if bad_date_type?(ohoh8)
+            
       date = ohoh8[7..10].downcase
       return nil if date == '0000' or date =~ /\|/
       return nil unless date =~ /\A\d[\du]{3}/
-      return date1
+      return date
     end
     
     def self.get_260_date(r)
+      puts "GETTING FROM THE 260!"
       return nil unless r['260'] and r['260']['c']
       m = CONTAINS_FOUR_DIGITS.match(r['260']['c'])
       return m && m[1]
