@@ -137,8 +137,9 @@ module HathiTrust
             'rights'  => item.rights,
             'heldby'   => item.print_holdings,
             'collection_code' => item.collection_code,
-            'dig_source' => item.dig_source
           }
+          
+          jsonrec['dig_source'] = item.dig_source if item.dig_source
           if item.enum_chron
             jsonrec['enumcron'] = item.enum_chron
             needs_sorting = true
