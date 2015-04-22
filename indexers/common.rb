@@ -336,7 +336,7 @@ end
     
 
 to_field "display_date" do |rec, acc, context|
-  break unless context.output_hash['publishDate']
+  next unless context.output_hash['publishDate']
   rd = context.clipboard[:ht][:rawdate]
   if context.output_hash['publishDate'].first  ==  rd
     acc << rd
