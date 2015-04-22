@@ -320,12 +320,8 @@ to_field "publishDate", get_date
 def ordinalize_incomplete_year(s)
   i = s.to_s
   case i
-  when '11'
-    '11th'
-  when '12'
-    '12th'
-  when '13'
-    '13th'
+  when /d\A1\d\Z/
+    "#{i}th"
   when /\A\d?1\Z/
     "#{i}st"
   when /\A\d?2\Z/
