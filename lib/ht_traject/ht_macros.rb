@@ -182,7 +182,6 @@ module HathiTrust::Traject::Macros
     end
     
     def self.get_260_date(r)
-      puts "GETTING FROM THE 260!"
       return nil unless r['260'] and r['260']['c']
       m = CONTAINS_FOUR_DIGITS.match(r['260']['c'])
       return m && m[1]
