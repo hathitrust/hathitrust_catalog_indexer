@@ -127,7 +127,7 @@ module HathiTrust
       # Turn this item into the sort of json object
       # we want to store in solr
 
-      def to_json
+      def to_json(platform)
         rv = []
         needs_sorting = false
         self.each do |item|
@@ -139,7 +139,6 @@ module HathiTrust
             'collection_code' => item.collection_code,
           }
           
-          jsonrec['dig_source'] = item.dig_source if item.dig_source
           if item.enum_chron
             jsonrec['enumcron'] = item.enum_chron
             needs_sorting = true
@@ -148,6 +147,11 @@ module HathiTrust
           if item.enum_pubdate
             jsonrec['enum_pubdate'] = item.enum_pubdate
             jsonrec['enum_pubdate_range'] = HathiTrust::Traject::Macros::HTMacros.compute_date_range(item.enum_pubdate.to_i)
+          end
+          
+          
+          if platform == :ht
+            jsonrec['dig_source'] = item.dig_source if item.dig_source
           end
 
           rv << jsonrec

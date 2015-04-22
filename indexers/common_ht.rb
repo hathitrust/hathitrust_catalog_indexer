@@ -63,9 +63,6 @@ to_field 'ht_id_update' do |record, acc, context|
   acc.delete_if {|x| x.empty?}
 end
 
-to_field 'ht_json' do |record, acc, context|
-  acc << context.clipboard[:ht][:items].to_json if context.clipboard[:ht][:has_items]
-end
 
 to_field 'ht_rightscode' do |record, acc, context|
   acc.concat context.clipboard[:ht][:items].rights_list if context.clipboard[:ht][:has_items]
