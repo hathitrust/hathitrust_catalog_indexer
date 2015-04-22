@@ -159,6 +159,7 @@ module HathiTrust::Traject::Macros
     end
     
     def self.convert_raw_date(d)
+      return nil unless d
       d.gsub(/u/, '0')
     end
     
