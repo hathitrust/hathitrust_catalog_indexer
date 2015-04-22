@@ -136,7 +136,8 @@ module HathiTrust
             'ingest' => item.last_update_date,
             'rights'  => item.rights,
             'heldby'   => item.print_holdings,
-            'collection_code' => item.collection_code
+            'collection_code' => item.collection_code,
+            'dig_source' => item.dig_source
           }
           if item.enum_chron
             jsonrec['enumcron'] = item.enum_chron
@@ -226,7 +227,7 @@ module HathiTrust
 
       DEFAULT_DATE = '00000000'
 
-      attr_accessor :rights, :enum_chron, :last_update_date, :print_holdings, :collection_code
+      attr_accessor :rights, :enum_chron, :last_update_date, :print_holdings, :collection_code, :dig_source
       attr_reader :htid, :set, :enum_pubdate, :enum_pubdate_range
 
       def initialize
@@ -241,6 +242,7 @@ module HathiTrust
         inst.enum_chron = f['z']
         inst.enum_pubdate = f['y']
         inst.collection_code = f['c'] ? f['c'].downcase : inst.namespace
+        inst.dig_source = f['s'] ? f['s'].downcase : nil
         inst
       end
 
