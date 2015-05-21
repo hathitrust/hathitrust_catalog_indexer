@@ -315,7 +315,44 @@ end
 each_record extract_date_into_context
 
 # Now use that value
-to_field "publishDate", get_date
+to_field "publishDate", get_date  
+
+def ordinalize_incomplete_year(s)
+  i = s.to_s
+  case i
+  when /d\A1\d\Z/
+    "#{i}th"
+  when /\A\d?1\Z/
+    "#{i}st"
+  when /\A\d?2\Z/
+    "#{i}nd"
+  when /\A\d?3\Z/
+    "#{i}rd"
+  else
+    "#{i}th"
+  end
+end
+    
+    
+
+to_field "display_date" do |rec, acc, context|
+  next unless context.output_hash['publishDate']
+  rd = context.clipboard[:ht][:rawdate]
+  if context.output_hash['publishDate'].first  ==  rd
+    acc << rd
+  else
+    if rd =~ /(\d\d\d)u/
+      acc << "the #{$1}0s"
+    elsif rd =~ /(\d\d)u+/
+      acc << 'the ' + ordinalize_incomplete_year($1.to_i + 1) + " century"
+    else # rd =~ /\duuu/
+      # Do nothing
+      # acc << 'the ' + ordinalize_incomplete_year(rd[0].to_i + 1) + " millenium"
+    end
+  end
+end
+      
+    
 
 to_field 'publishDateRange' do |rec, acc, context|
   if context.output_hash['publishDate']
