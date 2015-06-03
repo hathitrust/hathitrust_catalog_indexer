@@ -342,9 +342,9 @@ to_field "display_date" do |rec, acc, context|
     acc << rd
   else
     if rd =~ /(\d\d\d)u/
-      acc << "the #{$1}0s"
+      acc << "in the #{$1}0s"
     elsif rd =~ /(\d\d)u+/
-      acc << 'the ' + ordinalize_incomplete_year($1.to_i + 1) + " century"
+      acc << 'in the ' + ordinalize_incomplete_year($1.to_i + 1) + " century"
     elsif rd == '1uuu'
       acc << 'between 1000 and 1999'
     elsif rd == '2uuu'
