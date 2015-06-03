@@ -347,6 +347,8 @@ to_field "display_date" do |rec, acc, context|
       acc << 'the ' + ordinalize_incomplete_year($1.to_i + 1) + " century"
     elsif rd == '1uuu'
       acc << 'between 1000 and 1999'
+    elsif rd == '2uuu'
+      acc << 'between 2000 and 2999'
     end
   end
 end
