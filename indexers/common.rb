@@ -54,7 +54,7 @@ end
 
 to_field 'format', umich_format_and_types
 
-  
+
 
 ################################
 ######## IDENTIFIERS ###########
@@ -82,7 +82,7 @@ to_field 'issn', extract_marc('022a:022l:022m:022y:022z:247x')
 to_field 'isn_related', extract_marc("400x:410x:411x:440x:490x:500x:510x:534xz:556z:581z:700x:710x:711x:730x:760x:762x:765xz:767xz:770xz:772x:773xz:774xz:775xz:776xz:777x:780xz:785xz:786xz:787xz")
 
 
-  
+
 to_field 'sudoc', extract_marc('086az')
 to_field "lccn", extract_marc('010a')
 to_field 'rptnum', extract_marc('088a')
@@ -112,7 +112,7 @@ to_field "author_rest", extract_marc("505r")
 author_normalizer = NacoNormalizer.new
 to_field "authorSort", extract_marc_unless("100abcd:110abcd:111abc:110ab:700abcd:710ab:711ab",skipWaSeSS, :first=>true) do |rec, acc, context|
   acc.map!{|a| author_normalizer.normalize(a)}
-  acc.compact!  
+  acc.compact!
 end
 
 
@@ -161,19 +161,19 @@ to_field('serialTitle_ab') do |r, acc, context|
   if context.clipboard[:ht][:journal]
     acc.replace Array(context.output_hash['title_ab'])
   end
-end  
+end
 
 to_field('serialTitle_a') do |r, acc, context|
   if context.clipboard[:ht][:journal]
     acc.replace Array(context.output_hash['title_a'])
   end
-end  
-  
+end
+
 to_field('serialTitle_rest') do |r, acc, context|
   if context.clipboard[:ht][:journal]
     acc.replace Array(context.output_hash['title_rest'])
   end
-end  
+end
 
 
 
@@ -207,7 +207,7 @@ to_field "topic", extract_marc_unless(%w(
   690a   690abcdevxyz
 
   ), skip_FAST, :trim_punctuation=>true)
-      
+
 
 ###############################
 #### Genre / geography / dates
@@ -245,7 +245,7 @@ to_field "country_of_pub" do |r, acc|
   end
 end
 
-# Also add the 752ab  
+# Also add the 752ab
 to_field "country_of_pub", extract_marc('752ab')
 
 
@@ -315,7 +315,7 @@ end
 each_record extract_date_into_context
 
 # Now use that value
-to_field "publishDate", get_date  
+to_field "publishDate", get_date
 
 def ordinalize_incomplete_year(s)
   i = s.to_s
@@ -332,8 +332,8 @@ def ordinalize_incomplete_year(s)
     "#{i}th"
   end
 end
-    
-    
+
+
 
 to_field "display_date" do |rec, acc, context|
   next unless context.output_hash['publishDate']
@@ -352,8 +352,8 @@ to_field "display_date" do |rec, acc, context|
     end
   end
 end
-      
-    
+
+
 
 to_field 'publishDateRange' do |rec, acc, context|
   if context.output_hash['publishDate']
@@ -383,10 +383,3 @@ to_field 'language008', extract_marc('008[35-37]') do |r, acc|
   acc.reject! {|x| x !~ /\S/} # ditch only spaces
   acc.uniq!
 end
-
-
-
-
-
-
-
