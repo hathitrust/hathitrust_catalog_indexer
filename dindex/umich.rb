@@ -12,7 +12,7 @@ end
 
 # callnumber from the items
 to_field 'callnumber', extract_marc('852hij')
-to_field 'callnoletters', extract_marc('852hij:050ab:090ab', :first=>true) do |rec, acc|
+to_field 'callnumber_letters', extract_marc('852hij:050ab:090ab', :first=>true) do |rec, acc|
   unless acc.empty?
     m = /\A([A-Za-z]+)/.match(acc[0])
     acc[0] = m[1] if m
@@ -59,7 +59,7 @@ end
 
 ### High Level Browse ###
 
-to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
+to_field 'hlb3_delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
   acc.map!{|c|  HLB.categories(c).to_a }
   acc.flatten!
   acc.compact!

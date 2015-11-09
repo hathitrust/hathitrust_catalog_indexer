@@ -107,7 +107,7 @@ to_field 'rptnum_e_s', extract_marc('088a')
 
 skipWaSeSS = ->(rec,field) { field.tag == '710' && field['9'] == 'WaSeSS' }
 
-to_field 'mainauthor_t_s', extract_marc('100abcd:110abcd:111abc')
+to_field 'main_author_t_s', extract_marc('100abcd:110abcd:111abc')
 to_field 'mainauthor_role_t_s', extract_marc('100e:110e:111e', :trim_punctuation => true)
 to_field 'mainauthor_role_t_s', extract_marc('1004:1104:1114', :translation_map => "ht/relators")
 
@@ -175,19 +175,19 @@ to_field "serial_title_tmax_s" do |r, acc, context|
   end
 end
 
-to_field('serialTitle_ab_tmax') do |r, acc, context|
+to_field('serial_title_ab_tmax') do |r, acc, context|
   if context.clipboard[:ht][:journal]
     acc.replace Array(context.output_hash['title_ab_tmax_s'])
   end
 end
 
-to_field('serialTitle_top_tmax') do |r, acc, context|
+to_field('serial_title_top_tmax') do |r, acc, context|
   if context.clipboard[:ht][:journal]
     acc.replace Array(context.output_hash['title_top_tmax'])
   end
 end
 
-to_field('serialTitle_rest_tmax') do |r, acc, context|
+to_field('serial_title_rest_tmax') do |r, acc, context|
   if context.clipboard[:ht][:journal]
     acc.replace Array(context.output_hash['title_rest_tmax'])
   end
@@ -286,10 +286,10 @@ to_field "country_of_pub_t_s", extract_marc('752ab')
 each_record extract_date_into_context
 #
 ## Now use that value
-to_field "publishDate_s_s", get_date
+to_field "publish_date_s_s", get_date
 to_field 'pub_date', get_date
 #
-to_field 'publishDateRange_s_s' do |rec, acc, context|
+to_field 'publish_date_range_s_s' do |rec, acc, context|
   if context.output_hash['publishDate_s_s']
     d =  context.output_hash['publishDate_s_s'].first
     dr = HathiTrust::Traject::Macros::HTMacros.compute_date_range(d)
