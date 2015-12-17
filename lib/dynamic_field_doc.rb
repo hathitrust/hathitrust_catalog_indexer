@@ -1,5 +1,5 @@
 $:.unshift '../simple_solr/lib'
-require 'simple_solr'
+# require 'simple_solr'
 module DynamicFieldDocs
 
   TYPES = {
@@ -15,6 +15,7 @@ module DynamicFieldDocs
       :pp => ['_pp', 'piped_path', true, false],
       :piped => ['_piped', 'string', false, true],
       :bool => ['_bool', 'boolean', true, true],
+      :json => ['_json', 'json', false, true]
   }
 
   SM = {
@@ -25,6 +26,7 @@ module DynamicFieldDocs
       '_e'  => [:exactish],
       '_n' => [:numeric],
       '_s' => [:string],
+      '_json' => [:json]
       '_pp' => [:pp],
       '_piped' => [:piped],
       '_bool' => [:bool],
@@ -40,13 +42,13 @@ module DynamicFieldDocs
       '_pp_s' => [:pp, :piped],
   }.to_a.sort{|a,b| b[0].size <=> a[0].size}.map{|x| [Regexp.new("\\A(.+)#{x[0]}\\Z"), x[1]]}.each_with_object({}) {|x,h| h[x[0]] = x[1]}
 
-  def explicit_field_defs
-    surl =    settings['solr.url'] || ENV['SOLR_URL']
-    core = surl.split('/').pop
-    base = surl.split('/')[0..-2].join('/')
-    c = SimpleSolr::Client.new(base, core)
-    c.fields
-  end
+  # def explicit_field_defs
+  #   surl =    settings['solr.url'] || ENV['SOLR_URL']
+  #   core = surl.split('/').pop
+  #   base = surl.split('/')[0..-2].join('/')
+  #   c = SimpleSolr::Client.new(base, core)
+  #   c.fields
+  # end
 
   def to_dfield(field_name, aLambda=nil, &blk)
 
