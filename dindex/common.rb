@@ -144,7 +144,7 @@ to_field 'title_a_e',   extract_marc_filing_version('245a', :include_original =>
 to_field 'title_ab_e',  extract_marc_filing_version('245ab', :include_original => true)
 to_field 'title_c_e',   extract_marc('245c')
 
-to_field 'vtitle_mtmax_s',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true)
+to_field 'vtitle_tmax_s',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true)
 
 
 # Sortable title
