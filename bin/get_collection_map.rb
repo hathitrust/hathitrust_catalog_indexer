@@ -3,7 +3,7 @@ require_relative '../lib/ht_traject/ht_print_holdings'
 require 'pp'
 
 db = HathiTrust::PrintHoldings::DB
-sql = 'select collection, name from ht_institutions i join ht_collections c on c.original_from_inst_id = i.inst_id'
+sql = 'select collection, coalesce(mapto_name,name) name from ht_institutions i join ht_collections c on c.original_from_inst_id = i.inst_id'
 
 ccof = {}
 db[sql].order(:collection).each do |h|
