@@ -35,4 +35,6 @@ to_field 'ht_searchonly_intl' do |record, acc, context|
 end
 
 
-
+to_field 'language008_full', marc_languages("008[35-37]") do |record, acc|
+  acc.map! {|x| x.gsub(/\|/, '')}
+end

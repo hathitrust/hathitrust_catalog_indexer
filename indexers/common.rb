@@ -412,4 +412,3 @@ to_field 'language008', extract_marc('008[35-37]', :first=>true) do |r, acc|
   acc.uniq!
 end
 
-to_field 'language008_full', marc_languages("008[35-37]")
