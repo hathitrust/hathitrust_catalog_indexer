@@ -379,7 +379,10 @@ to_field "publisher", extract_marc('260b:264|*1|:533c')
 to_field "edition", extract_marc('250a')
 
 to_field 'language', marc_languages("008[35-37]:041a:041d:041e:041j")
+
 to_field 'language008', extract_marc('008[35-37]', :first=>true) do |r, acc|
   acc.reject! {|x| x !~ /\S/} # ditch only spaces
   acc.uniq!
 end
+
+to_field 'language008_full', marc_languages("008[35-37]")
