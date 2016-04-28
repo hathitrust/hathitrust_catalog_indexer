@@ -1,4 +1,6 @@
 $:.unshift  "#{File.dirname(__FILE__)}/../lib"
+
+
 require 'set'
 
 require 'library_stdnums'
@@ -14,10 +16,11 @@ extend HathiTrust::Traject::Macros
 extend Traject::UMichFormat::Macros
 
 require 'naconormalizer'
-
-require 'marc-fastxmlwriter'
+require 'marc/fastxmlwriter'
 
 require 'marc_record_speed_monkeypatch'
+
+
 
 settings do
   store "log.batch_progress", 10_000
