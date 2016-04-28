@@ -1,4 +1,5 @@
 
+include_class Java::edu.umich.lib.hlb::HLB
 
 #####################################
 ############ HATHITRUST STUFF #######
@@ -34,7 +35,17 @@ to_field 'ht_searchonly_intl' do |record, acc, context|
   acc << !context.clipboard[:ht][:items].intl_fulltext? 
 end
 
+# Language 008 as string
 
 to_field 'language008_full', marc_languages("008[35-37]") do |record, acc|
   acc.map! {|x| x.gsub(/\|/, '')}
+end
+
+# HLB
+
+to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
+  acc.map!{|c|  HLB.categories(c).to_a }
+  acc.flatten!
+  acc.compact!
+  acc.uniq!
 end
