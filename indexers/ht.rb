@@ -1,4 +1,4 @@
-
+require 'umich_traject' # log HLB java dependencies
 include_class Java::edu.umich.lib.hlb::HLB
 
 #####################################
