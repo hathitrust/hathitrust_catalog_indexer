@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 group :development do
-  gem "bundler", '~> 1.3'
+  gem "bundler"
   gem 'rake'
   gem 'minitest'
 end
