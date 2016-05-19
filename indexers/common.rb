@@ -132,7 +132,7 @@ end
 # For titles, we want with and without
 
 to_field 'title',     extract_marc_filing_version('245abdefgknp', :include_original => true)
-to_field 'title_a',   extract_marc_filing_version('245a', :include_original => true)
+to_field 'title_z',   extract_marc_filing_version('245a', :include_original => true)
 to_field 'title_ab',  extract_marc_filing_version('245ab', :include_original => true)
 to_field 'title_c',   extract_marc('245c')
 
@@ -172,9 +172,9 @@ to_field('serialTitle_ab') do |r, acc, context|
   end
 end
 
-to_field('serialTitle_a') do |r, acc, context|
+to_field('serialTitle_z') do |r, acc, context|
   if context.clipboard[:ht][:journal]
-    acc.replace Array(context.output_hash['title_a'])
+    acc.replace Array(context.output_hash['title_z'])
   end
 end
 
