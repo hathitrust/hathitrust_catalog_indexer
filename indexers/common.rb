@@ -93,7 +93,13 @@ to_field 'isn_related', extract_marc("400x:410x:411x:440x:490x:500x:510x:534xz:5
 
 
 to_field 'sudoc', extract_marc('086az')
-to_field "lccn", extract_marc('010a')
+
+# UC started sending me leading spaces, so I need to do something 
+# about it.
+to_field "lccn", extract_marc('010a') do |rec, acc|
+  acc.map! {|x| x.strip }
+end
+
 to_field 'rptnum', extract_marc('088a')
 
 to_field 'barcode', extract_marc('974a')
