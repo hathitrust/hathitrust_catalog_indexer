@@ -14,7 +14,11 @@ end
 
 
 # callnumber from the bib, instead of the item
-to_field 'callnumber', extract_marc('050ab:090ab')
+to_field 'callnumber', extract_marc('050ab:090ab') do |rec, acc|
+  acc.delete_if{|x| x !~ /\S/}
+end
+
+
 to_field 'callnoletters', extract_marc('050ab:090ab', :first=>true) do |rec, acc|
   unless acc.empty?
     m = /\A([A-Za-z]+)/.match(acc[0])
