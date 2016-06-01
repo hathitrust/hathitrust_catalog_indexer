@@ -1,18 +1,12 @@
 require 'traject'
-require 'traject/solrj_writer'
-require 'socket'
-
+require 'traject/solr_json_writer'
 
 settings do
-  provide "solr.url", ENV["SOLR_URL"]
-
-#  provide "solrj_writer.parser_class_name", "BinaryResponseParser"
-  provide "solrj_writer.parser_class_name", "XMLResponseParser"
+  provide "solr.url", "http://localhost:8027/solr/biblio"
   provide "solrj_writer.commit_on_close", "true"
   provide "solrj_writer.thread_pool", 2
-  provide "solrj_writer.batch_size", 50
-  provide "writer_class_name", "Traject::SolrJWriter"
-  store 'processing_thread_pool', 5
-  store "log.batch_size", 25_000
-
+  provide "solrj_writer.batch_size", 100
+  provide "writer_class_name", "Traject::SolrJsonWriter"
+  store 'processing_thread_pool', 4
+  store "log.batch_size", 50_000
 end
