@@ -15,4 +15,5 @@ gem 'httpclient'
 gem 'library_stdnums'
 gem 'naconormalizer'
 gem 'marc-fastxmlwriter'
+gem 'jdbc-mysql'
 
