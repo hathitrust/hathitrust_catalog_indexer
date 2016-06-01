@@ -17,9 +17,6 @@ require 'naconormalizer'
 require 'traject/macros/marc_format_classifier'
 extend Traject::Macros::MarcFormats
 
-# require 'dynamic_field_doc'
-# extend DynamicFieldDocs
-
 settings do
   store "log.batch_progress", 1_000
 end
