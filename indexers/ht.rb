@@ -43,9 +43,11 @@ end
 
 # HLB
 
+SPACED_PIPE = /\s*\|\s*/
 to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
   acc.map!{|c|  HLB.categories(c).to_a }
   acc.flatten!
   acc.compact!
   acc.uniq!
+  acc.map! {|c| c.gsub(SPACED_PIPE, '|')}
 end
