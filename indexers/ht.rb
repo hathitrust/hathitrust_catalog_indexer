@@ -14,7 +14,12 @@ end
 
 
 # callnumber from the bib, instead of the item
-to_field 'callnumber', extract_marc('050ab:090ab')
+LC_MAYBE = /\A\s*[A-Z]+\s*\d+/
+to_field 'callnumber', extract_marc('050ab:090ab') do |rec, acc|
+  acc.delete_if{|x| !(LC_MAYBE.match(x))}
+end
+
+
 to_field 'callnoletters', extract_marc('050ab:090ab', :first=>true) do |rec, acc|
   unless acc.empty?
     m = /\A([A-Za-z]+)/.match(acc[0])
