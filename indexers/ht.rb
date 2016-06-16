@@ -6,6 +6,16 @@ include_class Java::edu.umich.lib.hlb::HLB
 #####################################
 #
 
+
+# Skip calling out to the print holdings database if I'm
+# on a machine that doesn't have access
+unless ENV['SKIP_PH']
+  each_record do |r, context|
+    context.clipboard[:ht][:items].fill_print_holdings! if context.clipboard[:ht][:has_items]
+  end
+end
+
+
 ## OK, so one weird thing we need to do is have different ht_json docs for mirlyn vs hathitrust, since they have differently-formatted 974s. Pass in the :ht symbol only for HT and the to_json will do the Right Thing.
 
 to_field 'ht_json' do |record, acc, context|

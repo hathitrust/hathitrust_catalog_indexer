@@ -23,13 +23,6 @@ end
 # [:ht][:items] to pull out all the other stuff we need.
 
 
-# Skip calling out to the print holdings database if I'm
-# on a machine that doesn't have access
-unless ENV['SKIP_PH']
-  each_record do |r, context|
-    context.clipboard[:ht][:items].fill_print_holdings! if context.clipboard[:ht][:has_items]
-  end
-end
 
 
 to_field 'ht_availability' do |record, acc, context|
