@@ -220,7 +220,7 @@
          be based on the last SolrCore to be initialized.
          
       -->
-    <maxBooleanClauses>1024</maxBooleanClauses>
+    <maxBooleanClauses>2048</maxBooleanClauses>
 
 
     <!-- Solr Internal Query Caches
@@ -359,7 +359,7 @@
        handleSelect="true" is not recommended for new users, but is the default
        for backwards compatibility
     -->
-  <requestDispatcher handleSelect="false" >
+  <requestDispatcher handleSelect="true" >
     <!-- Request Parsing
 
          These settings indicate how Solr Requests may be parsed, and
@@ -402,7 +402,9 @@
          The options below instruct Solr not to output any HTTP Caching
          related headers
       -->
-    <httpCaching never304="true" />
+   <!-- <httpCaching never304="true" /> -->
+   <httpCaching lastModifiedFrom="openTime"
+                    etagSeed="Solr" />
 
   </requestDispatcher>
 
@@ -434,17 +436,33 @@
        of SearchComponents (see below) and supports distributed
        queries across multiple shards
     -->
+  <!--
+      
   <requestHandler name="/select" class="solr.SearchHandler">
-    <!-- default values for query parameters can be specified, these
-         will be overridden by parameters in the request
-      -->
      <lst name="defaults">
        <str name="echoParams">explicit</str>
        <int name="rows">10</int>
        <str name="fl">*</str>
-       <str name="df">allfields_t</str>
      </lst>
 
+    </requestHandler>
+ -->
+    
+    <requestHandler name="edismax" class="solr.SearchHandler" >
+      <lst name="defaults">
+       <str name="defType">edismax</str>
+       <str name="echoParams">all</str>
+       <float name="tie">0.01</float>
+       <bool name="lowercaseOperators">false</bool>
+      </lst>
+    </requestHandler>
+
+    <requestHandler name="dismax" class="solr.SearchHandler" >
+      <lst name="defaults">
+       <str name="defType">dismax</str>
+       <str name="echoParams">all</str>
+       <float name="tie">0.01</float>
+      </lst>
     </requestHandler>
     
     

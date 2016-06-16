@@ -138,6 +138,11 @@
    -->
 
 
+  <!-- Use old-school similarity 
+  <similarity class="org.apache.lucene.search.similarities.BM25Similarity" />
+  -->
+  <similarity class="solr.ClassicSimilarityFactory"/>
+
    <!-- field names should consist of alphanumericID or underscore characters only and
       not start with a digit.  This is not currently strictly enforced,
       but other field names will not have first class support from all components
@@ -194,8 +199,10 @@
  <field name="collection"  type="string" indexed="true" stored="true" multiValued="true"/>
  <field name="building"    type="string" indexed="true" stored="true" multiValued="true"/>
  <field name="location"    type="string" indexed="true" stored="true" multiValued="true"/>
+ <field name="fund"    type="exactish" indexed="true" stored="true" multiValued="true"/>
+ <field name="fund_display"    type="string" indexed="false" stored="true" multiValued="true"/> 
 
- <!-- Identifiers -->
+<!-- Identifiers -->
  
 <field name="lccn"         type="lccn" indexed="true" stored="true"  multiValued="true"/> 
 <field name="ctrlnum"      type="exactish"   indexed="true" stored="true"  multiValued="true"/>
@@ -205,7 +212,7 @@
 <field name="isbn"         type="isbn"         indexed="true" stored="true"  multiValued="true"/>
 <field name="issn"         type="numericID"         indexed="true" stored="true"  multiValued="true"/>
 <field name="isn_related"  type="numericID"         indexed="true" stored="true" multiValued="true"/>
-
+<field name="barcode"      type="exactish"   indexed="true" stored="true" multiValued="true" />
 <!-- HT Stuff -->
 
 <field name="ht_count"      type="int"    indexed="true"  stored="true"  multiValued="false"/>
@@ -299,7 +306,7 @@
  
  <field name="topic"       type="text"       indexed="true" stored="false" multiValued="true"  omitNorms="true"/>
  <field name="topicProper" type="text_nostem" indexed="true" stored="false" multiValued="true"  omitNorms="true"  />
- <field name="topicStr"    type="exactish" indexed="true" stored="true"  multiValued="true"/>
+ <field name="topicStr"    type="string" indexed="true" stored="true"  multiValued="true"/>
  <field name="lcshID"      type="string"     indexed="true" stored="true"  multiValued="true"/>
  <field name="fullgenre"   type="text"       indexed="true" stored="true"  multiValued="true"  omitNorms="true"/>
  <field name="genre"       type="text"       indexed="true" stored="true"  multiValued="true"  omitNorms="true"/>
