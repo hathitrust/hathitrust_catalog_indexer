@@ -62,9 +62,13 @@ fi
 
 # Update the tmaps
 
-cd $TDIR
-jruby -S bundle exec $JRUBY  $SCRIPTDIR/get_collection_map.rb
+if [ ! -z "$SKIP_PH" ]
+then
+  cd $TDIR
+  jruby -S bundle exec $JRUBY  $SCRIPTDIR/get_collection_map.rb
+fi
 
+   
 echo "Indexing from $filename into $WRITER ($SOLR_URL)"
 
 $TDIR/bin/traject \

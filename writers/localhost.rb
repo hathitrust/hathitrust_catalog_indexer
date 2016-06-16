@@ -8,4 +8,5 @@ settings do
   provide "solr_writer.batch_size", 60
   provide "writer_class_name", "Traject::SolrJsonWriter"
   provide "processing_thread_pool", 5
+  provide "log.batch_size", 50_000
 end
