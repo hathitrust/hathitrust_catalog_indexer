@@ -106,7 +106,7 @@ module HathiTrust::Traject::Macros
           else
             HTMacros.get_date(r)
           end
-      acc << d if d
+      acc.replace [d] if d
     end
   end
 
