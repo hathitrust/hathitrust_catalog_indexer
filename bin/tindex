@@ -6,7 +6,9 @@
 #  - the name of the file
 #  - (optional) the logfile
 
+# Turn off invokedynamic 
 export JRUBY_OPTS="-J-Xmx2048m -Xcompile.invokedynamic=false"
+#
 
 if [ $# -lt 3 -o $# -gt 4 ]
 then
