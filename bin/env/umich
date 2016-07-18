@@ -51,7 +51,13 @@ then
   exit 1
 fi
 
-export SOLR_URL="http://localhost:${SOLR_PORT}/solr/biblio"
+if [ -z $SOLR_CORE ]
+then
+    echo "SOLR_CORE not defined; defaulting to 'biblio'"
+    SOLR_CORE=biblio
+fi    
+
+export SOLR_URL="http://localhost:${SOLR_PORT}/solr/${SOLR_CORE}"
 
 
 # If we're seeing the old version of jruby , ignore it
