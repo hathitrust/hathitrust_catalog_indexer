@@ -58,21 +58,29 @@ end
   
   
 ### High Level Browse ###
-PIPE_SPLIT = /\s*\|\s*/o
+
+require 'hlb3_load'
+
+# Load up the .json file already downloaded from
+# https://mirlyn.lib.umich.edu/static/hlb3/hlb3.json
+
+HLB3.init(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb3.json'))
+
+
+
 to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
   errs = 0
   begin
     acc.compact!
-    acc.map! {|c| HLB.categories(c).to_a}
-    acc.flatten!
-    acc.compact!
     acc.uniq!
-    components = []
-    acc.each do |cat|
-      components.concat cat.split(PIPE_SPLIT)
-    end
-    components.uniq!
+
+    # Get the individual conmponents
+    components = acc.flatten
     context.output_hash['hlb3'] = components unless components.empty?
+
+    # Turn them into pipe-delimited strings
+    acc.map! {|c| HLB.categories(c).to_a.map{|a| a.join(' | ')}}
+
   rescue => e
     errs += 1
     abort(0) if errs > 2

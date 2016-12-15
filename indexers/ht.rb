@@ -58,11 +58,14 @@ end
 
 # HLB
 
-SPACED_PIPE = /\s*\|\s*/
+# Load up the json file. We're assuming it lives in translation maps, which
+# we construct a path to relative to this source file
+
+require 'hlb3_load'
+HLB3.init(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb3.json'))
+
+
 to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
-  acc.map!{|c|  HLB.categories(c).to_a }
-  acc.flatten!
+  acc.map!{|c|  HLB.categories(c).to_a.join('|') }
   acc.compact!
-  acc.uniq!
-  acc.map! {|c| c.gsub(SPACED_PIPE, '|')}
 end

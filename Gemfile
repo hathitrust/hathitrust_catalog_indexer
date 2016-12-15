@@ -1,10 +1,12 @@
 source 'https://rubygems.org'
 
 group :development do
-  gem "bundler"
-  gem 'rake'
-  gem 'minitest'
+ gem "bundler"
+ gem 'rake'
+ gem 'minitest'
 end
+
+
 
 gem 'traject', '~>2.0'
 gem 'traject_umich_format'
