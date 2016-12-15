@@ -68,24 +68,26 @@ HLB.initialize(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb
 
 to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
   errs = 0
-  begin
-    acc.map! {|c| HLB.categories(c).to_a}
+#  begin
+    acc.map! {|c| HLB.categories(c)}
     acc.compact!
     acc.uniq!
+    acc.flatten!(1) # just one level
 
-
+    logger.warn("Acc has #{acc.size} components")
+    logger.warn "The first is #{acc[0]}"
     # Get the individual conmponents and stash them
-    components = acc.flatten
+    components = acc.flatten.to_a
     context.output_hash['hlb3'] = components unless components.empty?
 
     # Turn them into pipe-delimited strings
-    acc.map! {|c| HLB.categories(c).to_a.map{|a| a.join(' | ')}}
+    acc.map! {|c| c.join(' | ')}
 
-  rescue => e
-    errs += 1
-    abort(0) if errs > 2
-    retry
-  end
+#  rescue => e
+#    errs += 1
+#    abort(0) if errs > 2
+#    retry
+#  end
 end 
   
 
