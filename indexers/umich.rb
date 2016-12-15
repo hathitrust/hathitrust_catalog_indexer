@@ -1,8 +1,5 @@
 require 'umich_traject'
 
-include_class Java::edu.umich.lib.hlb::HLB
-
-
 ## OK, so one weird thing we need to do is have different ht_json docs for mirlyn vs hathitrust, since they have differently-formatted 974s. Pass in the :mirlyn symbol and the to_json will do the Right Thing.
 
 to_field 'ht_json' do |record, acc, context|
@@ -59,11 +56,11 @@ end
   
 ### High Level Browse ###
 
-require 'hlb3_load'
-
 # Load up the .json file already downloaded from
 # https://mirlyn.lib.umich.edu/static/hlb3/hlb3.json
 
+
+require 'hlb3_load'
 HLB.initialize(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb3.json'))
 
 
