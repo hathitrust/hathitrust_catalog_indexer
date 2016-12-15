@@ -1,5 +1,4 @@
-require 'umich_traject' # log HLB java dependencies
-include_class Java::edu.umich.lib.hlb::HLB
+
 
 #####################################
 ############ HATHITRUST STUFF #######
@@ -62,7 +61,7 @@ end
 # we construct a path to relative to this source file
 
 require 'hlb3_load'
-HLB3.init(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb3.json'))
+HLB.initialize(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb3.json'))
 
 
 to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|

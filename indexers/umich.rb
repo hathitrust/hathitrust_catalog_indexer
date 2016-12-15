@@ -64,7 +64,7 @@ require 'hlb3_load'
 # Load up the .json file already downloaded from
 # https://mirlyn.lib.umich.edu/static/hlb3/hlb3.json
 
-HLB3.init(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb3.json'))
+HLB.initialize(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb3.json'))
 
 
 
@@ -74,7 +74,7 @@ to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij')
     acc.compact!
     acc.uniq!
 
-    # Get the individual conmponents
+    # Get the individual conmponents and stash them
     components = acc.flatten
     context.output_hash['hlb3'] = components unless components.empty?
 
