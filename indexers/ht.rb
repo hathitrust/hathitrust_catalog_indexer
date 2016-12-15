@@ -57,8 +57,8 @@ end
 
 # HLB
 
-# Load up the json file. We're assuming it lives in translation maps, which
-# we construct a path to relative to this source file
+# Load up the .json file already downloaded from
+# https://mirlyn.lib.umich.edu/static/hlb3/hlb3.json
 
 require 'hlb3_load'
 HLB.initialize(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb3.json'))
