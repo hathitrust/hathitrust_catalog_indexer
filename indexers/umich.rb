@@ -69,8 +69,10 @@ HLB.initialize(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb
 to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
   errs = 0
   begin
+    acc.map! {|c| HLB.categories(c).to_a}
     acc.compact!
     acc.uniq!
+
 
     # Get the individual conmponents and stash them
     components = acc.flatten
