@@ -5,6 +5,7 @@
 export TDIR=/l/solr-vufind/apps/ht_traject
 export DDIR=/l/solr-vufind/data
 
+export DEFAULT_WRITER=localhost
 
 # A simple function to look for a file, gzipped and not gzipped,
 # in both the data dir and the processed dir

@@ -44,7 +44,7 @@ then
    echo Indexing $marcfile
    echo Targeting $SOLR_URL
    cd $TDIR
-   $SCRIPTDIR/tindex $TENV localhost $marcfile
+   $SCRIPTDIR/tindex $TENV $DEFAULT_WRITER $marcfile
 else
   echo "No indexing: Could not find file '$marcfile'"
 fi
@@ -52,5 +52,5 @@ fi
 # commit
 #
 
-echo `curl "${SOLR_URL}/update?commit=true"`
+# echo `curl "${SOLR_URL}/update?commit=true"`
 

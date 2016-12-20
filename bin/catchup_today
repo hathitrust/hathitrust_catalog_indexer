@@ -37,7 +37,7 @@ fi
 if [ -f $marcfile ] 
 then
    cd $TDIR
-   $SCRIPTDIR/tindex $TENV localhost $marcfile $LOGFILE
+   $SCRIPTDIR/tindex $TENV $DEFAULT_WRITER $marcfile $LOGFILE
 else
   echo "No indexing: Could not find file '$marcfile'"
 fi

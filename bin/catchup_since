@@ -47,7 +47,7 @@ for i in $(seq -f '%.0f' $DATESTR $LASTDATE ); do
   if [ -f $marcfile ] 
   then
    cd $TDIR
-   $SCRIPTDIR/tindex $TENV localhost $marcfile
+   $SCRIPTDIR/tindex $TENV $DEFAULT_WRITER $marcfile
   else
     echo "No indexing: Could not find file '$marcfile'"
   fi

@@ -19,3 +19,4 @@ gem 'naconormalizer'
 gem 'marc-fastxmlwriter'
 gem 'jdbc-mysql'
 
+gem 'traject-solrj_writer'
