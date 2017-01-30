@@ -65,6 +65,12 @@ HLB.initialize(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb
 
 
 to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
-  acc.map!{|c|  HLB.categories(c).to_a.join('|') }
+  acc.map! {|c| HLB.categories(c)}
   acc.compact!
-end
+  acc.uniq!
+  acc.flatten!(1)
+  # Turn them into pipe-delimited strings
+  acc.map! {|c| c.join(' | ')}
+end 
+
+
