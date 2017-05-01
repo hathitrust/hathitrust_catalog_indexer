@@ -31,7 +31,18 @@ echo
 echo Working on $HOSTNAME in $TDIR
 echo
 
+# is the date given valid? 'Cause `seq` is dumb about dates
+function valid_date() {
+ date -d "$1" > /dev/null 2>&1
+}
+
 for i in $(seq -f '%.0f' $DATESTR $LASTDATE ); do
+
+  if !(valid_date "$i"); then
+    echo "Skipping $i";
+    continue;
+  fi
+
   delfile=`find_del_file_for_date $i`
   if [ -f $delfile ] 
   then
