@@ -39,10 +39,9 @@ function valid_date() {
 for i in $(seq -f '%.0f' $DATESTR $LASTDATE ); do
 
   if !(valid_date "$i"); then
-    echo "Skipping $i";
     continue;
   fi
-
+  
   delfile=`find_del_file_for_date $i`
   if [ -f $delfile ] 
   then

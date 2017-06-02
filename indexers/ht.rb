@@ -57,20 +57,16 @@ end
 
 # HLB
 
-# Load up the .json file already downloaded from
-# https://mirlyn.lib.umich.edu/static/hlb3/hlb3.json
-
-require 'hlb3_load'
-HLB.initialize(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb3.json'))
-
+require 'high_level_browse'
+hlb = HighLevelBrowse.load(dir: '/htsolr/catalog/bin/ht_traject')
 
 to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
-  acc.map! {|c| HLB.categories(c)}
+  acc.map! {|c| hlb[c] }
   acc.compact!
   acc.uniq!
   acc.flatten!(1)
   # Turn them into pipe-delimited strings
-  acc.map! {|c| c.join(' | ')}
+  acc.map! {|c| c.to_a.join(' | ')}
 end 
 
 
