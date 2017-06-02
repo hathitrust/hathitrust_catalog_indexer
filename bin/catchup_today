@@ -24,22 +24,22 @@ echo Working on $HOSTNAME in $TDIR
 echo
 
 
-if [ -f $delfile ] 
+if [ -f "$delfile" ] 
 then
   echo Deleting from $delfile
   echo Targeting $SOLR_URL
   cd $TDIR
   jruby -S bundle exec $JRUBY $SCRIPTDIR/delete_ids $delfile
 else
-  echo "No Deletes: Could not find file '$delfile'"
+  echo "No Deletes: Could not find delfile '$delfile'"
 fi
 
-if [ -f $marcfile ] 
+if [ -f "$marcfile" ] 
 then
    cd $TDIR
    $SCRIPTDIR/tindex $TENV $DEFAULT_WRITER $marcfile $LOGFILE
 else
-  echo "No indexing: Could not find file '$marcfile'"
+  echo "No indexing: Could not find marcfile '$marcfile'"
 fi
 
 # commit

@@ -82,3 +82,4 @@ $JRUBY -S traject \
   $LOGFILE_DIRECTIVE \
   $filename
 
+#  -s processing_thread_pool=0 \

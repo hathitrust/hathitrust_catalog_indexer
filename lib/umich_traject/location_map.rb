@@ -20,7 +20,7 @@ module Traject
       m[/^SPEC MYR.*/]  = "SPEC MYERS"
       m[/^SPEC WALP.*/] = "SPEC WALP"
       m[/^SPEC WLPR/]   = "SPEC WALP"
-      m[/^HATCH SEM/]   = "HATCH NER"
+#      m[/^HATCH SEM/]   = "HATCH NER"
       m[/^HATCH MSHLV/] = "HATCH BKS"
       m[/^HATCH MREF/]  = "HATCH BKS"
       m[/^HATCH MOVRD/] = "HATCH MAP"

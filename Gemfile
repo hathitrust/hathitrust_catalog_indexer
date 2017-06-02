@@ -18,5 +18,6 @@ gem 'library_stdnums'
 gem 'naconormalizer'
 gem 'marc-fastxmlwriter'
 gem 'jdbc-mysql'
+gem 'high_level_browse'
 
 gem 'traject-solrj_writer'
