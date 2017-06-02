@@ -114,9 +114,9 @@ module HathiTrust
       def fill_print_holdings!
         ids = self.ht_ids.flatten
         @ph = HathiTrust::PrintHoldings.get_print_holdings_hash(ids)
-        self.each do |item|
-          item.print_holdings = @ph[item.htid]
-        end
+#        self.each do |item|
+#           item.print_holdings = @ph[item.htid]
+#        end
       end
 
       def print_holdings
@@ -168,8 +168,8 @@ module HathiTrust
       def enumcronSort a,b
         matcha = /(\d{4})/.match a['enumcron']
         matchb = /(\d{4})/.match b['enumcron']
-        if (matcha and matchb)
-          return matcha[1] <=> matchb[1] unless (matcha[1] == matchb[1])
+        if matcha and matchb and (matcha[1] != matchb[1])
+#          return matcha[1].to_i <=> matchb[1].to_i 
         end
         return a[:sortstring] <=> b[:sortstring]
       end

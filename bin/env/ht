@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export SOLR_URL="http://solr-sdr-catalog:9033/catalog"
+export DEFAULT_WRITER='localhost_ht'
 
 if [ -z `type -t jruby` ]
 then

@@ -50,9 +50,9 @@ else
   exit 1
 fi
 
-$JRUBY -S bundle exec $SCRIPTDIR/tindex $TENV localhost $marcfile $logfile
+$JRUBY -S bundle exec $SCRIPTDIR/tindex $TENV $DEFAULT_WRITER $marcfile $logfile
 
 # commit
 
-echo `curl "${SOLR_URL}/update?commit=true"`
+# echo `curl "${SOLR_URL}/update?commit=true"`
 
