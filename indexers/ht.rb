@@ -55,22 +55,30 @@ to_field 'language008_full', marc_languages("008[35-37]") do |record, acc|
   acc.map! {|x| x.gsub(/\|/, '')}
 end
 
-# HLB
 
-# Load up the .json file already downloaded from
-# https://mirlyn.lib.umich.edu/static/hlb3/hlb3.json
-
-require 'hlb3_load'
-HLB.initialize(File.join(File.dirname(__FILE__), '../lib/translation_maps', 'hlb3.json'))
+##### High Level Browse ####
 
 
-to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
-  acc.map! {|c| HLB.categories(c)}
+
+
+
+require 'high_level_browse'
+thisdir = File.dirname(__FILE__)
+tmapsdir = File.realpath(File.join(thisdir, '..', 'lib', 'translation_maps'))
+
+hlb = HighLevelBrowse.load(dir: tmapsdir)
+
+to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099|*0|a:086a:086z:852|0*|hij') do |rec, acc, context|
+  acc.map! {|c| hlb[c] }
   acc.compact!
   acc.uniq!
   acc.flatten!(1)
-  # Turn them into pipe-delimited strings
-  acc.map! {|c| c.join(' | ')}
-end 
 
+  # Get the individual conmponents and stash them
+  components = acc.flatten.to_a.uniq
+  context.output_hash['hlb3'] = components unless components.empty?
+  
+  # Turn them into pipe-delimited strings
+  acc.map! {|c| c.to_a.join(' | ')}
+end
 
