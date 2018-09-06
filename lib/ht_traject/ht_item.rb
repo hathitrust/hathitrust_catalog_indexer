@@ -114,9 +114,9 @@ module HathiTrust
       def fill_print_holdings!
         ids = self.ht_ids.flatten
         @ph = HathiTrust::PrintHoldings.get_print_holdings_hash(ids)
-#        self.each do |item|
-#           item.print_holdings = @ph[item.htid]
-#        end
+        self.each do |item|
+           item.print_holdings = @ph[item.htid]
+        end
       end
 
       def print_holdings

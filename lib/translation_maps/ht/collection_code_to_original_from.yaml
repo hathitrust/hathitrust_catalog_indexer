@@ -3,7 +3,6 @@ miu: University of Michigan
 umbus: University of Michigan
 umdb: University of Michigan
 umlaw: University of Michigan
-miem: Michigan State University
 msu: Michigan State University
 nwu: Northwestern University
 chi: University of Chicago
@@ -31,6 +30,7 @@ iduke: Duke University
 osu: The Ohio State University
 incsu: North Carolina State University
 pu: University of Pennsylvania
+fmu: University of Miami
 uva: University of Virginia
 mou: University of Missouri - Columbia
 geu: Emory University
@@ -78,3 +78,4 @@ umprivate: Private Donor
 usu: Utah State University Press
 uuhhs: Unitarian Universalist History and Heritage Society
 nnfr: The Frick Collection
+vircu: Virginia Commonwealth University
