@@ -57,8 +57,10 @@ end
 
 # HLB
 
+logger.info "Starting load of HLB"
 require 'high_level_browse'
 hlb = HighLevelBrowse.load(dir: '/htsolr/catalog/bin/ht_traject')
+logger.info "Finished load of HLB"
 
 to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
   acc.map! {|c| hlb[c] }
