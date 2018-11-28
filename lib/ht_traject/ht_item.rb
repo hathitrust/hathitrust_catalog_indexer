@@ -68,7 +68,7 @@ module HathiTrust
 
       def rights_list
         unless @rights_list
-          @rights_list = self.map(&:rights).uniq
+          @rights_list = self.flat_map(&:rights).uniq
           if @rights_list.size == 1 && @rights_list[0] == 'nobody'
             @rights_list = ['tombstone']
           end
@@ -133,6 +133,7 @@ module HathiTrust
         self.each do |item|
           jsonrec = {
             'htid' => item.htid,
+            'nineteen_twenty_three' => item.nineteen_twenty_three,
             'ingest' => item.last_update_date,
             'rights'  => item.rights,
             'heldby'   => item.print_holdings,
@@ -237,17 +238,21 @@ module HathiTrust
 
       def initialize
         @print_holdings = []
+        @rights = []
       end
 
       def self.new_from_974(f)
         inst = self.new
-        inst.rights = f['r']
+        inst.rights << f['r']
         inst.htid   = f['u']
         inst.last_update_date = f['d'] || DEFAULT_DATE
         inst.enum_chron = f['z']
         inst.enum_pubdate = f['y']
         inst.collection_code = f['c'] ? f['c'].downcase : inst.namespace
         inst.dig_source = f['s'] ? f['s'].downcase : nil
+
+        inst.rights << inst.nineteen_twenty_three
+
         inst
       end
 
@@ -279,6 +284,14 @@ module HathiTrust
         ItemSet.ht_avail_intl[rights].first
       end
 
+      def nineteen_twenty_three
+        if HathiTrust::Constants::OPEN_1923.include? self.htid
+          "1923_open"
+          else
+          nil
+        end
+      end
+      
 
       def namespace
         unless @namespace
