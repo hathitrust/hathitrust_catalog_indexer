@@ -133,7 +133,7 @@ module HathiTrust
         self.each do |item|
           jsonrec = {
             'htid' => item.htid,
-            'nineteen_twenty_three' => item.nineteen_twenty_three,
+            'newly_open' => item.newly_open,
             'ingest' => item.last_update_date,
             'rights'  => item.rights,
             'heldby'   => item.print_holdings,
@@ -251,7 +251,7 @@ module HathiTrust
         inst.collection_code = f['c'] ? f['c'].downcase : inst.namespace
         inst.dig_source = f['s'] ? f['s'].downcase : nil
 
-        inst.rights << inst.nineteen_twenty_three
+        inst.rights << inst.newly_open
 
         inst
       end
@@ -284,9 +284,9 @@ module HathiTrust
         ItemSet.ht_avail_intl[rights].first
       end
 
-      def nineteen_twenty_three
-        if HathiTrust::Constants::OPEN_1923.include? self.htid
-          "1923_open"
+      def newly_open
+        if HathiTrust::Constants::NewlyOpen.include? self.htid
+          "newly_open"
           else
           nil
         end
