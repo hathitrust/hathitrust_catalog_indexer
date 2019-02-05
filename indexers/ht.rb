@@ -56,23 +56,19 @@ to_field 'language008_full', marc_languages("008[35-37]") do |record, acc|
 end
 
 
-##### High Level Browse ####
-
-
-
-
-
+logger.info "Starting load of HLB"
 require 'high_level_browse'
-thisdir = File.dirname(__FILE__)
-tmapsdir = File.realpath(File.join(thisdir, '..', 'lib', 'translation_maps'))
+hlb = HighLevelBrowse.load(dir: '/htsolr/catalog/bin/ht_traject')
+logger.info "Finished load of HLB"
 
-hlb = HighLevelBrowse.load(dir: tmapsdir)
-
-to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099|*0|a:086a:086z:852|0*|hij') do |rec, acc, context|
+to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij') do |rec, acc, context|
   acc.map! {|c| hlb[c] }
   acc.compact!
   acc.uniq!
   acc.flatten!(1)
+  # Turn them into pipe-delimited strings
+  acc.map! {|c| c.to_a.join(' | ')}
+end 
 
   # Get the individual conmponents and stash them
   components = acc.flatten.to_a.uniq

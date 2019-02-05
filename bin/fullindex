@@ -40,19 +40,19 @@ echo Targeting $SOLR_URL
 echo
 
 echo Targeting $SOLR_URL
-read -p "Deleting everying. Right? Right??? Y/N (N) > " GO_ON
+#read -p "Deleting everying. Right? Right??? Y/N (N) > " GO_ON
 
-if [[ "$GO_ON" == [Yy]  ]]
-then
+#if [[ "$GO_ON" == [Yy]  ]]
+#then
   $JRUBY $SCRIPTDIR/delete_all
-else
-  echo "OK. Aborting. Will not index $marcfile"
-  exit 1
-fi
+#else
+#  echo "OK. Aborting. Will not index $marcfile"
+#  exit 1
+#fi
 
 $JRUBY -S bundle exec $SCRIPTDIR/tindex $TENV $DEFAULT_WRITER $marcfile $logfile
 
 # commit
 
-# echo `curl "${SOLR_URL}/update?commit=true"`
+echo `curl "${SOLR_URL}/update?commit=true"`
 
