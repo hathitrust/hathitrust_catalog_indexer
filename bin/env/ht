@@ -1,0 +1,63 @@
+#!/bin/bash
+
+export SOLR_URL="http://solr-sdr-catalog:9033/solr/catalog"
+export DEFAULT_WRITER='localhost_ht'
+
+if [ -z `type -t jruby` ]
+then
+  export JRUBY="/htsolr/catalog/bin/jruby/bin/jruby"
+  export JRUBY_BIN_DIR="/htsolr/catalog/bin/jruby/bin/"
+  export PATH=$JRUBY_BIN_DIR:$PATH
+else
+  export JRUBY=jruby
+fi
+  
+
+host=`hostname -s`
+
+if [ $host = "buzz" ]
+then
+  export TDIR="/htsolr/catalog-dev/bin/ht_traject"
+else
+  export TDIR="/htsolr/catalog/bin/ht_traject"
+fi
+
+# Wait. Are we on waffle doing testing?
+if [ $host = 'waffle' ]
+then
+	echo "Working on waffle in test mode"
+	export SKIP_PH=1
+	export TDIR="/Users/dueberb/devel/ruby/ht_traject"
+fi	
+
+
+export DDIR=/htsolr/catalog/prep
+
+
+# Find yesterday's date, allowing for different implementations of "date"
+
+export datestr=`date --date "now -1 day" "+%Y%m%d" 2>/dev/null`
+if [ -z $datestr ]
+then
+  export datestr=` date -v -1d "+%Y%m%d"`
+fi
+
+
+function find_marc_file_for_date() {
+  local datestr=$1
+  echo "${DDIR}/zephir_upd_${datestr}.json.gz"
+}
+
+function find_del_file_for_date() {
+  local datestr=$1
+  echo "${DDIR}/zephir_upd_${datestr}_delete.txt.gz"
+}
+
+
+export marcfile=`find_marc_file_for_date "$datestr"`
+export delfile=`find_del_file_for_date "$datestr"`
+
+if [ -z $READER ]
+then
+  export READER="ndj"
+fi

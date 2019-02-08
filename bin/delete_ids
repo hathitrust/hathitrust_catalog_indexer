@@ -1,0 +1,37 @@
+require 'httpclient'
+require 'zlib'
+
+filename = ARGV[0]
+
+url = ENV['SOLR_URL'] + '/update'
+
+unless url
+  raise "SOLR_URL environment variable not defined"
+end
+
+client = HTTPClient.new
+
+total = 0
+begin
+  file = File.open(filename)
+  if /\.gz\Z/.match(filename)
+    file = Zlib::GzipReader.new(file)
+  end
+
+  body = "<delete>"
+  file.each do |l|
+    body << "<id>#{l.chomp}</id>"
+    total += 1
+  end
+  body << "</delete>"
+
+  if total > 0
+    client.post(url, body, {'Content-Type' => 'text/xml'})  
+  else
+    puts "File #{filename} is empty"
+  end
+  puts "Deleted #{total} ids from #{url}\n\n"
+rescue Exception => e
+  puts "Problem deleting: #{e}"
+end
+    

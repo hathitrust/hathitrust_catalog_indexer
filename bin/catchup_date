@@ -1,0 +1,56 @@
+#!/bin/bash
+
+if [ $# -ne 2 ] 
+then
+  echo
+  echo "catchup_date: run the catchup (delete and index) for a specific date"
+  echo
+  echo "USAGE:"
+  echo "    catchup_today ht  YYYYMMDD    # for hathitrust"
+  echo "    catchup_today umich  YYYYMMDD # for UMich/Mirlyn"
+  echo
+  exit
+fi
+
+export SCRIPTDIR=`dirname $0`
+export TENV=$1 # umich or ht
+export DT=$2 # YYYYMMDD
+
+# Set up JRUBY, TDIR, DDIR
+source $SCRIPTDIR/env/$TENV 
+ 
+
+export marcfile=`find_marc_file_for_date "$DT"`
+export delfile=`find_del_file_for_date "$DT"`
+
+
+echo
+echo Working on $HOSTNAME in $TDIR -- delete from $delfile and index $marcfile
+echo
+
+
+if [ -f $delfile ] 
+then
+  echo Deleting from $delfile
+  echo Targeting $SOLR_URL
+  cd $TDIR
+  jruby -S bundle exec $JRUBY $SCRIPTDIR/delete_ids $delfile
+else
+  echo "No Deletes: Could not find file '$delfile'"
+fi
+
+if [ -f $marcfile ] 
+then
+   echo Indexing $marcfile
+   echo Targeting $SOLR_URL
+   cd $TDIR
+   $SCRIPTDIR/tindex $TENV $DEFAULT_WRITER $marcfile
+else
+  echo "No indexing: Could not find file '$marcfile'"
+fi
+
+# commit
+#
+
+# echo `curl "${SOLR_URL}/update?commit=true"`
+
