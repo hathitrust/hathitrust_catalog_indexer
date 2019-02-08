@@ -1,7 +1,0 @@
-#!/bin/bash
-
-export SCRIPTDIR=`dirname $0`
-source $SCRIPTDIR/env/ht
-
-$JRUBY $SCRIPTDIR/get_collection_map.rb
- 

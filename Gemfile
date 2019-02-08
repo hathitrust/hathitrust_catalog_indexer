@@ -20,3 +20,8 @@ gem 'marc-fastxmlwriter'
 gem 'jdbc-mysql'
 gem 'traject-solrj_writer'
 gem 'high_level_browse'
+
+# gem 'simple_solr_client'
+# gem 'hanami-cli'
+
+
