@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export SOLR_URL="http://solr-sdr-catalog:9033/solr/catalog"
+export SOLR_URL="http://solr-sdr-catalog:9022/solr/catalog"
 export DEFAULT_WRITER='localhost_ht'
 
 if [ -z `type -t jruby` ]
@@ -17,7 +17,7 @@ host=`hostname -s`
 
 if [ $host = "buzz" ]
 then
-  export TDIR="/htsolr/catalog-dev/bin/ht_traject"
+  export TDIR="/htsolr/catalog-dev/bin/ht_catalog_indexer"
 else
   export TDIR="/htsolr/catalog/bin/ht_traject"
 fi

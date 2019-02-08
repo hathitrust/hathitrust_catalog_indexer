@@ -73,7 +73,7 @@ fi
    
 echo "Indexing from $filename into $WRITER ($SOLR_URL)"
 
-$JRUBY -S traject \
+$SCRIPTDIR/traject \
   -c $TDIR/readers/$READER.rb \
   -c $TDIR/writers/$WRITER.rb \
   -c $TDIR/indexers/common.rb \
