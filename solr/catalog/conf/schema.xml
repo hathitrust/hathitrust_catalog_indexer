@@ -196,15 +196,6 @@
  <copyField source="allfields" dest="allfieldsProper"/>
 
 
-
- <!-- Institutional Fields -->
- <field name="institution" type="string" indexed="true" stored="true" multiValued="true"/>
- <field name="collection"  type="string" indexed="true" stored="true" multiValued="true"/>
- <field name="building"    type="string" indexed="true" stored="true" multiValued="true"/>
- <field name="location"    type="string" indexed="true" stored="true" multiValued="true"/>
- <field name="fund"    type="exactish" indexed="true" stored="true" multiValued="true"/>
- <field name="fund_display"    type="string" indexed="false" stored="true" multiValued="true"/>
-
 <!-- Identifiers -->
 
 <field name="lccn"         type="lccn" indexed="true" stored="true"  multiValued="true"/>
@@ -215,7 +206,6 @@
 <field name="isbn"         type="isbn"         indexed="true" stored="true"  multiValued="true"/>
 <field name="issn"         type="numericID"         indexed="true" stored="true"  multiValued="true"/>
 <field name="isn_related"  type="numericID"         indexed="true" stored="true" multiValued="true"/>
-<field name="barcode"      type="exactish"   indexed="true" stored="true" multiValued="true" />
 <!-- HT Stuff -->
 
 <field name="ht_count"      type="int"    indexed="true"  stored="true"  multiValued="false"/>
@@ -272,7 +262,7 @@
  <field name="author_nodocvalues" type="string" indexed="true" stored="true" multiValued="true" docValues="false" />
  <copyField source="author" dest="author_docvalues"/>
  <copyField source="author" dest="author_nodocvalues"/>
- 
+
 
 
  <!-- Title fields -->
