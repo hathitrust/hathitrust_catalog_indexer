@@ -39,7 +39,7 @@
   <!ENTITY library_types    SYSTEM "schema/library_types.xml">
 
   <!-- ...and the dynanic fields -->
-  <!ENTITY dynamic_fields    SYSTEM "schema/dynamic_fields.xml">
+<!--  <!ENTITY dynamic_fields    SYSTEM "schema/dynamic_fields.xml">-->
 
 
   ]>
@@ -206,6 +206,7 @@
 <field name="isbn"         type="isbn"         indexed="true" stored="true"  multiValued="true"/>
 <field name="issn"         type="numericID"         indexed="true" stored="true"  multiValued="true"/>
 <field name="isn_related"  type="numericID"         indexed="true" stored="true" multiValued="true"/>
+
 <!-- HT Stuff -->
 
 <field name="ht_count"      type="int"    indexed="true"  stored="true"  multiValued="false"/>
@@ -247,8 +248,10 @@
  <!-- Author fields -->
 
  <field name="mainauthor"      type="text_nostem" indexed="true" stored="true"    multiValued="true" />
- <field name="mainauthor_role" type="string" indexed="true" stored="true"    multiValued="true" />
- <field name="author"      type="text_nostem" indexed="true" stored="true"    multiValued="true" />
+ <field name="mainauthor_just_name" type="string" indexed="false" stored="true" multiValued="true"/>
+ <field name="mainauthor_role" type="string" indexed="true" stored="true" multiValued="true"/>
+
+ <field name="author"      type="text_nostem" indexed="true" stored="true"    multiValued="true"/>
  <field name="authorStr"   type="textFacet"     indexed="true" stored="true"   multiValued="true" />
  <field name="author_top"  type="text_nostem" indexed="true" stored="true"   multiValued="true" />
  <field name="author_rest" type="text_nostem" indexed="true" stored="true"   multiValued="true" />
@@ -256,13 +259,6 @@
  <field name="authorSort" type="exactish" indexed="true" stored="false" multiValued="false"/>
 
  <copyField source="author" dest="authorStr"/>
-
-
- <field name="author_docvalues"   type="string" indexed="true" stored="true" multiValued="true" docValues="true" />
- <field name="author_nodocvalues" type="string" indexed="true" stored="true" multiValued="true" docValues="false" />
- <copyField source="author" dest="author_docvalues"/>
- <copyField source="author" dest="author_nodocvalues"/>
-
 
 
  <!-- Title fields -->
@@ -357,7 +353,7 @@
 
  <!-- Insert the dynamic fields -->
 
- &dynamic_fields;
+<!-- &dynamic_fields;-->
 
 
 

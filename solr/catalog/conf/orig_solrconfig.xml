@@ -51,6 +51,8 @@
     <lib dir="${solr.install.dir}/contrib/analysis-extras/lib" regex=".*\.jar"/>
     <lib dir="${solr.solr.home}/lib" regex=".*\.jar"/>
 
+  <lib dir="../../lib" regex=".*\.jar"/>
+
   <!-- The DirectoryFactory to use for indexes.
 
        solr.StandardDirectoryFactory is filesystem
@@ -148,7 +150,7 @@
     -->
 
   <!-- The default high-performance update handler -->
-  <updateHandler name="update" class="solr.DirectUpdateHandler2">
+  <updateHandler class="solr.DirectUpdateHandler2">
 
     <!-- Enables a transaction log, used for real-time get, durability, and
          and solr cloud replica recovery.  The log can grow as big as
@@ -504,7 +506,6 @@
   <initParams path="/update/**,/query,/select,/tvrh,/elevate,/spell">
     <lst name="defaults">
       <str name="df">text</str>
-      <str name="wt">json</str>
     </lst>
   </initParams>
 

@@ -21,7 +21,8 @@ gem 'jdbc-mysql'
 gem 'traject-solrj_writer'
 gem 'high_level_browse'
 
-# gem 'simple_solr_client'
+gem 'simple_solr_client'
+gem 'pry'
 # gem 'hanami-cli'
 
 

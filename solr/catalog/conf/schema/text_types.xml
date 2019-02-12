@@ -55,7 +55,7 @@
     <charFilter class="solr.MappingCharFilterFactory" mapping="&char_expansion_file;"/>
     <!-- Eliminate leading and trailing punctuation and add on a prefix -->
     <charFilter class="solr.PatternReplaceCharFilterFactory"
-                pattern="^\p{Punct}*(.*?)\p{Punct}*$" replacement="aaaaa$1" />  
+                pattern="^\p{Punct}*(.*?)\p{Punct}*$" replacement="aaaaa$1" />
     <tokenizer class="solr.ICUTokenizerFactory"/>
     <filter class="solr.ICUFoldingFilterFactory"/>
     <filter class="solr.CJKWidthFilterFactory"/>
