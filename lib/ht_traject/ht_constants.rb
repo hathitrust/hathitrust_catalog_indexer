@@ -1,5 +1,3 @@
-require_relative 'ht_dbh'
-require 'set'
 module HathiTrust
   module Constants
 

@@ -32,12 +32,14 @@ fi
 
 SCRIPTDIR=`dirname $0`
 
+
 TENV=$1 # umich or ht
 WRITER=$2
 
 # Set up JRUBY, TDIR, DDIR, $marcfile, $delfile, and path
 source $SCRIPTDIR/env/$TENV
 
+TDIR=$SCRIPTDIR/..
 if [ ! -f $TDIR/writers/$WRITER.rb ]
 then
   echo "Can't find writer $WRITER.rb at $TDIR/writers/$WRITER.rb"

@@ -4,8 +4,7 @@ require 'socket'
 
 
 settings do
-  #  provide "solr.url", ENV["SOLR_URL"]
-  store   "solr.url", "http://localhost:9033/catalog"
+  provide "solr.url", ENV["SOLR_URL"]
   provide "solrj_writer.parser_class_name", "XMLResponseParser"
   provide "solrj_writer.commit_on_close", "true"
   provide "solrj_writer.thread_pool", 2
