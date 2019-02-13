@@ -111,9 +111,16 @@ module HathiTrust
         @intl
       end
 
+
+      PH = if ENV['HT_TRAJECT_MOCK_PH']
+             HathiTrust::MockPrintHoldings
+           else
+             HathiTrust::PrintHoldings
+           end
+
       def fill_print_holdings!
         ids = self.ht_ids.flatten
-        @ph = HathiTrust::PrintHoldings.get_print_holdings_hash(ids)
+        @ph = PH.get_print_holdings_hash(ids)
         self.each do |item|
            item.print_holdings = @ph[item.htid]
         end
