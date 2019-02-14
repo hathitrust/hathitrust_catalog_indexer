@@ -1,7 +1,8 @@
 source 'https://rubygems.org'
 
 group :development do
- gem "bundler"
+
+ gem 'bundler', '~>2.0'
  gem 'rake'
  gem 'minitest'
 end
@@ -23,6 +24,10 @@ gem 'high_level_browse'
 
 gem 'simple_solr_client'
 gem 'pry'
+
+gem "jruby-launcher", "~>1.1"
+
+
 # gem 'hanami-cli'
 
 

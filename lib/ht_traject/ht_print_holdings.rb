@@ -1,4 +1,6 @@
 
+      require_relative 'ht_dbh'
+
 
 module HathiTrust
 
@@ -13,7 +15,6 @@ module HathiTrust
 
     def self.query
       return @query if @query
-      require_relative 'ht_dbh'
       @query = HathiTrust::DBH::DB[:holdings_htitem_htmember].select(:volume_id, :member_id)
     end
     

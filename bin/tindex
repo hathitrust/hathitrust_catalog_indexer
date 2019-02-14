@@ -7,7 +7,7 @@
 #  - (optional) the logfile
 
 # Turn off invokedynamic 
-export JRUBY_OPTS="-J-Xmx2048m -Xcompile.invokedynamic=false"
+export JRUBY_OPTS="--server -J-Xmx2048m -Xcompile.invokedynamic=true"
 #
 
 if [ $# -lt 3 -o $# -gt 4 ]
