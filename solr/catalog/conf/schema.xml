@@ -138,8 +138,12 @@
    -->
 
 
-
-  <similarity class="org.apache.lucene.search.similarities.BM25Similarity" />
+   <!-- see https://www.elastic.co/blog/practical-bm25-part-2-the-bm25-algorithm-and-its-variables -->
+   
+   <similarity class="org.apache.lucene.search.similarities.BM25Similarity">
+     <str name="b">0.1</str>  <!-- default is 0.75 -->
+     <str name="k1">1.2</str> <!-- default is 1.2 -->
+   </similarity>
 
   <!--
   <similarity class="solr.ClassicSimilarityFactory"/>

@@ -139,15 +139,15 @@ end
 # For titles, we want with and without
 
 to_field 'title',     extract_marc_filing_version('245abdefgknp', :include_original => true)
-to_field 'title_a',   extract_marc_filing_version('245a', :include_original => true)
-to_field 'title_ab',  extract_marc_filing_version('245ab', :include_original => true)
-to_field 'title_c',   extract_marc('245c')
+to_field 'title_a',   extract_marc_filing_version('245a', :include_original => true), strip, trim_punctuation
+to_field 'title_ab',  extract_marc_filing_version('245ab', :include_original => true), strip, trim_punctuation
+to_field 'title_c',   extract_marc('245c'), strip, trim_punctuation
 
 to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true, :first=>true)
 
 
 # Sortable title
-to_field "titleSort", marc_sortable_title
+to_field "titleSort", marc_sortable_title, strip, trim_punctuation
 #title_normalizer  = NacoNormalizer.new(:keep_first_comma => false)
 #to_field "titleSort", extract_marc_filing_version('245abk') do |rec, acc, context|
 #  acc.replace [acc[0]] # get only the first one

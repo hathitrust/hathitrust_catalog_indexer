@@ -9,7 +9,7 @@ end
 
 
 
-gem 'traject', '~>2.0'
+gem 'traject', '~>3.0'
 gem 'traject_umich_format'
 gem 'match_map'
 gem 'traject_alephsequential_reader'
