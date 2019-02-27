@@ -16,14 +16,8 @@ else
 fi
   
 
-host=`hostname -s`
 
-if [ $host = "buzz" ]
-then
-  export TDIR="/htsolr/catalog-dev/bin/ht_catalog_indexer"
-else
-  export TDIR="/htsolr/catalog/bin/ht_traject"
-fi
+
 
 # Wait. Are we on waffle doing testing?
 if [ $host = 'waffle' ]

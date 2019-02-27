@@ -1,5 +1,5 @@
 #!/bin/bash
-
+ 
 # Need at least three arguments:
 #  - the environment (ht or umich)
 #  - the name of the writer (ht_localhost, debug, etc.)
@@ -10,15 +10,14 @@
 export JRUBY_OPTS="--server -J-Xmx2048m -Xcompile.invokedynamic=true"
 #
 
-if [ $# -lt 3 -o $# -gt 4 ]
+if [ $# -lt 2 -o $# -gt 3 ]
 then
   echo
   echo "tindex: Use traject to index"
   echo "USAGE:"
-  echo "  tindex env writer filename [logfile]"
+  echo "  tindex writer filename [logfile]"
   echo
   echo "...where"
-  echo "  - 'env' is umich or ht"
   echo "  - 'writer' is the name of the writer config (in ht_traject/writers/, without the 'rb')"
   echo "  - 'filename' is the name of the file of MARC records"
   echo "  - 'logfile' is the name of the log file"
@@ -30,58 +29,64 @@ then
 fi
 
 
-SCRIPTDIR=`dirname $0`
+HERE=`dirname $0`
+SCRIPTDIR=`realpath $HERE`
 
+READER=ndj
 
-TENV=$1 # umich or ht
-WRITER=$2
+WRITER=$1
 
-# Set up JRUBY, TDIR, DDIR, $marcfile, $delfile, and path
-source $SCRIPTDIR/env/$TENV
+filename=$2
+filebase=`basename "$filename"`
 
-TDIR=$SCRIPTDIR/..
+logfile=$3
+
+# Pull in functions to find marc/del files
+source $SCRIPTDIR/utils.sh
+
+# Put jruby in the path
+PATH=/htsolr/catalog/bin/jruby/bin:$PATH
+
+TDIR=`realpath $SCRIPTDIR/..`
 if [ ! -f $TDIR/writers/$WRITER.rb ]
 then
-  echo "Can't find writer $WRITER.rb at $TDIR/writers/$WRITER.rb"
+  log "Can't find writer $WRITER.rb at $TDIR/writers/$WRITER.rb" $logfile
   exit 1
 fi
 
-
-filename=$3
-filebase=`basename "$filename"`
 
 if [ ! -f $filename ]
 then
-  echo "Can't find file $filename"
+  log "Can't find file $filename"  $logfile
   exit 1
 fi
 
 
-if [ ! -z $4 ]
-then
-  LOGFILE_DIRECTIVE="-s log.file=$4"
-else
-  LOGFILE_DIRECTIVE=""
-fi
+
 
 # Update the tmaps
 
-if [ ! -z "$SKIP_PH" ]
-then
-  cd $TDIR
-  jruby -S bundle exec $JRUBY  $SCRIPTDIR/get_collection_map.rb
+log "Getting collection map" $logfile
+log $SCRIPTDIR/bundle exec jruby  $SCRIPTDIR/get_collection_map.rb
+
+log "Indexing from $filename into $WRITER ($SOLR_URL)" $logfile
+
+cmd="$SCRIPTDIR/bundle exec traject 
+  -c $TDIR/readers/$READER.rb 
+  -c $TDIR/writers/$WRITER.rb 
+  -c $TDIR/indexers/common.rb 
+  -c $TDIR/indexers/common_ht.rb 
+  -c $TDIR/indexers/ht.rb 
+  -s log.file=STDOUT 
+  $filename"
+
+if [[ -z $logfile ]]; then
+    $cmd
+else
+    $cmd >> $logfile 2>&1
 fi
+  
+  
 
-   
-echo "Indexing from $filename into $WRITER ($SOLR_URL)"
-
-$SCRIPTDIR/traject \
-  -c $TDIR/readers/$READER.rb \
-  -c $TDIR/writers/$WRITER.rb \
-  -c $TDIR/indexers/common.rb \
-  -c $TDIR/indexers/common_ht.rb \
-  -c $TDIR/indexers/$TENV.rb \
-  $LOGFILE_DIRECTIVE \
-  $filename
 
 #  -s processing_thread_pool=0 \

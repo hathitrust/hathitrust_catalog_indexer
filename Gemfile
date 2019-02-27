@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 group :development do
 
  gem 'bundler', '~>2.0'
- gem 'rake'
+ gem 'rake', '~> 12.3'
  gem 'minitest'
 end
 

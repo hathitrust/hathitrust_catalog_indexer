@@ -1,48 +1,21 @@
 #!/bin/bash
 
-if [ $# -lt 1 -o $# -gt 2 ]
+
+if [ $# -gt 1 ]
 then
   echo
   echo "catchup_today: run the catchup (delete and index) for last night's files"
   echo
   echo "USAGE:"
-  echo "    catchup_today ht    <optional1_logfile>  # for hathitrust"
-  echo "    catchup_today umich <optional1_logfile>  # for UMich/Mirlyn"
+  echo "    catchup_today <optional1_logfile>  # for hathitrust"
   echo
   exit
 fi
 
-export SCRIPTDIR=`dirname $0`
-export TENV=$1 # umich or ht
-export LOGFILE=$2
+HERE=`dirname $0`
+SCRIPTDIR=`realpath $HERE`
+TODAY=$(date +"%Y%m%d")
+LOGFILE=`realpath "$SCRIPTDIR/../logs/daily_${TODAY}.txt"`
 
-# Set up JRUBY, TDIR, DDIR, $marcfile, $delfile
-source $SCRIPTDIR/env/$TENV 
-
-echo
-echo Working on $HOSTNAME in $TDIR
-echo
-
-
-if [ -f "$delfile" ] 
-then
-  echo Deleting from $delfile
-  echo Targeting $SOLR_URL
-  cd $TDIR
-  jruby -S bundle exec $JRUBY $SCRIPTDIR/delete_ids $delfile
-else
-  echo "No Deletes: Could not find delfile '$delfile'"
-fi
-
-if [ -f "$marcfile" ] 
-then
-   cd $TDIR
-   $SCRIPTDIR/tindex $TENV $DEFAULT_WRITER $marcfile $LOGFILE
-else
-  echo "No indexing: Could not find marcfile '$marcfile'"
-fi
-
-# commit
-#
-# echo `curl "${SOLR_URL}/update?commit=true"`
+$SCRIPTDIR/index_date $TODAY $LOGFILE
 
