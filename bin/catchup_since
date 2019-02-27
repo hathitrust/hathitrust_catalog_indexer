@@ -25,8 +25,7 @@ source $SCRIPTDIR/utils.sh
 log "Keep in mind that the files are dated one day back" $logfile
 
 TODAY=`date +"%Y%m%d"`
-LASTDATE=`date -d "$TODAY - 1 day" +"%Y%m%d"`
-STARTDATE=`date -d "$1 - 1 day" +"%Y%m%d"`
+STARTDATE=$1
 
 
 
@@ -35,7 +34,10 @@ log "Catching up from $STARTDATE aka $fulldate" $logfile
 
 DATESTR=$STARTDATE
 
-until [[ $DATESTR > $LASTDATE ]]; do
+until [[ $DATESTR > $TODAY ]]; do
+log " "
+log " ------- $DATESTR -----------"
+log " "
    $SCRIPTDIR/index_date $DATESTR
    DATESTR=`date -d "$DATESTR + 1 day" +"%Y%m%d"`
 
