@@ -25,7 +25,7 @@ source $SCRIPTDIR/utils.sh
 log "Keep in mind that the files are dated one day back" $logfile
 
 TODAY=`date +"%Y%m%d"`
-STARTDATE=$1
+STARTDATE=`date -d "now - 1 day" +"%Y%m%d"`
 
 
 

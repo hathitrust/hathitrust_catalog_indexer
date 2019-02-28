@@ -61,7 +61,7 @@ then
   exit 1
 fi
 
-
+export SOLR_URL=`solr_url`
 
 
 # Update the tmaps

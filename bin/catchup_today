@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 
 
 if [ $# -gt 1 ]
@@ -14,8 +14,15 @@ fi
 
 HERE=`dirname $0`
 SCRIPTDIR=`realpath $HERE`
+
+# HT's "today" file is dated yesterday
+YESTERDAY=$(date -d "now - 1 day" +"%Y%m%d")
+
+# We'll use the actual date in the logfile, though
+
 TODAY=$(date +"%Y%m%d")
+
 LOGFILE=`realpath "$SCRIPTDIR/../logs/daily_${TODAY}.txt"`
 
-$SCRIPTDIR/index_date $TODAY $LOGFILE
+$SCRIPTDIR/index_date $YESTERDAY $LOGFILE
 
