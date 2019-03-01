@@ -1,0 +1,46 @@
+#!/bin/bash
+
+if [ $# -lt 1 -o $# -gt 2 ]
+then
+    echo
+  echo "index_file: just index a single file"
+  echo
+  echo "USAGE:"
+  echo "    index_file <filename> <optional_logfile>"
+  echo
+  exit
+fi
+
+HERE=`dirname $0`
+SCRIPTDIR=`realpath $HERE`
+marcfile=`realpath $1`
+
+[[ ! -z "$2" ]] && logfile=`realpath "$2"`
+
+
+# Make sure we're using a valid java
+# and get the utility scripts
+source $SCRIPTDIR/set_java_home.sh
+source $SCRIPTDIR/utils.sh
+
+# Put jruby in the path
+PATH=/htsolr/catalog/bin/jruby/bin:$PATH
+
+
+DEFAULT_WRITER='localhost'
+HOSTNAME=`hostname -s`
+TDIR="/htsolr/catalog-dev/bin/ht_catalog_indexer"
+DDIR=/htsolr/catalog/prep
+
+export SOLR_URL=`solr_url`
+
+log "Working on $HOSTNAME in $TDIR" $logfile
+
+if [ -f "$marcfile" ] 
+then
+    cd $TDIR
+    $SCRIPTDIR/bundle exec $SCRIPTDIR/tindex $DEFAULT_WRITER $marcfile $logfile
+else
+  log  "No indexing: Could not find marcfile '$marcfile'" $logfile
+fi
+

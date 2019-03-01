@@ -1,0 +1,52 @@
+#!/bin/bash
+
+if [ $# -lt 1 -o $# -gt 2 ]
+then
+  echo
+  echo "index_date: run the catchup (delete and index) for a particular date"
+  echo
+  echo "USAGE:"
+  echo "    index_date YYYYMMDD <optional1_logfile>"
+  echo
+  exit
+fi
+
+HERE=`dirname $0`
+SCRIPTDIR=`realpath $HERE`
+DATE=$1
+[[ ! -z "$2" ]] && logfile=`realpath "$2"`
+
+source $SCRIPTDIR/set_java_home.sh
+source $SCRIPTDIR/utils.sh
+
+# Put jruby in the path
+PATH=/htsolr/catalog/bin/jruby/bin:$PATH
+
+# where do we keep the data?
+DDIR=/htsolr/catalog/prep
+
+delfile=`find_del_file_for_date $DATE $DDIR`
+marcfile=`find_marc_file_for_date $DATE $DDIR`
+
+if [ -f "$delfile" ] 
+then
+  log  "Deleting from $delfile, targeting $SOLR_URL" $logfile
+  cd $TDIR
+  delout=`$SCRIPTDIR/bundle exec jruby $SCRIPTDIR/delete_ids $delfile`
+  log "$delout" "$logfile"
+else
+  log  "No Deletes: Could not find delfile '$delfile'" $logfile
+fi
+
+log " ---- " $logfile
+
+if [ -f "$marcfile" ] 
+then
+    cd $TDIR
+    $SCRIPTDIR/bundle exec $SCRIPTDIR/index_file $marcfile $logfile
+else
+  log  "No indexing: Could not find marcfile '$marcfile'" $logfile
+fi
+
+
+commit

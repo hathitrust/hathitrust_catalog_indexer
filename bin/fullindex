@@ -1,58 +1,53 @@
 #!/bin/bash
 
-if [ $# -lt 2 ] 
+if [ $# -gt 1 ] 
 then
   echo
-  echo "fullindex: empty the catalog and index the given file"
+  echo "fullindex: empty the catalog and index the most recent monthly"
   echo
   echo "USAGE:"
-  echo "    fullindex ht filename      # for hathitrust"
-  echo "    fullindex umich filename   # for UMich/Mirlyn"
+  echo "    fullindex filename <optional logfile>"
   echo
   exit
 fi
 
-export SCRIPTDIR=`dirname $0`
-export TENV=$1 # umich or ht
-marcfile=$2
-logfile=$3
+HERE=`dirname $0`
+SCRIPTDIR=`realpath $HERE`
 
-if [ -f $marcfile ] 
+logfile=$1
+
+source $SCRIPTDIR/set_java_home.sh
+source $SCRIPTDIR/utils.sh
+
+# where do we keep the data?
+DDIR=/htsolr/catalog/prep
+
+# Full indexes are dated the last day of the month
+# Let's find it
+
+# First day of this month
+first="$(date +"%Y%m")01"
+# Last day of last month
+last_day_of_last_month=`date -d "$first - 1 day" +"%Y%m%d"`
+
+marcfile="${DDIR}/zephir_full_${last_day_of_last_month}_vufind.json.gz"
+
+echo Targeting $SOLR_URL
+read -p "Deleting everything in $SOLR_URL. Right? Right??? Y/N (N) > " GO_ON
+
+if [[ "$GO_ON" == [Yy]  ]]
 then
-  echo "Indexing $marcfile"
+    log "Empty solr"
+    empty_solr
+    log "Index $marcfile"
+    $SCRIPTDIR/bundle exec $SCRIPTDIR/index_file $marcfile $logfile
+    log "Catch up since $last_day_of_last_month"
+   $SCRIPTDIR/bundle exec $SCRIPTDIR/catchup_since $last_day_of_last_month $logfile
 else
-  echo "No indexing: Could not find file '$marcfile'"
+  echo "OK. Aborting. Will not empty or index"
   exit 1
 fi
 
+commit
 
-# Set up JRUBY, TDIR, DDIR, $marcfile
-source $SCRIPTDIR/env/$TENV 
-
-# So, $marcfile gets set in $TENV, so we need to *re* set it here.
-# Dumb, I know.
-
-marcfile=$2
-
-echo
-echo Working on $HOSTNAME in $TDIR
-echo Targeting $SOLR_URL
-echo
-
-echo Targeting $SOLR_URL
-#read -p "Deleting everying. Right? Right??? Y/N (N) > " GO_ON
-
-#if [[ "$GO_ON" == [Yy]  ]]
-#then
-  $JRUBY $SCRIPTDIR/delete_all
-#else
-#  echo "OK. Aborting. Will not index $marcfile"
-#  exit 1
-#fi
-
-$JRUBY -S bundle exec $SCRIPTDIR/tindex $TENV $DEFAULT_WRITER $marcfile $logfile
-
-# commit
-
-echo `curl "${SOLR_URL}/update?commit=true"`
 

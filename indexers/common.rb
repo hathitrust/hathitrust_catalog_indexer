@@ -6,6 +6,25 @@ require 'set'
 require 'library_stdnums'
 
 require 'traject/macros/marc21_semantics'
+
+# Need to monkey-patch extract_marc_filing_version to deal with records
+# where ind2 > str.length
+#
+# Gotta submit a PR
+
+module Traject::Macros::Marc21Semantics
+  class << self
+    alias old_filing_version filing_version
+    def filing_version(field, str, spec)
+      return str if field.kind_of? MARC::ControlField
+      ind2 = field.indicator2.to_i
+      return str if ind2 > str.length
+      old_filing_version(field, str, spec)
+    end
+  end
+end
+
+
 extend  Traject::Macros::Marc21Semantics
 
 require 'traject/macros/marc_format_classifier'
@@ -25,6 +44,8 @@ require 'marc_record_speed_monkeypatch'
 settings do
   store "log.batch_progress", 10_000
 end
+
+
 
 
 
