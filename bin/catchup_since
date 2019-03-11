@@ -1,3 +1,4 @@
+#!/bin/bash
 
 if [ $# -ne 1 ] 
 then
@@ -14,7 +15,13 @@ fi
 HERE=`dirname $0`
 SCRIPTDIR=`realpath $HERE`
 TDIR=`realpath $SCRIPTDIR/..`
-[[ ! -z $2 ]] && logfile=`realpath $2`
+
+RAWDATE=$1
+
+if [ ! -z "$2" ]
+then
+  logfile=`realpath $2`
+fi
 
 
 source $SCRIPTDIR/utils.sh
@@ -24,8 +31,9 @@ source $SCRIPTDIR/utils.sh
 
 log "Keep in mind that the files are dated one day back" $logfile
 
-TODAY=`date +"%Y%m%d"`
-STARTDATE=`date -d "now - 1 day" +"%Y%m%d"`
+TODAY=`date -d "now - 1 day" +"%Y%m%d"`
+
+STARTDATE=`date -d  "$RAWDATE - 1 day" +"%Y%m%d"`
 
 
 

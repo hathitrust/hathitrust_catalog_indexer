@@ -11,6 +11,8 @@ then
   exit
 fi
 
+DEFAULT_WRITER="localhost_legacy"
+
 HERE=`dirname $0`
 SCRIPTDIR=`realpath $HERE`
 marcfile=`realpath $1`
@@ -24,10 +26,9 @@ source $SCRIPTDIR/set_java_home.sh
 source $SCRIPTDIR/utils.sh
 
 # Put jruby in the path
-PATH=/htsolr/catalog/bin/jruby/bin:$PATH
+export PATH=/htsolr/catalog/bin/jruby/bin:$PATH
 
 
-DEFAULT_WRITER='localhost'
 HOSTNAME=`hostname -s`
 TDIR="/htsolr/catalog-dev/bin/ht_catalog_indexer"
 DDIR=/htsolr/catalog/prep
@@ -42,5 +43,9 @@ then
     $SCRIPTDIR/bundle exec $SCRIPTDIR/tindex $DEFAULT_WRITER $marcfile $logfile
 else
   log  "No indexing: Could not find marcfile '$marcfile'" $logfile
+fi
+
+if [ ! -z $logfile ]; then
+    log "$(tail -1 $logfile)"
 fi
 

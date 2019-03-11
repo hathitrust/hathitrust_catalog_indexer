@@ -14,6 +14,7 @@ fi
 
 HERE=`dirname $0`
 SCRIPTDIR=`realpath $HERE`
+LOGFILE=$1
 
 # HT's "today" file is dated yesterday
 YESTERDAY=$(date -d "now - 1 day" +"%Y%m%d")
@@ -22,7 +23,10 @@ YESTERDAY=$(date -d "now - 1 day" +"%Y%m%d")
 
 TODAY=$(date +"%Y%m%d")
 
-LOGFILE=`realpath "$SCRIPTDIR/../logs/daily_${TODAY}.txt"`
+if [ -z $LOGFILE ]; then
+  LOGFILE=`realpath "$SCRIPTDIR/../logs/daily_${TODAY}.txt"`
+fi
+  
 
 $SCRIPTDIR/index_date $YESTERDAY $LOGFILE
 

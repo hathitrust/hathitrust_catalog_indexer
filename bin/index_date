@@ -11,6 +11,11 @@ then
   exit
 fi
 
+if [ -z $SOLR_URL ]; then
+    export SOLR_URL="http://localhost:9033/catalog"
+fi
+
+
 HERE=`dirname $0`
 SCRIPTDIR=`realpath $HERE`
 DATE=$1

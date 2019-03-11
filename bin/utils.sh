@@ -1,6 +1,6 @@
 function solr_url() {
     if [[ -z $SOLR_URL ]]; then
-	SOLR_URL="http://localhost:9033/solr/catalog"
+	SOLR_URL="http://localhost:9033/catalog"
     fi
     echo $SOLR_URL
 }
@@ -21,10 +21,17 @@ function find_del_file_for_date() {
 function log() {
     local msg=$1
     local file=$2
-    if [ -z $file ]; then
+
+    if [ ! -z $file ] && [ ! -f $file ]; then
+	touch $file
+    fi
+
+    if [ -z $file ] || [ ! -z $TERM ]; then
 	echo $msg
-    else
-	[[ ! -f $file ]] && touch $file
+    fi
+
+    if [ ! -z $file ]; then
+	
 	echo $msg >> $file 2>&1
     fi
 }

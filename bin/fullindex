@@ -11,6 +11,7 @@ then
   exit
 fi
 
+
 HERE=`dirname $0`
 SCRIPTDIR=`realpath $HERE`
 
@@ -18,6 +19,10 @@ logfile=$1
 
 source $SCRIPTDIR/set_java_home.sh
 source $SCRIPTDIR/utils.sh
+
+export SOLR_URL=`solr_url`
+
+PATH=/htsolr/catalog/bin/jruby/bin:$PATH
 
 # where do we keep the data?
 DDIR=/htsolr/catalog/prep
@@ -32,21 +37,16 @@ last_day_of_last_month=`date -d "$first - 1 day" +"%Y%m%d"`
 
 marcfile="${DDIR}/zephir_full_${last_day_of_last_month}_vufind.json.gz"
 
-echo Targeting $SOLR_URL
-read -p "Deleting everything in $SOLR_URL. Right? Right??? Y/N (N) > " GO_ON
+log "Targeting $SOLR_URL" $logfile
+echo "5 second delay if you need it..."
+sleep 5
 
-if [[ "$GO_ON" == [Yy]  ]]
-then
-    log "Empty solr"
-    empty_solr
-    log "Index $marcfile"
-    $SCRIPTDIR/bundle exec $SCRIPTDIR/index_file $marcfile $logfile
-    log "Catch up since $last_day_of_last_month"
-   $SCRIPTDIR/bundle exec $SCRIPTDIR/catchup_since $last_day_of_last_month $logfile
-else
-  echo "OK. Aborting. Will not empty or index"
-  exit 1
-fi
+log "Empty solr" $logfile
+empty_solr
+log "Index $marcfile"  $logfile
+$SCRIPTDIR/bundle exec $SCRIPTDIR/index_file $marcfile $logfile
+log "Catch up since $last_day_of_last_month"  $logfile
+$SCRIPTDIR/bundle exec $SCRIPTDIR/catchup_since $last_day_of_last_month $logfile
 
 commit
 
