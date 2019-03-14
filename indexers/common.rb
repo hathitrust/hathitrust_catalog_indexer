@@ -167,6 +167,7 @@ to_field 'title_c',   extract_marc('245c'), strip, trim_punctuation
 to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true, :first=>true)
 
 
+
 # Sortable title
 to_field "titleSort", marc_sortable_title, strip, trim_punctuation
 #title_normalizer  = NacoNormalizer.new(:keep_first_comma => false)

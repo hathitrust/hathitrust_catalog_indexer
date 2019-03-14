@@ -17,7 +17,9 @@ HERE=`dirname $0`
 SCRIPTDIR=`realpath $HERE`
 marcfile=`realpath $1`
 
-[[ ! -z "$2" ]] && logfile=`realpath "$2"`
+if [[ ! -z "$2" ]]; then
+    logfile=`realpath "$2"`
+fi
 
 
 # Make sure we're using a valid java
@@ -37,10 +39,15 @@ export SOLR_URL=`solr_url`
 
 log "Working on $HOSTNAME in $TDIR" $logfile
 
+# The whole ridiculous `tee` pipeline is in service of trying to output errors to STDOUT as well as the logfile, so
+# they show up in cron jobs. This might not be the place to do it, though...
+
 if [ -f "$marcfile" ] 
 then
+    export -f log
     cd $TDIR
-    $SCRIPTDIR/bundle exec $SCRIPTDIR/tindex $DEFAULT_WRITER $marcfile $logfile
+    $SCRIPTDIR/bundle exec $SCRIPTDIR/tindex $DEFAULT_WRITER $marcfile | tee -a $logfile | grep 'ERROR\|FATAL\|Exc' | xargs -Ierr bash -c 'log "$@"' _ err
+
 else
   log  "No indexing: Could not find marcfile '$marcfile'" $logfile
 fi
