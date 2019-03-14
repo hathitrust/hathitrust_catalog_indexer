@@ -3,11 +3,16 @@ require 'zlib'
 
 filename = ARGV[0]
 
+
 url = ENV['SOLR_URL'] + '/update'
 
 unless url
   raise "SOLR_URL environment variable not defined"
 end
+
+
+
+
 
 client = HTTPClient.new
 

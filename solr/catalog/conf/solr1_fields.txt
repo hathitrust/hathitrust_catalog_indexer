@@ -1,0 +1,95 @@
+   <field name="allfieldsProper" type="textProper" indexed="true" stored="false"/>
+   <field name="allfields"       type="text"       indexed="true" stored="false"/>
+   <field name="author2"     type="textProper" indexed="true" stored="true"   multiValued="true" />
+   <field name="author_rest" type="textProper" indexed="true" stored="true"   multiValued="true" />
+   <field name="authorSort" type="alphaOnlySort" indexed="true" stored="false" multiValued="false"/>
+   <field name="authorStr"   type="saneString"     indexed="true" stored="false"   multiValued="true" />
+   <field name="author_top"  type="textProper" indexed="true" stored="true"   multiValued="true" />
+   <field name="author"      type="textProper" indexed="true" stored="true"    multiValued="true" />
+   <field name="availability" type="string"     indexed="true" stored="true"  multiValued="true"/>
+   <field name="building"    type="string" index="true" stored="true" multiValued="true"/>
+  <field name="callnoletters" type="leadingLetters"     indexed="true" stored="false" multiValued="false"/>
+  <field name="callnosort"    type="lccallnonormalizer" indexed="true" stored="true" multiValued="true"/>
+  <field name="callnumber"    type="exactmatcher"       indexed="true" stored="true" multiValued="true"/>
+   <field name="cat_date"     type="tint"       indexed="true" stored="true" multiValued="false"/>
+   <field name="collection"  type="string" index="true" stored="true" multiValued="true"/>
+   <field name="countryOfPubStr"  type="saneString" indexed="true" stored="true" multiValued="true"/>
+   <field name="country_of_pub"   type="text"   indexed="true" stored="false" multiValued="true"  omitNorms="true"/>
+  <field name="ctrlnum"      type="exactmatcher"   indexed="true" stored="true"  multiValued="true"/>
+   <field name="display_date"     type="string" indexed="false" stored="true" multiValued="false"/>
+   <field name="edition"      type="string"     indexed="true" stored="true" multiValued="true"/>
+   <field name="enum_publishDateRange" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="enum_publishDateTrie"  type="tint"   indexed="true" stored="false" multiValued="true"/>
+   <field name="enum_publishDate"      type="string" indexed="true" stored="true"  multiValued="true"/>
+   <field name="era"              type="string" indexed="true" stored="true"  multiValued="true"/>
+   <field name="format"       type="string"     indexed="true" stored="true"  multiValued="true"/>
+   <field name="fullgenre"   type="text"       indexed="true" stored="true"  multiValued="true"  omitNorms="true"/>
+   <field name="fullgeographic"   type="text"   indexed="true" stored="true" multiValued="true"  omitNorms="true"/>
+   <field name="fullrecord"      type="string"     indexed="false" stored="true" compressed="true"/>
+   <field name="genreStr"    type="string"     indexed="true" stored="false" multiValued="true"                   />
+   <field name="genre"       type="text"       indexed="true" stored="true"  multiValued="true"  omitNorms="true"/>
+   <field name="geographicStr"    type="saneString" indexed="true" stored="true" multiValued="true"/>
+   <field name="geographic"       type="text"   indexed="true" stored="true" multiValued="true"  omitNorms="true"/>
+   <field name="hlb3Delimited" type="string" indexed="false" stored="true" multiValued="true" termVectors="false"/>
+   <field name="hlb3Str" type="string"     indexed="true" stored="true" multiValued="true"                   /> 
+   <field name="hlb3"    type="text"       indexed="true" stored="false" multiValued="true"  omitNorms="true" /> 
+  <field name="ht_availability_intl" type="string"  indexed="true" stored="true" multiValued="true"/>
+  <field name="ht_availability"      type="string"  indexed="true" stored="true" multiValued="true"/>
+  <field name="ht_count"      type="tint"    indexed="true"  stored="true"  multiValued="false"/>
+  <field name="ht_heldby"     type="string"  indexed="true"  stored="true"  multiValued="true"/>
+  <field name="ht_id_display" type="string"  indexed="false" stored="true"  multiValued="true"/>
+  <field name="ht_id"         type="string"  indexed="true"  stored="true"  multiValued="true"/>
+  <field name="ht_id_update"  type="tint"    indexed="true"  stored="true"  multiValued="true"/>
+  <field name="ht_json"       type="string"  indexed="false" stored="true"  multiValued="false"/>
+  <field name="ht_rightscode" type="string"  indexed="true"  stored="true"  multiValued="true"/>
+  <field name="ht_searchonly_intl"   type="boolean" indexed="true" stored="true" multiValued="false"/>
+  <field name="ht_searchonly" type="boolean" indexed="true"  stored="true"  multiValued="false"/>
+  <field name="htsource"      type="string"  indexed="true"  stored="true"  multiValued="true"/>
+   <field name="id_int"          type="tlong"      indexed="true" stored="true"/>
+   <field name="id"              type="string"     indexed="true" stored="true"/>   
+   <field name="institution" type="string" index="true" stored="true" multiValued="true"/>
+  <field name="isbn"         type="stdnum"         indexed="true" stored="true"  multiValued="true"/>
+  <field name="isn_related"  type="stdnum"         indexed="true" stored="true" multiValued="true"/>
+  <field name="issn"         type="stdnum"         indexed="true" stored="true"  multiValued="true"/>
+   <field name="language008_full" type="string" indexed="true" stored="true"  multiValued="false"/>
+   <field name="language008"  type="string"     indexed="true" stored="true"  multiValued="false"/>
+   <field name="language"     type="string"     indexed="true" stored="true"  multiValued="true"/>
+  <field name="lccn"         type="lccnnormalizer" indexed="true" stored="true"  multiValued="true"/> 
+   <field name="lcshID"      type="string"     indexed="true" stroed="true"  multiValued="true"/>
+   <field name="location"    type="string" index="true" stored="true" multiValued="true"/>
+   <field name="mainauthor_just_name" type="string" indexed="false" stored="true" multiValued="true"/>
+   <field name="mainauthor_role" type="string" indexed="true" stored="true"    multiValued="true" />
+   <field name="mainauthor"      type="textProper" indexed="true" stored="true"    multiValued="true" />
+  <field name="oclc"         type="numeric"        indexed="true" stored="true"  multiValued="true"/>
+   <field name="place_of_publication" type="saneString" indexed="true" stored="true" multiValued="true"/>
+   <field name="publishDateRange" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="publishDateTrie"  type="tint"   indexed="true" stored="false" multiValued="true"/>
+   <field name="publishDate"      type="string" indexed="true" stored="true"  multiValued="true"/>
+   <field name="publisher"    type="textProper" indexed="true" stored="true" multiValued="true"/>
+  <field name="rptnum"       type="exactmatcher"   indexed="true" stored="true"  multiValued="true"/>
+  <field name="sdrnum"       type="exactmatcher"   indexed="true" stored="true"  multiValued="true"/>
+   <field name="serialTitle_ab"    type="exactmatcher" indexed="true" stored="true" multiValued="true"/>
+   <field name="serialTitle_a"     type="exactmatcher" indexed="true" stored="true" multiValued="true"/>
+   <field name="serialTitleProper" type="textProper"   indexed="true" stored="false" multiValued="true" />
+   <field name="serialTitle_restProper" type="textProper"   indexed="true" stored="false" multiValued="true" />
+   <field name="serialTitle_rest"       type="text"         indexed="true" stored="true" multiValued="true" />
+   <field name="serialTitle"       type="text"         indexed="true" stored="true"  multiValued="true" />
+   <field name="series2"         type="text"          indexed="true" stored="true" multiValued="true"/>
+   <field name="series"          type="text"          indexed="true" stored="true" multiValued="true"/>
+   <field name="spelling" type="textSpell" indexed="true" stored="true"/>
+  <field name="sudoc"         type="exactmatcher"       indexed="true" stored="true" multiValued="true"/>
+   <field name="title_ab_exact"    type="fullAnchored"  indexed="true"  stored="false" multiValued="true"/>
+   <field name="title_ab"         type="exactmatcher"  indexed="true"  stored="true" multiValued="true"/>
+   <field name="title_a"          type="exactmatcher"  indexed="true"  stored="true" multiValued="true"/>
+   <field name="title_c"          type="string"        indexed="false" stored="true" multiValued="true"/>
+   <field name="titleProper"      type="textProper"    indexed="true"  stored="false" multiValued="true" />
+   <field name="title_restProper" type="textProper"    indexed="true"  stored="false" multiValued="true" />
+   <field name="title_rest"       type="text"          indexed="true"  stored="true" multiValued="true" />
+   <field name="titleSort"        type="alphaOnlySort" indexed="true"  stored="true" multiValued="false"/>
+   <field name="title_topProper"  type="textProper"    indexed="true"  stored="false" multiValued="true" />
+   <field name="title_top"        type="text"          indexed="true"  stored="true" multiValued="true" />
+   <field name="title"            type="text"          indexed="true"  stored="true"  multiValued="true" />
+   <field name="topicProper" type="textProper" indexed="true" stored="false" multiValued="true"  omitNorms="true"  />
+   <field name="topicStr"    type="saneString" indexed="true" stored="true"  multiValued="true"/>
+   <field name="topic"       type="text"       indexed="true" stored="false" multiValued="true"  omitNorms="true"/>
+   <field name="vtitle"           type="string"        indexed="false" stored="true" multiValued="false" />

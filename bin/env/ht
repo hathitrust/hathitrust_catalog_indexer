@@ -1,7 +1,10 @@
 #!/bin/bash
 
-export SOLR_URL="http://solr-sdr-catalog:9033/catalog"
-export DEFAULT_WRITER='localhost_ht'
+if [ -z $SOLR_URL ]; then
+  export SOLR_URL="http://solr-sdr-catalog:9033/solr/catalog"
+fi
+
+export DEFAULT_WRITER='localhost'
 
 if [ -z `type -t jruby` ]
 then
@@ -13,14 +16,8 @@ else
 fi
   
 
-host=`hostname -s`
 
-if [ $host = "alamo" ]
-then
-  export TDIR="/htsolr/catalog-dev/bin/ht_traject"
-else
-  export TDIR="/htsolr/catalog/bin/ht_traject"
-fi
+
 
 # Wait. Are we on waffle doing testing?
 if [ $host = 'waffle' ]

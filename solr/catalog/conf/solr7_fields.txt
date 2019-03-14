@@ -1,0 +1,103 @@
+ <field name="allfieldsProper" type="text_nostem" indexed="true" stored="false"/>
+ <field name="allfields"       type="text"       indexed="true" stored="false"/>
+ <field name="author2"     type="text_nostem" indexed="true" stored="true"   multiValued="true" />
+ <field name="author_docvalues"   type="string" indexed="true" stored="true" multiValued="true" docValues="true" />
+ <field name="author_nodocvalues" type="string" indexed="true" stored="true" multiValued="true" docValues="false" />
+ <field name="author_rest" type="text_nostem" indexed="true" stored="true"   multiValued="true" />
+ <field name="authorSort" type="exactish" indexed="true" stored="false" multiValued="false"/>
+ <field name="authorStr"   type="textFacet"     indexed="true" stored="true"   multiValued="true" />
+ <field name="author_top"  type="text_nostem" indexed="true" stored="true"   multiValued="true" />
+ <field name="author"      type="text_nostem" indexed="true" stored="true"    multiValued="true" />
+ <field name="availability" type="string"     indexed="true" stored="true"  multiValued="true"/>
+<field name="barcode"      type="exactish"   indexed="true" stored="true" multiValued="true" />
+ <field name="building"    type="string" indexed="true" stored="true" multiValued="true"/>
+<field name="callnoletters" type="exactish"       indexed="true" stored="false" multiValued="false"/>
+<field name="callnosearch"    type="squashed_prefix"  indexed="true" stored="true"  multiValued="true"/>
+<field name="callnosort"    type="lc_callnumber_sortable"  indexed="true" stored="true"  multiValued="true"/>
+<field name="callnumber"    type="exactish"       indexed="true" stored="true"  multiValued="true"/>
+ <field name="cat_date"     type="int"       indexed="true" stored="true" multiValued="false"/>
+ <field name="collection"  type="string" indexed="true" stored="true" multiValued="true"/>
+ <field name="countryOfPubStr"  type="exactish" indexed="true" stored="true" multiValued="true"/>
+ <field name="country_of_pub"   type="text"   indexed="true" stored="false" multiValued="true"  omitNorms="true"/>
+<field name="ctrlnum"      type="exactish"   indexed="true" stored="true"  multiValued="true"/>
+ <field name="display_date"     type="string" indexed="false" stored="true" multiValued="false"/>
+ <field name="edition"      type="string"     indexed="true" stored="true" multiValued="true"/>
+ <field name="enum_publishDateRange" type="string" indexed="true" stored="true" multiValued="true"/>
+ <field name="enum_publishDateTrie"  type="int"   indexed="true" stored="false" multiValued="true"/>
+ <field name="enum_publishDate"      type="string" indexed="true" stored="true"  multiValued="true"/>
+ <field name="era"              type="string" indexed="true" stored="true"  multiValued="true"/>
+ <field name="format"       type="string"     indexed="true" stored="true"  multiValued="true"/>
+ <field name="fullgenre"   type="text"       indexed="true" stored="true"  multiValued="true"  omitNorms="true"/>
+ <field name="fullgeographic"   type="text"   indexed="true" stored="true" multiValued="true"  omitNorms="true"/>
+ <field name="fullrecord"      type="string"     indexed="false" stored="true" docValues="false"/>
+ <field name="fund_display"    type="string" indexed="false" stored="true" multiValued="true"/>
+ <field name="fund"    type="exactish" indexed="true" stored="true" multiValued="true"/>
+ <field name="genreStr"    type="string"     indexed="true" stored="false" multiValued="true"                   />
+ <field name="genre"       type="text"       indexed="true" stored="true"  multiValued="true"  omitNorms="true"/>
+ <field name="geographicStr"    type="string" indexed="true" stored="true" multiValued="true"/>
+ <field name="geographic"       type="text"   indexed="true" stored="true" multiValued="true"  omitNorms="true"/>
+ <field name="hlb3Delimited" type="string" indexed="false" stored="true" multiValued="true" termVectors="false"/>
+ <field name="hlb3Str" type="string"     indexed="true" stored="true" multiValued="true"                   />
+ <field name="hlb3"    type="text"       indexed="true" stored="false" multiValued="true"  omitNorms="true" />
+<field name="ht_availability_intl" type="string"  indexed="true" stored="true" multiValued="true"/>
+<field name="ht_availability"      type="string"  indexed="true" stored="true" multiValued="true"/>
+<field name="ht_count"      type="int"    indexed="true"  stored="true"  multiValued="false"/>
+<field name="ht_heldby"     type="string"  indexed="true"  stored="true"  multiValued="true"/>
+<field name="ht_id_display" type="string"  indexed="false" stored="true"  multiValued="true"/>
+<field name="ht_id"         type="string"  indexed="true"  stored="true"  multiValued="true"/>
+<field name="ht_id_update"  type="int"    indexed="true"  stored="true"  multiValued="true"/>
+<field name="ht_json"       type="string"  indexed="false" stored="true"  multiValued="false" docValues="false"/>
+<field name="ht_rightscode" type="string"  indexed="true"  stored="true"  multiValued="true"/>
+<field name="ht_searchonly_intl"   type="boolean" indexed="true" stored="true" multiValued="false"/>
+<field name="ht_searchonly" type="boolean" indexed="true"  stored="true"  multiValued="false"/>
+<field name="htsource"      type="string"  indexed="true"  stored="true"  multiValued="true"/>
+ <field name="id_int"          type="long"      indexed="true" stored="true"/>
+   <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+ <field name="institution" type="string" indexed="true" stored="true" multiValued="true"/>
+<field name="isbn"         type="isbn"         indexed="true" stored="true"  multiValued="true"/>
+<field name="isn_related"  type="numericID"         indexed="true" stored="true" multiValued="true"/>
+<field name="issn"         type="numericID"         indexed="true" stored="true"  multiValued="true"/>
+ <field name="language008_full" type="string" indexed="true" stored="true"  multiValued="false"/>
+ <field name="language008"  type="string"     indexed="true" stored="true"  multiValued="false"/>
+ <field name="language"     type="string"     indexed="true" stored="true"  multiValued="true"/>
+<field name="lccn"         type="lccn" indexed="true" stored="true"  multiValued="true"/>
+ <field name="lcshID"      type="string"     indexed="true" stored="true"  multiValued="true"/>
+ <field name="location"    type="string" indexed="true" stored="true" multiValued="true"/>
+ <field name="mainauthor_role" type="string" indexed="true" stored="true"    multiValued="true" />
+ <field name="mainauthor"      type="text_nostem" indexed="true" stored="true"    multiValued="true" />
+<field name="oclc"         type="numericID_trim_leading_zeros"        indexed="true" stored="true"  multiValued="true"/>
+ <field name="place_of_publication" type="string" indexed="true" stored="true" multiValued="true"/>
+ <field name="publishDateRange" type="string" indexed="true" stored="true" multiValued="true"/>
+ <field name="publishDateTrie"  type="int"   indexed="true" stored="false" multiValued="false" docValues="false" sortMissingLast="true"/>/>
+ <field name="publishDate"      type="string" indexed="true" stored="true"  multiValued="true"/>
+ <field name="publisher"    type="text_nostem" indexed="true" stored="true" multiValued="true"/>
+   <field name="_root_" type="string" indexed="true" stored="false" docValues="false" />
+<field name="rptnum"       type="exactish"   indexed="true" stored="true"  multiValued="true"/>
+<field name="sdrnum"       type="exactish"   indexed="true" stored="true"  multiValued="true"/>
+ <field name="serialTitle_ab"    type="exactish" indexed="true" stored="true" multiValued="true"/>
+ <field name="serialTitle_a"     type="exactish" indexed="true" stored="true" multiValued="true"/>
+ <field name="serialTitleProper" type="text_nostem"   indexed="true" stored="false" multiValued="true" />
+ <field name="serialTitle_restProper" type="text_nostem"   indexed="true" stored="false" multiValued="true" />
+ <field name="serialTitle_rest"       type="text"         indexed="true" stored="true" multiValued="true" />
+ <field name="serialTitle"       type="text"         indexed="true" stored="true"  multiValued="true" />
+ <field name="series2"         type="text"          indexed="true" stored="true" multiValued="true"/>
+ <field name="series"          type="text"          indexed="true" stored="true" multiValued="true"/>
+<field name="sudoc"         type="exactish"       indexed="true" stored="true"  multiValued="true"/>
+ <field name="title_ab_exact"    type="exactish"  indexed="true"  stored="false" multiValued="true"/>
+ <field name="title_ab"         type="exactish"  indexed="true"  stored="true" multiValued="true"/>
+ <field name="title_a"          type="exactish"  indexed="true"  stored="true" multiValued="true"/>
+ <field name="title_c"          type="string"        indexed="false" stored="true" multiValued="true"/>
+ <field name="title_l"          type="text_leftjustified" indexed="true" stored="false" multiValued="true" />
+ <field name="titleProper"      type="text_nostem"    indexed="true"  stored="false" multiValued="true" />
+ <field name="title_restProper" type="text_nostem"    indexed="true"  stored="false" multiValued="true" />
+ <field name="title_rest"       type="text"          indexed="true"  stored="true" multiValued="true" />
+ <field name="titleSort"        type="exactish" indexed="true"  stored="true" multiValued="false"/>
+ <field name="title_top_l"      type="text_leftjustified" indexed="true" stored="false" multiValued="true" />
+ <field name="title_topProper"  type="text_nostem"    indexed="true"  stored="false" multiValued="true" />
+ <field name="title_top"        type="text"          indexed="true"  stored="true" multiValued="true" />
+ <field name="title"            type="text"          indexed="true"  stored="true"  multiValued="true" />
+ <field name="topicProper" type="text_nostem" indexed="true" stored="false" multiValued="true"  omitNorms="true"  />
+ <field name="topicStr"    type="string" indexed="true" stored="true"  multiValued="true"/>
+ <field name="topic"       type="text"       indexed="true" stored="false" multiValued="true"  omitNorms="true"/>
+   <field name="_version_" type="long" indexed="true" stored="false" multiValued="false" />
+ <field name="vtitle"           type="string"        indexed="false" stored="true" multiValued="false" />

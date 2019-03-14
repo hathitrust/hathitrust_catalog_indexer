@@ -1,3 +1,4 @@
 ht_secure_data.rb
 logs
-
+solr/catalog/data
+zephir**.json.gz

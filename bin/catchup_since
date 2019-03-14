@@ -1,65 +1,55 @@
-if [ $# -ne 2 ] 
+#!/bin/bash
+
+if [ $# -ne 1 ] 
 then
   echo
   echo "catchup_since: run all deletes/includes in order since the given date"
   echo
   echo "USAGE:"
-  echo "    catchup_since ht    YYYYMMDD     # for hathitrust"
-  echo "    catchup_since umich YYYYMMDD     # for UMich/Mirlyn"
+  echo "    catchup_since  YYYYMMDD  <optional logfile> "
   echo
   exit
 fi
 
 
-export SCRIPTDIR=`dirname $0`
-export TENV=$1 # umich or ht
-DATESTR=$2
+HERE=`dirname $0`
+SCRIPTDIR=`realpath $HERE`
+TDIR=`realpath $SCRIPTDIR/..`
+
+RAWDATE=$1
+
+if [ ! -z "$2" ]
+then
+  logfile=`realpath $2`
+fi
+
+
+source $SCRIPTDIR/utils.sh
+
 
 # Hathitrust uses yesterday's date as the last day
-LASTDATE=`date --date "now - 1 day" +%Y%m%d`
 
-# UMich uses the current date
-if [ "$TENV" == "umich" ]; then
-  LASTDATE=`date --date "now" +%Y%m%d`
-  fi
+log "Keep in mind that the files are dated one day back" $logfile
 
-# Set up JRUBY, TDIR, DDIR, $marcfile, $delfile
-source $SCRIPTDIR/env/$TENV 
+TODAY=`date -d "now - 1 day" +"%Y%m%d"`
+
+STARTDATE=`date -d  "$RAWDATE - 1 day" +"%Y%m%d"`
 
 
-echo
-echo Working on $HOSTNAME in $TDIR
-echo
 
-# is the date given valid? 'Cause `seq` is dumb about dates
-function valid_date() {
- date -d "$1" > /dev/null 2>&1
-}
+fulldate=`date -d $STARTDATE`
+log "Catching up from $STARTDATE aka $fulldate" $logfile
 
-for i in $(seq -f '%.0f' $DATESTR $LASTDATE ); do
+DATESTR=$STARTDATE
 
-  if !(valid_date "$i"); then
-    continue;
-  fi
-  
-  delfile=`find_del_file_for_date $i`
-  if [ -f $delfile ] 
-  then
-    echo Deleting from $delfile
-    echo Targeting $SOLR_URL
-    cd $TDIR
-    jruby -S bundle exec $JRUBY $SCRIPTDIR/delete_ids $delfile
-  else
-    echo "No Deletes: Could not find file '$delfile'"
-  fi
+until [[ $DATESTR > $TODAY ]]; do
+log " "
+log " ------- $DATESTR -----------"
+log " "
+   $SCRIPTDIR/index_date $DATESTR
+   DATESTR=`date -d "$DATESTR + 1 day" +"%Y%m%d"`
 
-  marcfile=`find_marc_file_for_date $i`
-  if [ -f $marcfile ] 
-  then
-   cd $TDIR
-   $SCRIPTDIR/tindex $TENV $DEFAULT_WRITER $marcfile
-  else
-    echo "No indexing: Could not find file '$marcfile'"
-  fi
 done
+
+commit
 

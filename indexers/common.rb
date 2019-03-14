@@ -6,6 +6,25 @@ require 'set'
 require 'library_stdnums'
 
 require 'traject/macros/marc21_semantics'
+
+# Need to monkey-patch extract_marc_filing_version to deal with records
+# where ind2 > str.length
+#
+# Gotta submit a PR
+
+module Traject::Macros::Marc21Semantics
+  class << self
+    alias old_filing_version filing_version
+    def filing_version(field, str, spec)
+      return str if field.kind_of? MARC::ControlField
+      ind2 = field.indicator2.to_i
+      return str if ind2 > str.length
+      old_filing_version(field, str, spec)
+    end
+  end
+end
+
+
 extend  Traject::Macros::Marc21Semantics
 
 require 'traject/macros/marc_format_classifier'
@@ -25,6 +44,8 @@ require 'marc_record_speed_monkeypatch'
 settings do
   store "log.batch_progress", 10_000
 end
+
+
 
 
 
@@ -139,15 +160,16 @@ end
 # For titles, we want with and without
 
 to_field 'title',     extract_marc_filing_version('245abdefgknp', :include_original => true)
-to_field 'title_a',   extract_marc_filing_version('245a', :include_original => true)
-to_field 'title_ab',  extract_marc_filing_version('245ab', :include_original => true)
-to_field 'title_c',   extract_marc('245c')
+to_field 'title_a',   extract_marc_filing_version('245a', :include_original => true), strip, trim_punctuation
+to_field 'title_ab',  extract_marc_filing_version('245ab', :include_original => true), strip, trim_punctuation
+to_field 'title_c',   extract_marc('245c'), strip, trim_punctuation
 
 to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true, :first=>true)
 
 
+
 # Sortable title
-to_field "titleSort", marc_sortable_title
+to_field "titleSort", marc_sortable_title, strip, trim_punctuation
 #title_normalizer  = NacoNormalizer.new(:keep_first_comma => false)
 #to_field "titleSort", extract_marc_filing_version('245abk') do |rec, acc, context|
 #  acc.replace [acc[0]] # get only the first one

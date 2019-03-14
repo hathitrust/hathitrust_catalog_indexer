@@ -1,7 +1,15 @@
 #!/bin/bash
 
-export SCRIPTDIR=`dirname $0`
-source $SCRIPTDIR/env/ht
+HERE=`dirname $0`
+SCRIPTDIR=`realpath $HERE`
 
-$JRUBY $SCRIPTDIR/get_collection_map.rb
+# Make sure we're using a valid java
+# and get the utility scripts
+source $SCRIPTDIR/set_java_home.sh
+source $SCRIPTDIR/utils.sh
+
+# Put jruby in the path
+PATH=/htsolr/catalog/bin/jruby/bin:$PATH
+
+$SCRIPTDIR/bundle exec jruby $SCRIPTDIR/get_collection_map.rb
  
