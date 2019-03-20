@@ -1,5 +1,4 @@
-
-      require_relative 'ht_dbh'
+require_relative 'ht_dbh'
 
 
 module HathiTrust
@@ -22,9 +21,14 @@ module HathiTrust
     def self.get_print_holdings_hash(htids)
       htids = Array(htids)
       htid_map = Hash.new {|h,k| h[k] = []}
-      self.query.where(:volume_id=>htids).each do |r|
-        htid_map[r[:volume_id]] << r[:member_id]
+
+      # Need to do this in blocks because I'm getting failures (timeouts) from mysql
+      htids.each_slice(20) do |ids|
+        self.query.where(:volume_id=>ids).each do |r|
+          htid_map[r[:volume_id]] << r[:member_id]
+        end
       end
+      
       
       htid_map
     end

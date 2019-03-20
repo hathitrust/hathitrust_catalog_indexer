@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $# -ne 1 ] 
+if [ $# -ne 1 ]  && [ $# -ne 2 ]
 then
   echo
   echo "catchup_since: run all deletes/includes in order since the given date"
@@ -43,12 +43,11 @@ log "Catching up from $STARTDATE aka $fulldate" $logfile
 DATESTR=$STARTDATE
 
 until [[ $DATESTR > $TODAY ]]; do
-log " "
-log " ------- $DATESTR -----------"
-log " "
-   $SCRIPTDIR/index_date $DATESTR
-   DATESTR=`date -d "$DATESTR + 1 day" +"%Y%m%d"`
-
+  log " "
+  log " ------- $DATESTR -----------"
+  log " "
+  $SCRIPTDIR/index_date $DATESTR $logfile
+  DATESTR=`date -d "$DATESTR + 1 day" +"%Y%m%d"`
 done
 
 commit
