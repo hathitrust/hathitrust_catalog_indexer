@@ -34,7 +34,6 @@ DDIR=/htsolr/catalog/prep
 first="$(date +"%Y%m")01"
 # Last day of last month
 last_day_of_last_month=`date -d "$first - 1 day" +"%Y%m%d"`
-
 marcfile="${DDIR}/zephir_full_${last_day_of_last_month}_vufind.json.gz"
 
 log "Targeting $SOLR_URL" $logfile
@@ -45,6 +44,8 @@ log "Empty solr" $logfile
 empty_solr
 log "Index $marcfile"  $logfile
 $SCRIPTDIR/bundle exec $SCRIPTDIR/index_file $marcfile $logfile
+
+
 log "Catch up since $last_day_of_last_month"  $logfile
 $SCRIPTDIR/bundle exec $SCRIPTDIR/catchup_since $last_day_of_last_month $logfile
 
