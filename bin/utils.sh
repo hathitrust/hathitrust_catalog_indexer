@@ -1,6 +1,6 @@
 function solr_url() {
     if [[ -z $SOLR_URL ]]; then
-	SOLR_URL="http://localhost:9033/catalog"
+	SOLR_URL="http://localhost:9033/solr/catalog"
     fi
     echo $SOLR_URL
 }
