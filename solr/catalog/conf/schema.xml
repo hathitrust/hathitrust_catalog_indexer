@@ -20,8 +20,8 @@
   <!ENTITY tpig "1000">
 
   <!-- Min/Max length of a numericIDID field -->
-  <!ENTITY min_numid_length "8">
-  <!ENTITY min_numid_length_minus_two "6"> <!-- can't compute in XML; change it when you change min_num_length -->
+  <!ENTITY min_numid_length "5">
+  <!ENTITY min_numid_length_minus_two "3"> <!-- can't compute in XML; change it when you change min_num_length -->
   <!ENTITY max_numid_length "14">
 
 
