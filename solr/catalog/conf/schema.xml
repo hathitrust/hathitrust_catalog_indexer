@@ -139,7 +139,7 @@
 
 
    <!-- see https://www.elastic.co/blog/practical-bm25-part-2-the-bm25-algorithm-and-its-variables -->
-   
+
    <similarity class="org.apache.lucene.search.similarities.BM25Similarity">
      <str name="b">0.1</str>  <!-- default is 0.75 -->
      <str name="k1">1.2</str> <!-- default is 1.2 -->
@@ -341,6 +341,9 @@
  <field name="geographicStr"    type="string" indexed="true" stored="true" multiValued="true"/>
  <field name="country_of_pub"   type="text"   indexed="true" stored="false" multiValued="true"  omitNorms="true"/>
  <field name="countryOfPubStr"  type="exactish" indexed="true" stored="true" multiValued="true"/>
+ <field name="country_of_pub_facet" type="string" indexe="true" stored="false" multiValued="true"/>
+
+ <copyField source="country_of_pub" dest="country_of_pub_facet"/>
 
  <field name="place_of_publication" type="string" indexed="true" stored="true" multiValued="true"/>
  <copyField source="country_of_pub" dest="countryOfPubStr"/>
