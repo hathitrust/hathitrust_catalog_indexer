@@ -341,7 +341,7 @@
  <field name="geographicStr"    type="string" indexed="true" stored="true" multiValued="true"/>
  <field name="country_of_pub"   type="text"   indexed="true" stored="false" multiValued="true"  omitNorms="true"/>
  <field name="countryOfPubStr"  type="exactish" indexed="true" stored="true" multiValued="true"/>
- <field name="country_of_pub_facet" type="string" indexe="true" stored="false" multiValued="true"/>
+ <field name="country_of_pub_facet" type="string" indexed="true" stored="false" multiValued="true"/>
 
  <copyField source="country_of_pub" dest="country_of_pub_facet"/>
 
