@@ -38,10 +38,10 @@ function log() {
 
 function commit() {
     log "Commiting"
-    curl --silent -H "Content-Type: application/xml" -X POST -d'<commit/>' "$SOLR_URL/update?wt=json"
+    curl  -H "Content-Type: application/json" -X POST -d'{"commit": {}}' "$SOLR_URL/update?wt=json"
 }
 
 function empty_solr() {
-    log "Emptying"
-    curl --silent -H "Content-Type: application/xml" -X POST -d"<delete><query>*:*</query></delete>" "$SOLR_URL/update?wt=json"
+    log "Emptying $SOLR_URL"
+    curl  -H "Content-Type: application/json" -X POST -d'{"delete": {"query": "*:*"}}' "$SOLR_URL/update"
 }

@@ -6,7 +6,7 @@ then
   echo "fullindex: empty the catalog and index the most recent monthly"
   echo
   echo "USAGE:"
-  echo "    fullindex filename <optional logfile>"
+  echo "    fullindex <optional logfile>"
   echo
   exit
 fi
