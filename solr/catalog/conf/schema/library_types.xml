@@ -3,7 +3,9 @@
 
 
 <fieldType name="isbn" class="solr.TextField">
-    <analyzer>
+  <analyzer>
+    <charFilter class="solr.PatternReplaceCharFilterFactory"
+		             pattern="\^" replacement=" "/>    
         <tokenizer class="solr.PatternTokenizerFactory" pattern="[;,]\s*" />
         <filter class="edu.umich.lib.solr_filters.ISBNNormalizerFilterFactory"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
@@ -13,7 +15,9 @@
 
 
 <fieldType name="lccn" class="solr.TextField">
-     <analyzer>
+  <analyzer>
+    <charFilter class="solr.PatternReplaceCharFilterFactory"
+		             pattern="\^" replacement=" "/>
          <tokenizer class="solr.KeywordTokenizerFactory"/>
          <filter class="edu.umich.lib.solr_filters.LCCNNormalizerFilterFactory"/>
      </analyzer>
