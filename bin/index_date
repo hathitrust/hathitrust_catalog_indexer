@@ -11,10 +11,6 @@ then
   exit
 fi
 
-if [ -z $SOLR_URL ]; then
-    export SOLR_URL="http://localhost:9033/catalog"
-fi
-
 
 HERE=`dirname $0`
 SCRIPTDIR=`realpath $HERE`
@@ -23,6 +19,8 @@ DATE=$1
 
 source $SCRIPTDIR/set_java_home.sh
 source $SCRIPTDIR/utils.sh
+
+export SOLR_URL=`solr_url`
 
 # Put jruby in the path
 PATH=/htsolr/catalog/bin/jruby/bin:$PATH

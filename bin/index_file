@@ -35,8 +35,6 @@ HOSTNAME=`hostname -s`
 TDIR="/htsolr/catalog-dev/bin/ht_catalog_indexer"
 DDIR=/htsolr/catalog/prep
 
-export SOLR_URL=`solr_url`
-
 log "Working on $HOSTNAME in $TDIR" $logfile
 
 # The whole ridiculous `tee` pipeline is in service of trying to output errors to STDOUT as well as the logfile, so
