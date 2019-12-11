@@ -42,6 +42,7 @@ sleep 5
 
 log "Empty solr" $logfile
 empty_solr
+commit
 log "Index $marcfile"  $logfile
 $SCRIPTDIR/bundle exec $SCRIPTDIR/index_file $marcfile $logfile
 
