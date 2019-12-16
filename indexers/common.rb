@@ -169,7 +169,8 @@ to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only, :t
 
 
 # Sortable title
-to_field "titleSort", marc_sortable_title, strip, trim_punctuation
+#to_field "titleSort", marc_sortable_title, strip, trim_punctuation
+to_field "titleSort", extract_marc_filing_version('245abp'), strip, trim_punctuation
 #title_normalizer  = NacoNormalizer.new(:keep_first_comma => false)
 #to_field "titleSort", extract_marc_filing_version('245abk') do |rec, acc, context|
 #  acc.replace [acc[0]] # get only the first one
