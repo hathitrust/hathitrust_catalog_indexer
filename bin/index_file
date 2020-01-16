@@ -11,7 +11,7 @@ then
   exit
 fi
 
-DEFAULT_WRITER="localhost_legacy"
+DEFAULT_WRITER="localhost"
 
 HERE=`dirname $0`
 SCRIPTDIR=`realpath $HERE`
