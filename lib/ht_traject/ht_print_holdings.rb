@@ -1,14 +1,9 @@
-require_relative 'ht_dbh'
+
+require_relative 'ht_dbh'    
+
 
 
 module HathiTrust
-
-  class MockPrintHoldings
-
-    def self.get_print_holdings_hash(htids)
-      htids.each_with_object({}) {|id, h| h[id] = ['UM']}
-    end
-  end
 
   class PrintHoldings
 

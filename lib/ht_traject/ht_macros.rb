@@ -3,7 +3,18 @@ module HathiTrust
   end
 end
 
+require_relative 'bib_date.rb'
+
 module HathiTrust::Traject::Macros
+
+  # Nab the best bib date, based on teh date type and whatever's in the 008/date1 and 008/date2
+  def bib_date
+    ->(r,acc) do
+      bd = HathiTrust::BibDate.get_bib_date(r)
+      acc.replace [bd] if bd
+    end
+  end
+
 
   # Need a way to skip some fields, notably 710s with a $9 == 'WaSeSS'
   # because we've got JSTOR showing up as an author

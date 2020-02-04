@@ -16,16 +16,20 @@ gem 'traject_alephsequential_reader'
 gem 'sequel'
 gem 'httpclient'
 gem 'library_stdnums'
-gem 'naconormalizer'
+
+if defined? JRUBY_VERSION
+  gem 'naconormalizer'
+  gem "jruby-launcher", "~>1.1"  
+end
+
 gem 'marc-fastxmlwriter'
 gem 'jdbc-mysql'
-gem 'traject-solrj_writer'
 gem 'high_level_browse'
 
 gem 'simple_solr_client'
 gem 'pry'
 
-gem "jruby-launcher", "~>1.1"
+
 
 
 # gem 'hanami-cli'

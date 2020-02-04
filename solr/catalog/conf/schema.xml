@@ -262,6 +262,9 @@
  <field name="author2"     type="text_nostem" indexed="true" stored="true"   multiValued="true" />
  <field name="authorSort" type="exactish" indexed="true" stored="false" multiValued="false"/>
 
+ <field name="author_sortkey"        type="exactish" indexed="true"  stored="true" multiValued="false"/>
+
+
  <copyField source="author" dest="authorStr"/>
 
 
@@ -282,6 +285,9 @@
  <field name="title_rest"       type="text"          indexed="true"  stored="true" multiValued="true" />
 
  <field name="title_ab_exact"    type="exactish"  indexed="true"  stored="false" multiValued="true"/>
+
+ <field name="title_sortkey"        type="exactish" indexed="true"  stored="true" multiValued="false"/>
+
 
  <field name="series"          type="text"          indexed="true" stored="true" multiValued="true"/>
  <field name="series2"         type="text"          indexed="true" stored="true" multiValued="true"/>

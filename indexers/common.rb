@@ -34,20 +34,17 @@ require 'ht_traject'
 extend HathiTrust::Traject::Macros
 extend Traject::UMichFormat::Macros
 
-require 'naconormalizer'
+
+require 'ht_traject/basic_macros'
+extend HathiTrust::BasicMacros
+
 require 'marc/fastxmlwriter'
-
 require 'marc_record_speed_monkeypatch'
-
 
 
 settings do
   store "log.batch_progress", 10_000
 end
-
-
-
-
 
 
 logger.info RUBY_DESCRIPTION
@@ -115,7 +112,7 @@ to_field 'isn_related', extract_marc("400x:410x:411x:440x:490x:500x:510x:534xz:5
 
 to_field 'sudoc', extract_marc('086az')
 
-# UC started sending me leading spaces, so I need to do something 
+# UC started sending me leading spaces, so I need to do something
 # about it.
 to_field "lccn", extract_marc('010a') do |rec, acc|
   acc.map! {|x| x.strip }
@@ -145,12 +142,9 @@ to_field "author_top", extract_marc_unless("100abcdefgjklnpqtu0:110abcdefgklnptu
 to_field "author_rest", extract_marc("505r")
 
 
-# Naconormalizer for author
-author_normalizer = NacoNormalizer.new
-to_field "authorSort", extract_marc_unless("100abcd:110abcd:111abc:110ab:700abcd:710ab:711ab",skipWaSeSS, :first=>true) do |rec, acc, context|
-  acc.map!{|a| author_normalizer.normalize(a)}
-  acc.compact!
-end
+to_field "authorSort", extract_marc_unless("100abcd:110abcd:111abc:110ab:700abcd:710ab:711ab",skipWaSeSS, :first=>true),  naconormalize, compress_spaces, strip
+
+to_field "author_sortkey", extract_marc_unless("100abcd:110abcd:111abc:110ab:700abcd:710ab:711ab",skipWaSeSS), first_only, naconormalize, trim_punctuation, compress_spaces, strip, downcase
 
 
 ################################
@@ -159,30 +153,36 @@ end
 
 # For titles, we want with and without
 
-to_field 'title',     extract_marc_filing_version('245abdefgknp', :include_original => true)
+to_field 'title',     extract_marc_filing_version('245abdefgnp', :include_original => true)
 to_field 'title_a',   extract_marc_filing_version('245a', :include_original => true), strip, trim_punctuation
 to_field 'title_ab',  extract_marc_filing_version('245ab', :include_original => true), strip, trim_punctuation
 to_field 'title_c',   extract_marc('245c'), strip, trim_punctuation
 
-to_field 'vtitle',    extract_marc('245abdefghknp', :alternate_script=>:only, :trim_punctuation => true, :first=>true)
-
-
-
-# Sortable title
-#to_field "titleSort", marc_sortable_title, strip, trim_punctuation
-to_field "titleSort", extract_marc_filing_version('245abp', include_original: false), strip, trim_punctuation, first_only
-#title_normalizer  = NacoNormalizer.new(:keep_first_comma => false)
-#to_field "titleSort", extract_marc_filing_version('245abk') do |rec, acc, context|
-#  acc.replace [acc[0]] # get only the first one
-#  acc.map!{|a| title_normalizer.normalize(a)}
-#  acc.compact!
-#end
-
+to_field 'vtitle',    extract_marc('245abdefgnp', alternate_script: :only, :trim_punctuation => true, :first=>true)
 
 to_field "title_top", extract_marc("240adfghklmnoprs0:245abfgknps:247abfgknps:111acdefgjklnpqtu04:130adfgklmnoprst0")
 to_field "title_rest", extract_marc("210ab:222ab:242abnpy:243adfgklmnoprs:246abdenp:247abdenp:700fgjklmnoprstx03:710fgklmnoprstx03:711acdefgjklnpqstux034:730adfgklmnoprstx03:740anp:765st:767st:770st:772st:773st:775st:776st:777st:780st:785st:786st:787st:830adfgklmnoprstv:440anpvx:490avx:505t")
 to_field "series", extract_marc("440ap:800abcdfpqt:830ap")
 to_field "series2", extract_marc("490a")
+
+# Display, stored here for use by LSS
+#
+
+extractor_vtitle_display  = MarcExtractor.cached("245abnpc", alternate_script: :only)
+
+to_field 'title_display', extract_marc('245abnpc', alternate_script: false), first_only, trim_punctuation do |rec, acc, context|
+  vtitle = extractor_vtitle_display.extract(rec).first
+
+  if vtitle
+    acc.first << " (#{Traject::Macros::Marc21.trim_punctuation(vtitle).strip})"
+  end
+end
+
+# Sortable title
+
+to_field "titleSort", extract_marc_filing_version('245abp', include_original: false), strip, trim_punctuation, first_only
+to_field 'title_sortkey', extract_marc_filing_version('245abnp'), first_only, depunctuate, compress_spaces, strip, downcase
+
 
 # Serial titles count on the format alreayd being set and having the string 'Serial' in it.
 

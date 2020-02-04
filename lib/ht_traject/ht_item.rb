@@ -2,9 +2,10 @@ require 'traject'
 require 'match_map'
 require 'ht_traject/ht_constants'
 
-unless ENV['SKIP_PH']
-  require 'ht_traject/ht_print_holdings'
-end
+#unless ENV['SKIP_PH']
+#  STDERR.puts "Did not skip_ph"
+#  require 'ht_traject/ht_print_holdings'
+#end
 
 require 'ht_traject/ht_macros'
 require 'json'
@@ -113,8 +114,10 @@ module HathiTrust
 
 
       PH = if ENV['HT_TRAJECT_MOCK_PH']
+             require_relative 'ht_mock_print_holdings'
              HathiTrust::MockPrintHoldings
            else
+             require_relative 'ht_print_holdings'
              HathiTrust::PrintHoldings
            end
 
@@ -146,7 +149,7 @@ module HathiTrust
             'heldby'   => item.print_holdings,
             'collection_code' => item.collection_code,
           }
-          
+
           if item.enum_chron
             jsonrec['enumcron'] = item.enum_chron
             needs_sorting = true
@@ -156,8 +159,8 @@ module HathiTrust
             jsonrec['enum_pubdate'] = item.enum_pubdate
             jsonrec['enum_pubdate_range'] = HathiTrust::Traject::Macros::HTMacros.compute_date_range(item.enum_pubdate.to_i)
           end
-          
-          
+
+
           if platform == :ht
             jsonrec['dig_source'] = item.dig_source if item.dig_source
           end
@@ -177,7 +180,7 @@ module HathiTrust
         matcha = /(\d{4})/.match a['enumcron']
         matchb = /(\d{4})/.match b['enumcron']
         if matcha and matchb and (matcha[1] != matchb[1])
-#          return matcha[1].to_i <=> matchb[1].to_i 
+#          return matcha[1].to_i <=> matchb[1].to_i
         end
         return a[:sortstring] <=> b[:sortstring]
       end
@@ -194,13 +197,12 @@ module HathiTrust
       end
 
 
-
-
       def sortHathiJSON arr
         # Only one? Never mind
-        return arr if arr.size == 1
+        return arr if arr.size <= 1
 
-        # First, add the _sortstring entries
+
+        # First, add the sortstring entries
         arr.each do |h|
           if h.has_key? 'enumcron'
             h[:sortstring] = enumcronSortString(h['enumcron'])
@@ -240,8 +242,11 @@ module HathiTrust
 
       DEFAULT_DATE = '00000000'
 
-      attr_accessor :rights, :enum_chron, :last_update_date, :print_holdings, :collection_code, :dig_source
+      attr_accessor :rights, :enum_chron, :last_update_date, :print_holdings,
+                    :collection_code, :dig_source
       attr_reader :htid, :set, :enum_pubdate, :enum_pubdate_range
+
+      attr_accessor :title_sortkey, :author_sortkey
 
       def initialize
         @print_holdings = []
@@ -267,6 +272,19 @@ module HathiTrust
         return unless s
         @htid = s.downcase
         @namespace = namespace_for(@htid)
+      end
+
+      def enumchron_sortstring
+        return '0000' if enum_chron.nil?
+        digit_strings = enum_chron.scan(/\d+/).map do |digits|
+          digits.size.to_s + digits
+        end
+
+        if digit_strings.empty?
+          '0000'
+        else
+          digit_strings
+        end
       end
 
       def enum_pubdate=(e)
@@ -298,7 +316,7 @@ module HathiTrust
           nil
         end
       end
-      
+
 
       def namespace
         unless @namespace
@@ -320,7 +338,7 @@ module HathiTrust
       end
 
       def display_string
-        [htid, last_update_date, enum_chron, enum_pubdate, enum_pubdate_range ].join("|")
+        [htid, last_update_date, enum_chron, enum_pubdate, enum_pubdate_range, title_sortkey, author_sortkey].join("|")
       end
 
     end # end of Item
