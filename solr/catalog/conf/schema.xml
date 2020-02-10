@@ -287,6 +287,7 @@
  <field name="title_ab_exact"    type="exactish"  indexed="true"  stored="false" multiValued="true"/>
 
  <field name="title_sortkey"        type="exactish" indexed="true"  stored="true" multiValued="false"/>
+ <field name="title_display" type="string" indexed="false" stored="true" multiValued="false"/>
 
 
  <field name="series"          type="text"          indexed="true" stored="true" multiValued="true"/>
