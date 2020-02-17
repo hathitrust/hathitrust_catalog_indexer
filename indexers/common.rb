@@ -153,12 +153,12 @@ to_field "author_sortkey", extract_marc_unless("100abcd:110abcd:111abc:110ab:700
 
 # For titles, we want with and without
 
-to_field 'title',     extract_marc_filing_version('245abdefgnp', :include_original => true)
-to_field 'title_a',   extract_marc_filing_version('245a', :include_original => true), strip, trim_punctuation
-to_field 'title_ab',  extract_marc_filing_version('245ab', :include_original => true), strip, trim_punctuation
+to_field 'title',     extract_marc_filing_version('245abdekfgnp:245knp',:include_original => true), first_only, strip, trim_punctuation
+to_field 'title_a',   extract_marc_filing_version('245a:245knp', :include_original => true), first_only, strip, trim_punctuation
+to_field 'title_ab',  extract_marc_filing_version('245ab:245knp', :include_original => true), first_only, strip, trim_punctuation
 to_field 'title_c',   extract_marc('245c'), strip, trim_punctuation
 
-to_field 'vtitle',    extract_marc('245abdefgnp', alternate_script: :only, :trim_punctuation => true, :first=>true)
+to_field 'vtitle',    extract_marc('245abkdefgnp:245knpc', alternate_script: :only), first_only, strip, trim_punctuation
 
 to_field "title_top", extract_marc("240adfghklmnoprs0:245abfgknps:247abfgknps:111acdefgjklnpqtu04:130adfgklmnoprst0")
 to_field "title_rest", extract_marc("210ab:222ab:242abnpy:243adfgklmnoprs:246abdenp:247abdenp:700fgjklmnoprstx03:710fgklmnoprstx03:711acdefgjklnpqstux034:730adfgklmnoprstx03:740anp:765st:767st:770st:772st:773st:775st:776st:777st:780st:785st:786st:787st:830adfgklmnoprstv:440anpvx:490avx:505t")
@@ -168,9 +168,9 @@ to_field "series2", extract_marc("490a")
 # Display, stored here for use by LSS
 #
 
-extractor_vtitle_display  = MarcExtractor.cached("245abnpc", alternate_script: :only)
+extractor_vtitle_display  = MarcExtractor.cached("245abnpc:245knpc", alternate_script: :only)
 
-to_field 'title_display', extract_marc('245abnpc', alternate_script: false), first_only, trim_punctuation do |rec, acc, context|
+to_field 'title_display', extract_marc('245abnpc:245knpc', alternate_script: false), first_only, trim_punctuation do |rec, acc, context|
   vtitle = extractor_vtitle_display.extract(rec).first
 
   if vtitle
@@ -180,8 +180,8 @@ end
 
 # Sortable title
 
-to_field "titleSort", extract_marc_filing_version('245abp', include_original: false), strip, trim_punctuation, first_only
-to_field 'title_sortkey', extract_marc_filing_version('245abnp'), first_only, depunctuate, compress_spaces, strip, downcase
+to_field "titleSort", extract_marc_filing_version('245abnp:245knp', include_original: false), strip, trim_punctuation, first_only
+to_field 'title_sortkey', extract_marc_filing_version('245abnp:245knp'), first_only, depunctuate, compress_spaces, strip, downcase
 
 
 # Serial titles count on the format alreayd being set and having the string 'Serial' in it.
