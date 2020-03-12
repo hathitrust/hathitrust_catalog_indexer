@@ -1,15 +1,14 @@
 
 require_relative 'ht_dbh'    
 
-
-
 module HathiTrust
 
   class PrintHoldings
 
     def self.query
       return @query if @query
-      @query = HathiTrust::DBH::DB[:holdings_htitem_htmember].select(:volume_id, :member_id)
+      nocache_volume_id = Sequel.lit("SQL_NO_CACHE volume_id")
+      @query = HathiTrust::DBH::DB[:holdings_htitem_htmember].select(nocache_volume_id, :member_id)
     end
     
     # I use a db driver per thread to avoid any conflicts
