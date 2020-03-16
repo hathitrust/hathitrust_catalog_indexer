@@ -328,7 +328,7 @@
  <copyField source="hlb3" dest="hlb3Str"/>
  <copyField source="genre" dest="genreStr"/>
 
-
+ 
  <!-- Time and Place -->
 
  <field name="publishDate"      type="string" indexed="true" stored="true"  multiValued="true"/>
@@ -361,7 +361,9 @@
  <copyField source="enum_publishDate" dest="enum_publishDateRange"/>
 
 
+ <!-- Print holdings -->
 
+ <field name="print_holdings" type="string" indexed="true" stored="true" multiValued="true"/>
 
 
 
