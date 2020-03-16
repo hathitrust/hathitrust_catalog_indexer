@@ -72,3 +72,33 @@ to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij')
 end 
 
 
+
+# Compute the title_item_sortkey and author_item_sortkey
+
+each_record do |r, context|
+  items = context.clipboard[:ht][:items]
+  fields = context.output_hash
+  bibdate = HathiTrust::BibDate.get_bib_date(r)
+
+  items.each do |item|
+    item.title_sortkey = [
+      fields['title_sortkey'],
+      fields['author_sortkey'],
+      item.enum_pubdate, # from 974$y, which always has a value
+      item.enumchron_sortstring
+    ].join(' AAA ').downcase
+
+    item.author_sortkey = [
+      fields['author_sortkey'],
+      fields['title_sortkey'],
+      item.enum_pubdate, # from 974$y, which always has a value
+      item.enumchron_sortstring
+    ].join(' AAA ').downcase
+
+  end
+end
+
+# All the print holdings from all the items
+to_field 'print_holdings' do |record, acc, context|
+  acc.replace context.clipboard[:ht][:items].print_holdings
+end
