@@ -9,7 +9,7 @@ module HathiTrust
 
     def self.query
       return @query if @query
-      @query = HathiTrust::DBH::DB[:holdings_htitem_htmember].select(:volume_id, :member_id)
+      @query = HathiTrust::DBH::DB[:holdings_htitem_htmember].join(:ht_institutions_mapto, inst_id: :member_id).select(:volume_id, :mapto_inst_id).distinct
     end
     
     # I use a db driver per thread to avoid any conflicts
@@ -20,7 +20,7 @@ module HathiTrust
       # Need to do this in blocks because I'm getting failures (timeouts) from mysql
       htids.each_slice(20) do |ids|
         self.query.where(:volume_id=>ids).each do |r|
-          htid_map[r[:volume_id]] << r[:member_id]
+          htid_map[r[:volume_id]] << r[:mapto_inst_id]
         end
       end
       
