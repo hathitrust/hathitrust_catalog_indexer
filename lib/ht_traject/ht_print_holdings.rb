@@ -1,8 +1,6 @@
 
 require_relative 'ht_dbh'    
 
-
-
 module HathiTrust
 
   class PrintHoldings
