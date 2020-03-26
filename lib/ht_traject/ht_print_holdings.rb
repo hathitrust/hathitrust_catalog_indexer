@@ -9,7 +9,8 @@ module HathiTrust
 
     def self.query
       return @query if @query
-      @query = HathiTrust::DBH::DB[:holdings_htitem_htmember].join(:ht_institutions_mapto, inst_id: :member_id).select(:volume_id, :mapto_inst_id).distinct
+      nocache_volume_id = Sequel.lit("SQL_NO_CACHE volume_id")
+      @query = HathiTrust::DBH::DB[:holdings_htitem_htmember].join(:ht_institutions_mapto, inst_id: :member_id).select(nocache_volume_id, :mapto_inst_id).distinct
     end
     
     # I use a db driver per thread to avoid any conflicts
