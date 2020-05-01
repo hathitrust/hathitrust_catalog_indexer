@@ -35,11 +35,8 @@
     <tokenizer class="solr.KeywordTokenizerFactory"/>
     <filter class="solr.TrimFilterFactory"/>
     <filter class="solr.PatternReplaceFilterFactory"
-            pattern="^.*?(\p{N}[\p{N}\-\.]{&min_numid_length_minus_two;,}[xX]?).*$" replacement="***$1"/>
-    <filter class="solr.PatternReplaceFilterFactory" pattern="^[^\*].*$" replacement=""/>
-    <filter class="solr.PatternReplaceFilterFactory" pattern="^\*\*\*" replacement=""/>
-    <filter class="solr.LowerCaseFilterFactory"/>
-    <filter class="solr.PatternReplaceFilterFactory" pattern="[^\p{N}x]" replacement="" replace="all"/>
+            pattern="^.*?(\p{N}[\p{N}\-\.]+).*$" replacement="$1"/>
+    <filter class="solr.PatternReplaceFilterFactory" pattern="[^\p{N}]" replacement="" replace="all"/>
     <filter class="solr.PatternReplaceFilterFactory" pattern="^0*" replacement=""/>
   </analyzer>
 </fieldtype>
