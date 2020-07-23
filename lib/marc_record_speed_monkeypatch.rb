@@ -1,4 +1,3 @@
-
 # Monkeypatch MARC::Record for speed
 module MARC
   class FieldMap

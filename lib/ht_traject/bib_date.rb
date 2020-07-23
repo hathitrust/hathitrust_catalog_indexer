@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 class HathiTrust::BibDate
-
-  VALID_DATE_CHARS = /[\du]/
+  VALID_DATE_CHARS = /[\du]/.freeze
 
   class << self
-    
     def get_bib_date(r)
       ohoh8 = r['008'].value
       datetype = ohoh8[6]
@@ -19,7 +17,6 @@ class HathiTrust::BibDate
         date1(ohoh8) or '0000'
       end
     end
-    
 
     def date1(ohoh8)
       return nil unless ohoh8.size > 10
@@ -33,16 +30,10 @@ class HathiTrust::BibDate
 
       dt = ohoh8[11..14]
       validated_datechars(dt)
-    end    
-
-    def validated_datechars(dt)
-      if VALID_DATE_CHARS.match(dt)    
-        dt.gsub('u', '9')
-      else
-        nil
-      end
     end
 
+    def validated_datechars(dt)
+      dt.gsub('u', '9') if VALID_DATE_CHARS.match(dt)
+    end
   end
-
 end
