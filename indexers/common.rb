@@ -36,6 +36,8 @@ extend Traject::UMichFormat::Macros
 require 'ht_traject/basic_macros'
 extend HathiTrust::BasicMacros
 
+require 'ht_traject/oclc_resolution'
+
 require 'marc/fastxmlwriter'
 require 'marc_record_speed_monkeypatch'
 
@@ -76,7 +78,15 @@ to_field 'format', umich_format_and_types
 ######## IDENTIFIERS ###########
 ################################
 
-to_field 'oclc', oclcnum('035a:035z')
+# to_field 'oclc', oclcnum('035a:035z')
+#
+
+oclc_extractor = oclcnum('035a')
+to_field 'oclc' do |rec, acc|
+  oclc_extractor.call(rec, acc) # side-effects the acc
+  acc.map! {|x| x.sub(/\A0+/, '')} # drop leading zeros
+  acc.replace HathiTrust::OCLCResolution.all_resolved_oclcs(acc)
+end
 
 sdr_pattern = /^sdr-/
 to_field 'sdrnum' do |record, acc|
