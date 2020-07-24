@@ -36,6 +36,8 @@ extend Traject::UMichFormat::Macros
 require 'ht_traject/basic_macros'
 extend HathiTrust::BasicMacros
 
+require 'ht_traject/oclc_resolution'
+
 require 'marc/fastxmlwriter'
 require 'marc_record_speed_monkeypatch'
 
@@ -76,7 +78,22 @@ to_field 'format', umich_format_and_types
 ######## IDENTIFIERS ###########
 ################################
 
-to_field 'oclc', oclcnum('035a:035z')
+# to_field 'oclc', oclcnum('035a:035z')
+#
+#changed_by_oclc_concordance = Yell.new do |l|
+#  l.adapter :file, 'changed_by_oclc_concordance', format: '%m'
+#end
+oclc_extractor = oclcnum('035a')
+to_field 'oclc' do |rec, acc, context|
+  oclc_extractor.call(rec, acc) # side-effects the acc
+  original_count = acc.size
+  acc.map! {|x| x.sub(/\A0+/, '')} # drop leading zeros
+  acc.replace HathiTrust::OCLCResolution.all_resolved_oclcs(acc)
+  if acc.size != original_count
+    id = context.output_hash['id'].first
+    logger.info "OCLC==#{id} changed from #{original_count} to #{acc.size}"
+  end
+end
 
 sdr_pattern = /^sdr-/
 to_field 'sdrnum' do |record, acc|

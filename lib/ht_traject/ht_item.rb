@@ -2,11 +2,6 @@ require 'traject'
 require 'match_map'
 require 'ht_traject/ht_constants'
 
-# unless ENV['SKIP_PH']
-#  STDERR.puts "Did not skip_ph"
-#  require 'ht_traject/ht_print_holdings'
-# end
-
 require 'ht_traject/ht_macros'
 require 'json'
 
