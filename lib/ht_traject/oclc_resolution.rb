@@ -13,9 +13,11 @@ module HathiTrust
     end
 
     def self.all_resolved_oclcs(oclcs)
-      oclcs = Array(oclcs)
-      oclcs.flat_map{|o| self.query.call(oclc: o)}.flat_map{|x| [x[:oclc], x[:canonical]]}.uniq
-    end
+      oclcs = Array(oclcs).compact
+      return [] if oclcs.empty?
+      resolved = oclcs.flat_map{|o| self.query.call(oclc: o)}.flat_map{|x| [x[:oclc], x[:canonical]]}
+      resolved.concat(oclcs).flatten.map(&:to_s).uniq
+     end
 
   end
 end
