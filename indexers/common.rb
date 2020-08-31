@@ -91,7 +91,7 @@ to_field 'oclc' do |rec, acc, context|
   acc.replace HathiTrust::OCLCResolution.all_resolved_oclcs(acc)
   if acc.size != original_count
     id = context.output_hash['id'].first
-    logger.info "OCLC==#{id} changed from #{original_count} to #{acc.size}"
+#    logger.info "OCLC==#{id} changed from #{original_count} to #{acc.size}"
   end
 end
 
