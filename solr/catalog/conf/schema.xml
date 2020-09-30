@@ -205,7 +205,8 @@
 <field name="lccn"         type="lccn" indexed="true" stored="true"  multiValued="true"/>
 <field name="ctrlnum"      type="exactish"   indexed="true" stored="true"  multiValued="true"/>
 <field name="rptnum"       type="exactish"   indexed="true" stored="true"  multiValued="true"/>
-<field name="sdrnum"       type="exactish"   indexed="true" stored="true"  multiValued="true"/><field name="oclc"         type="oclc"        indexed="true" stored="true"  multiValued="true"/>
+<field name="sdrnum"       type="exactish"   indexed="true" stored="true"  multiValued="true"/>
+<field name="oclc"         type="oclc"        indexed="true" stored="true"  multiValued="true"/>
 <field name="oclc_search"  type="oclc"       indexed="true" stored="false"  multiValued="true"/>
 <field name="isbn"         type="isbn"         indexed="true" stored="true"  multiValued="true"/>
 <field name="issn"         type="numericID"         indexed="true" stored="true"  multiValued="true"/>
