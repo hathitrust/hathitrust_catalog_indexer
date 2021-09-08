@@ -47,9 +47,15 @@ if [ -f "$marcfile" ]
 then
     cd $TDIR
     $SCRIPTDIR/bundle exec $SCRIPTDIR/index_file $marcfile $logfile
+    exit_status=$?
 else
   log  "No indexing: Could not find marcfile '$marcfile'" $logfile
+  exit 1
 fi
 
 
 commit
+
+exit $exit_status
+
+
