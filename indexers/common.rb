@@ -62,6 +62,12 @@ each_record HathiTrust::Traject::Macros.setup
 ################################
 
 to_field 'id', extract_marc('001', first: true)
+
+to_field 'old_ids' do |_rec, acc, context|
+  id = context.output_hash['id'].first
+  acc.replace HathiTrust::Redirects.old_ids_for(id)
+end
+
 to_field 'allfields', extract_all_marc_values do |_r, acc|
   acc.replace [acc.join(' ')] # turn it into a single string
 end
