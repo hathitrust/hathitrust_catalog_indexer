@@ -186,7 +186,7 @@
 
 
     <!-- IDs that used to be valid for this set of HTIDs -->
-  <field name="old_ids" type="string" indexe="true" stored="true" multiValued="true"/>
+  <field name="old_ids" type="string" indexed="true" stored="true" multiValued="true"/>
 
 
  <!-- Set up the non-dynamic fields. For the old-school catalogs, this is everything -->
