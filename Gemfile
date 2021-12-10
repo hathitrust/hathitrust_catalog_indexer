@@ -15,7 +15,8 @@ gem 'traject_alephsequential_reader'
 gem 'traject_umich_format'
 
 if defined? JRUBY_VERSION
-gem 'jdbc-mysql'
+  gem 'jdbc-mysql'
+  gem 'traject-marc4j_reader'
 #  gem 'jruby-launcher', '~>1.1'
 #  gem 'naconormalizer', path: '../naconormalizer'
 end
