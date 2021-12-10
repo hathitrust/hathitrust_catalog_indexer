@@ -1,6 +1,7 @@
 require_relative '../ht_secure_data'
 require 'sequel'
 
+
 module HathiTrust
   module DBH
     extend HathiTrust::SecureData

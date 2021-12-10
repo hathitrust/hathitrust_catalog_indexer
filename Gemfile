@@ -13,6 +13,7 @@ gem 'sequel'
 gem 'traject', '~>3.0'
 gem 'traject_alephsequential_reader'
 gem 'traject_umich_format'
+gem 'date_named_file'
 
 if defined? JRUBY_VERSION
   gem 'jdbc-mysql'
@@ -26,5 +27,7 @@ gem 'marc-fastxmlwriter'
 
 gem 'pry'
 gem 'simple_solr_client'
+
+gem 'zinzout'
 
 # gem 'hanami-cli'
