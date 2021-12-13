@@ -37,6 +37,7 @@ require 'ht_traject/basic_macros'
 extend HathiTrust::BasicMacros
 
 require 'ht_traject/oclc_resolution'
+require 'ht_traject/redirects'
 
 require 'marc/fastxmlwriter'
 require 'marc_record_speed_monkeypatch'
