@@ -13,9 +13,22 @@ In addition to this overview, more detailed explanations can be found in:
 * [`lib/README.md`](lib/README.md)
 * [`indexers/README.md`](indexers/README.md)
 
+## Getting Started
+
+Index a file of records without using the database or hardcoded filesystem paths:
+
+```bash
+
+docker-compose build
+docker-compose run --rm traject bundle install
+docker-compose run --rm traject bundle exec fetch_new_hlb ./lib/translation_maps
+# get some sample records somehow
+docker-compose run traject bundle exec bin/index_file examples/sample_records.json.gz
+# ensure documents are committed
+source bin/utils.sh; solr_url; commit
+```
+
 ## How to do the basics
-
-
 
 ### Indexing
 
@@ -202,6 +215,3 @@ The lifecycle is:
   * `context.output_hash` is the actual mapping of field name to value -- 
     this is what's actually sent to the writer and then onto solr (or a 
     debug file or whatever). 
-
-
-

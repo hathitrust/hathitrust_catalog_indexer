@@ -19,7 +19,7 @@ if defined? JRUBY_VERSION
   gem 'jdbc-mysql'
   gem 'traject-marc4j_reader'
 #  gem 'jruby-launcher', '~>1.1'
-#  gem 'naconormalizer', path: '../naconormalizer'
+  gem 'naconormalizer'
 end
 
 gem 'high_level_browse'

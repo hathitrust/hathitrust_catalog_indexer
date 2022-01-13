@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../naconormalizer.rb' if defined? JRUBY_VERSION
+require 'naconormalizer' if defined? JRUBY_VERSION
 
 module HathiTrust::BasicMacros
   SPACES = /\s+/.freeze
