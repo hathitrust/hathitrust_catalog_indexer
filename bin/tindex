@@ -67,11 +67,11 @@ export SOLR_URL=`solr_url`
 # Update the tmaps
 
 log "Getting collection map" $logfile
-log $SCRIPTDIR/bundle exec jruby  $SCRIPTDIR/get_collection_map.rb
+log bundle exec jruby  $SCRIPTDIR/get_collection_map.rb
 
 log "Indexing from $filename into $WRITER ($SOLR_URL)" $logfile
 
-cmd="$SCRIPTDIR/bundle exec traject 
+cmd="bundle exec traject 
   -c $TDIR/readers/$READER.rb 
   -c $TDIR/writers/$WRITER.rb 
   -c $TDIR/indexers/common.rb 

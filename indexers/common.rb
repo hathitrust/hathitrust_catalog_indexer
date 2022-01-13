@@ -36,7 +36,12 @@ extend Traject::UMichFormat::Macros
 require 'ht_traject/basic_macros'
 extend HathiTrust::BasicMacros
 
-require 'ht_traject/oclc_resolution'
+if ENV["NO_DB"]
+  require 'ht_traject/mock_oclc_resolution'
+else
+  require 'ht_traject/oclc_resolution'
+end
+
 require 'ht_traject/redirects'
 
 require 'marc/fastxmlwriter'
