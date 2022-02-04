@@ -11,6 +11,7 @@ services:
       - SOLR_URL=http://solr-sdr-catalog:9033/solr/catalog
       - redirect_file=/dev/null
       - NO_DB=1
+      - DDIR=/app/examples
 
   solr-sdr-catalog:
     build: solr
