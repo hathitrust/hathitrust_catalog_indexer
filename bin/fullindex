@@ -22,10 +22,8 @@ source $SCRIPTDIR/utils.sh
 
 export SOLR_URL=`solr_url`
 
-PATH=/htsolr/catalog/bin/jruby/bin:$PATH
-
 # where do we keep the data?
-DDIR=/htsolr/catalog/prep
+DDIR=${DDIR:-/htsolr/catalog/prep}
 
 # Full indexes are dated the last day of the month
 # Let's find it
@@ -44,11 +42,11 @@ log "Empty solr" $logfile
 empty_solr
 commit
 log "Index $marcfile"  $logfile
-$SCRIPTDIR/bundle exec $SCRIPTDIR/index_file $marcfile $logfile
+$SCRIPTDIR/index_file $marcfile $logfile
 
 
 log "Catch up since $last_day_of_last_month"  $logfile
-$SCRIPTDIR/bundle exec $SCRIPTDIR/catchup_since $last_day_of_last_month $logfile
+$SCRIPTDIR/catchup_since $last_day_of_last_month $logfile
 
 commit
 
