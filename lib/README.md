@@ -48,8 +48,8 @@ really simple. We can take advantage of both of these things.
 
 ### Getting external data
 
-Note: basic database connection code is in [`ht_traject/ht_dbh.rb`]
-(ht_traject/ht_dbh.rb). Additionally, the non-git file `ht_secure_data.rb` 
+Note: basic database connection code is 
+in [`ht_traject/ht_dbh.rb`](ht_traject/ht_dbh.rb). Additionally, the non-git file `ht_secure_data.rb` 
 is used for name/password/server/database info.
 
 * Print holdings are gathered via a `Sequel` call to the database and 
@@ -71,10 +71,12 @@ is used for name/password/server/database info.
 
 [`ht_traject/basic_macros.rb`](ht_traject/basic_macros.rb) has mostly 
 generic post-processing macros not provided by the traject core (e.g., 
-`compress_spaces`). The exception is the naconormalization macro, and it's 
+`compress_spaces`). 
+
+The exception is the naconormalization macro, and its 
 not-running-on-JRuby mock `FakeoNormalizer`. Naconormalization is a set of 
 rules from the LoC that supposedly provide better sorting for 
-transliterated text. 
+transliterated text, and runs as a gem wrapped around OCLC java code. 
 
 [`ht_traject/ht_macros.rb`](ht_traject/ht_macros.rb) is a bit of a 
 mishmash. Some of the macros actually work on data assumed to already be 
