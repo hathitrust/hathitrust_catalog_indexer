@@ -64,6 +64,7 @@ to_field 'hlb3Delimited', extract_marc('050ab:082a:090ab:099a:086a:086z:852hij')
 end
 
 # Compute the title_item_sortkey and author_item_sortkey
+# Is this used anywhere????? Dead code???
 
 each_record do |r, context|
   items = context.clipboard[:ht][:items]
