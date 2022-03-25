@@ -18,7 +18,8 @@ In addition to this overview, more detailed explanations can be found in:
 ### Setup
 
 ```bash
-
+git clone https://github.com/hathitrust/hathitrust_catalog_indexer
+cd hathitrust_catalog_indexer
 docker-compose build
 docker-compose up -d solr-sdr-catalog
 docker-compose run --rm traject bundle install
@@ -41,13 +42,43 @@ source bin/utils.sh; solr_url; commit
 Zephir records for the last monthly up to the current date should be in `examples`:
 
 ```bash
-
 docker-compose run traject bin/fullindex
 ```
 
 ### Query Solr
 
 Solr should be accessible at http://localhost:9033
+
+## Using with other projects via docker
+
+Start solr and index as above. In the other project, ensure `docker-compose.yml` contains e.g.:
+
+```yaml
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    # Add this networks entry to the service that needs to reach solr
+    networks:
+      - catalog_indexer
+
+# Add this network information
+networks:
+  catalog_indexer:
+    external: true
+    # If you checked out into another directory than
+    # 'hathitrust_catalog_indexer', adjust to match
+    # match (appending '_default')
+    name: hathitrust_catalog_indexer_default
+```
+
+If you checked out into another directory than `hathitrust_catalog_indexer`,
+adjust the name of the network above to match.
+
+This will ensure the application uses the solr running from this docker network
+network (i.e. the one started with `docker-compose up` from this repository).
+Solr should be reachable via the `solr-sdr-catalog` hostname.
 
 ## How to do the basics
 
