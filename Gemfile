@@ -22,7 +22,6 @@ if defined? JRUBY_VERSION
   gem 'naconormalizer'
 end
 
-gem 'high_level_browse'
 gem 'marc-fastxmlwriter'
 
 gem 'pry'

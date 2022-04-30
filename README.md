@@ -23,7 +23,6 @@ cd hathitrust_catalog_indexer
 docker-compose build
 docker-compose up -d solr-sdr-catalog
 docker-compose run --rm traject bundle install
-docker-compose run --rm traject bundle exec fetch_new_hlb ./lib/translation_maps
 ```
 
 ### Index one file

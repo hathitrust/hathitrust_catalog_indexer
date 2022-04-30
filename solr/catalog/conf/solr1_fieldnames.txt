@@ -30,9 +30,6 @@ genre
 genreStr
 geographic
 geographicStr
-hlb3
-hlb3Delimited
-hlb3Str
 ht_availability
 ht_availability_intl
 ht_count

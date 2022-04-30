@@ -42,10 +42,6 @@ date arithmetic, determines filenames from configuration/environment, etc.
 * [`get_collection_map.rb`](get_collection_map.rb) does what it says -- get the mapping of 
   collection codes to institution names from the database nd stuffs it 
   into `lib/translation_maps/ht`
-* [`fetch_new_hlb`](fetch_new_hlb) is actually a script I ship with the HLB gem. Jeremy was 
-  using High Level Browse data for...something? And Tom, too? But I don't 
-  see why we bother at this point, as it's not exposed anywhere that I'm 
-  aware of. We should check with the website to be sure.
 * [`delete_all`](delete_all) is a utility to clear the solr index.
 * [`update_tmaps_ht`](update_tmaps_ht) updates the translation maps, the only one of which 
   right now is collection codes. 
