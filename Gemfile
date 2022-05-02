@@ -23,7 +23,7 @@ if defined? JRUBY_VERSION
 end
 
 gem 'high_level_browse'
-gem 'marc-fastxmlwriter'
+gem 'marc-fastxmlwriter', '~> 1.1'
 
 gem 'pry'
 gem 'simple_solr_client'
