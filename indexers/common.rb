@@ -38,11 +38,12 @@ extend HathiTrust::BasicMacros
 
 if ENV["NO_DB"]
   require 'ht_traject/mock_oclc_resolution'
-else
-  require 'ht_traject/oclc_resolution'
+else require 'ht_traject/oclc_resolution'
 end
 
-require 'ht_traject/redirects'
+unless ENV['NO_REDIRECTS']
+  require 'ht_traject/redirects'
+end
 
 require 'marc/fastxmlwriter'
 require 'marc_record_speed_monkeypatch'
@@ -69,9 +70,11 @@ each_record HathiTrust::Traject::Macros.setup
 
 to_field 'id', extract_marc('001', first: true)
 
-to_field 'old_ids' do |_rec, acc, context|
-  id = context.output_hash['id'].first
-  acc.replace HathiTrust::Redirects.old_ids_for(id)
+unless ENV['NO_REDIRECTS']
+  to_field 'old_ids' do |_rec, acc, context|
+    id = context.output_hash['id'].first
+    acc.replace HathiTrust::Redirects.old_ids_for(id)
+  end
 end
 
 to_field 'allfields', extract_all_marc_values do |_r, acc|
@@ -81,7 +84,7 @@ end
 # to_field 'fullrecord', macr4j_as_xml
 
 to_field 'fullrecord' do |rec, acc|
-  acc << MARC::FastXMLWriter.single_record_document(rec)
+  acc << MARC::FastXMLWriter.single_record_document(rec, include_namespace: true)
 end
 
 to_field 'format', umich_format_and_types
@@ -96,14 +99,13 @@ to_field 'format', umich_format_and_types
 #  l.adapter :file, 'changed_by_oclc_concordance', format: '%m'
 #end
 
-
 to_field 'oclc', oclcnum('035a:035z')
 
 oclc_extractor = oclcnum('035a')
 to_field 'oclc_search' do |rec, acc, context|
   oclc_extractor.call(rec, acc) # side-effects the acc
   original_count = acc.size
-  acc.map! {|x| x.sub(/\A0+/, '')} # drop leading zeros
+  acc.map! { |x| x.sub(/\A0+/, '') } # drop leading zeros
   acc.replace HathiTrust::OCLCResolution.all_resolved_oclcs(acc)
   if acc.size != original_count
     id = context.output_hash['id'].first
@@ -255,13 +257,12 @@ to_field 'genre', extract_marc('655ab')
 
 # Look into using Traject default geo field
 to_field 'geographic' do |record, acc|
-  marc_geo_map   = Traject::TranslationMap.new('marc_geographic')
+  marc_geo_map = Traject::TranslationMap.new('marc_geographic')
   extractor_043a = MarcExtractor.cached('043a', separator: nil)
-  acc.concat(
-    extractor_043a.extract(record).collect do |code|
-      # remove any trailing hyphens, then map
-      marc_geo_map[code.gsub(/\-+\Z/, '')]
-    end.compact
+  acc.concat(extractor_043a.extract(record).collect do |code|
+    # remove any trailing hyphens, then map
+    marc_geo_map[code.gsub(/\-+\Z/, '')]
+  end.compact
   )
 end
 
@@ -301,7 +302,7 @@ to_field 'country_of_pub', extract_marc('752ab')
 
 to_field 'place_of_publication' do |r, acc|
   current_map = Traject::TranslationMap.new('umich/current_cop')
-  obs_map     = Traject::TranslationMap.new('umich/obsolete_cop')
+  obs_map = Traject::TranslationMap.new('umich/obsolete_cop')
 
   if r['008'] && (r['008'].value.size > 17)
     code = r['008'].value[15..17].gsub(/[^a-z]/, ' ')
@@ -309,18 +310,17 @@ to_field 'place_of_publication' do |r, acc|
     # Bail if we've got an explicit "undetermined"
     unless code == 'xx '
       possible_single_letter_country_code = code[2]
-      container                           = if possible_single_letter_country_code.nil? || (possible_single_letter_country_code == ' ')
-                                              nil
-                                            else
-                                              current_map['xx' << possible_single_letter_country_code]
-                                            end
+      container = if possible_single_letter_country_code.nil? || (possible_single_letter_country_code == ' ')
+                    nil
+                  else current_map['xx' << possible_single_letter_country_code]
+                  end
 
       pop = current_map[code]
       pop ||= obs_map[code]
 
       # USSR? Check for the two-value version
       if possible_single_letter_country_code == 'r'
-        container        = 'Soviet Union'
+        container = 'Soviet Union'
         non_ussr_country = current_map[code[0..1] << ' ']
         acc << non_ussr_country if non_ussr_country
       end
@@ -329,8 +329,7 @@ to_field 'place_of_publication' do |r, acc|
         if container
           acc << container
           acc << "#{container} -- #{pop}" unless pop == container
-        else
-          acc << pop
+        else acc << pop
         end
       end
     end
@@ -357,8 +356,7 @@ def ordinalize_incomplete_year(s)
     "#{i}nd"
   when /\A\d?3\Z/
     "#{i}rd"
-  else
-    "#{i}th"
+  else "#{i}th"
   end
 end
 
@@ -368,31 +366,28 @@ to_field 'display_date' do |_rec, acc, context|
   rd = context.clipboard[:ht][:rawdate]
   if context.output_hash['publishDate'].first == rd
     acc << rd
-  else
-    if rd =~ /(\d\d\d)u/
-      acc << "in the #{Regexp.last_match(1)}0s"
-    elsif rd =~ /(\d\d)u+/
-      acc << 'in the ' + ordinalize_incomplete_year(Regexp.last_match(1).to_i + 1) + ' century'
-    elsif rd == '1uuu'
-      acc << 'between 1000 and 1999'
-    elsif rd == '2uuu'
-      acc << 'between 2000 and 2999'
-    end
+  else if rd =~ /(\d\d\d)u/
+         acc << "in the #{Regexp.last_match(1)}0s"
+       elsif rd =~ /(\d\d)u+/
+         acc << 'in the ' + ordinalize_incomplete_year(Regexp.last_match(1).to_i + 1) + ' century'
+       elsif rd == '1uuu'
+         acc << 'between 1000 and 1999'
+       elsif rd == '2uuu'
+         acc << 'between 2000 and 2999'
+       end
   end
 end
 
 to_field 'publishDateRange' do |rec, acc, context|
   if context.output_hash['publishDate']
-    d  = context.output_hash['publishDate'].first
+    d = context.output_hash['publishDate'].first
     dr = HathiTrust::Traject::Macros::HTMacros.compute_date_range(d)
     acc << dr if dr
-  else
-    id = if context.output_hash['id']
-           context.output_hash['id'].first
-         else
-           '<no id in record>'
-         end
-    logger.debug "No valid date for record #{id}: #{rec['008']}"
+  else id = if context.output_hash['id']
+              context.output_hash['id'].first
+            else '<no id in record>'
+            end
+  logger.debug "No valid date for record #{id}: #{rec['008']}"
   end
 end
 
