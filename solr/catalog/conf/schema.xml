@@ -325,12 +325,8 @@
  <field name="fullgenre"   type="text"       indexed="true" stored="true"  multiValued="true"  omitNorms="true"/>
  <field name="genre"       type="text"       indexed="true" stored="true"  multiValued="true"  omitNorms="true"/>
  <field name="genreStr"    type="string"     indexed="true" stored="false" multiValued="true"                   />
- <field name="hlb3"    type="text"       indexed="true" stored="false" multiValued="true"  omitNorms="true" />
- <field name="hlb3Str" type="string"     indexed="true" stored="true" multiValued="true"                   />
- <field name="hlb3Delimited" type="string" indexed="false" stored="true" multiValued="true" termVectors="false"/>
  <copyField source="topic" dest="topicStr"/>
  <copyField source="topic" dest="topicProper"/>
- <copyField source="hlb3" dest="hlb3Str"/>
  <copyField source="genre" dest="genreStr"/>
 
  
