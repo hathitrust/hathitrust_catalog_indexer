@@ -21,19 +21,13 @@ if [[ ! -z "$2" ]]; then
     logfile=`realpath "$2"`
 fi
 
-
 # Make sure we're using a valid java
 # and get the utility scripts
 source $SCRIPTDIR/set_java_home.sh
 source $SCRIPTDIR/utils.sh
 
-# Put jruby in the path
-export PATH=/htsolr/catalog/bin/jruby/bin:$PATH
-
-
 HOSTNAME=`hostname -s`
-TDIR="/htsolr/catalog-dev/bin/ht_catalog_indexer"
-DDIR=/htsolr/catalog/prep
+TDIR=`realpath $SCRIPTDIR/..`
 
 log "Working on $HOSTNAME in $TDIR" $logfile
 
@@ -44,7 +38,7 @@ if [ -f "$marcfile" ]
 then
     export -f log
     cd $TDIR
-    $SCRIPTDIR/bundle exec $SCRIPTDIR/tindex $DEFAULT_WRITER $marcfile | tee -a $logfile | grep 'ERROR\|FATAL\|Exc' | xargs -Ierr bash -c 'log "$@"' _ err
+    $SCRIPTDIR/tindex $DEFAULT_WRITER $marcfile | tee -a $logfile | grep 'ERROR\|FATAL\|Exc' | xargs -Ierr bash -c 'log "$@"' _ err
     exit_status=$?
 
 else

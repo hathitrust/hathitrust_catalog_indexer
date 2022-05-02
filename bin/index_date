@@ -22,11 +22,8 @@ source $SCRIPTDIR/utils.sh
 
 export SOLR_URL=`solr_url`
 
-# Put jruby in the path
-PATH=/htsolr/catalog/bin/jruby/bin:$PATH
-
 # where do we keep the data?
-DDIR=/htsolr/catalog/prep
+DDIR=${DDIR:-/htsolr/catalog/prep}
 
 delfile=`find_del_file_for_date $DATE $DDIR`
 marcfile=`find_marc_file_for_date $DATE $DDIR`
@@ -35,7 +32,7 @@ if [ -f "$delfile" ]
 then
   log  "Deleting from $delfile, targeting $SOLR_URL" $logfile
   cd $TDIR
-  delout=`$SCRIPTDIR/bundle exec jruby $SCRIPTDIR/delete_ids $delfile`
+  delout=`bundle exec jruby $SCRIPTDIR/delete_ids $delfile`
   log "$delout" "$logfile"
 else
   log  "No Deletes: Could not find delfile '$delfile'" $logfile
@@ -46,7 +43,7 @@ log " ---- " $logfile
 if [ -f "$marcfile" ] 
 then
     cd $TDIR
-    $SCRIPTDIR/bundle exec $SCRIPTDIR/index_file $marcfile $logfile
+    $SCRIPTDIR/index_file $marcfile $logfile
     exit_status=$?
 else
   log  "No indexing: Could not find marcfile '$marcfile'" $logfile

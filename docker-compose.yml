@@ -1,0 +1,22 @@
+---
+version: '3'
+
+services:
+  traject:
+    build: .
+    volumes:
+      - .:/app
+      - gem_cache:/gems
+    environment:
+      - SOLR_URL=http://solr-sdr-catalog:9033/solr/catalog
+      - redirect_file=/dev/null
+      - NO_DB=1
+      - DDIR=/app/examples
+
+  solr-sdr-catalog:
+    build: solr
+    ports:
+      - "9033:9033"
+
+volumes:
+  gem_cache:
