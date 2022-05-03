@@ -36,9 +36,6 @@
  <field name="genre"       type="text"       indexed="true" stored="true"  multiValued="true"  omitNorms="true"/>
  <field name="geographicStr"    type="string" indexed="true" stored="true" multiValued="true"/>
  <field name="geographic"       type="text"   indexed="true" stored="true" multiValued="true"  omitNorms="true"/>
- <field name="hlb3Delimited" type="string" indexed="false" stored="true" multiValued="true" termVectors="false"/>
- <field name="hlb3Str" type="string"     indexed="true" stored="true" multiValued="true"                   />
- <field name="hlb3"    type="text"       indexed="true" stored="false" multiValued="true"  omitNorms="true" />
 <field name="ht_availability_intl" type="string"  indexed="true" stored="true" multiValued="true"/>
 <field name="ht_availability"      type="string"  indexed="true" stored="true" multiValued="true"/>
 <field name="ht_count"      type="int"    indexed="true"  stored="true"  multiValued="false"/>
