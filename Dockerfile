@@ -1,4 +1,4 @@
-FROM jruby:9.2
+FROM jruby:9.3
 ARG UNAME=app
 ARG UID=1000
 ARG GID=1000
