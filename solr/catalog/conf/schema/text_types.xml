@@ -1,4 +1,4 @@
-!--    ............................
+<!--    ............................
         :     Text types           :
         ............................
 
@@ -58,9 +58,9 @@
                 pattern="^\p{Punct}*(.*?)\p{Punct}*$" replacement="aaaaa$1" />
     <tokenizer class="solr.ICUTokenizerFactory"/>
     <filter class="solr.ICUFoldingFilterFactory"/>
+    <filter class="solr.DecimalDigitFilterFactory"/>
     <filter class="solr.CJKWidthFilterFactory"/>
     <filter class="solr.CJKBigramFilterFactory"/>
-    <filter class="solr.DecimalDigitFilterFactory"/>
     <filter class="solr.KeywordRepeatFilterFactory"/>
       &stemmer;
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
