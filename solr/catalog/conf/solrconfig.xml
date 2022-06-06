@@ -331,6 +331,7 @@
   </query>
 
 
+  
   <!-- Request Dispatcher
 
        This section contains instructions for how the SolrDispatchFilter
@@ -448,7 +449,20 @@
 
     </requestHandler>
 
-    
+    <requestHandler name="/marcxml" class="solr.SearchHandler">
+      <lst name="defaults">
+	<str name="rows">1</str>	
+	<str name="qf">id,ht_id</str>
+	<str name="fl">fullrecord</str>
+	<str name="wt">xslt</str>
+	<str name="tr">marcxml.xsl</str>
+	<str name="q">{!edismax qf="id,ht_id" v=$id}</str>	
+      </lst>
+    </requestHandler>
+
+    <queryResponseWriter name="xslt" class="solr.XSLTResponseWriter">
+      <int name="xsltCacheLifetimeSeconds">5</int>
+    </queryResponseWriter>
   
     <requestHandler name="edismax" class="solr.SearchHandler" >
       <lst name="defaults">
