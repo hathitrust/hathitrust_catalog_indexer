@@ -25,7 +25,32 @@ docker-compose up -d solr-sdr-catalog
 docker-compose run --rm traject bundle install
 ```
 
-### Index one file
+### Generate Solr documents
+
+Generate Solr documents given an input file of MARC records in JSON format, one per line:
+
+```
+docker-compose run traject bin/tindex json input-marc-records.jsonl 
+```
+
+Output will be in `debug.json`.
+
+### Building a Sample Index Docker Image
+
+This will build a docker image with a Solr core pre-loaded with a set of records.
+
+* As above, put records you want to load in `example-index/records-to-index.jsonl`
+
+* Then run:
+
+```
+docker build . -f example-index/Dockerfile -t my-sample-solr
+```
+
+and run e.g. `docker run -p 9033:9033 my-sample-solr`, or use in another
+`docker-compose.yml`, etc.
+
+### Index one file into Solr
 
 Index a file of records without using the database or hardcoded filesystem paths:
 
