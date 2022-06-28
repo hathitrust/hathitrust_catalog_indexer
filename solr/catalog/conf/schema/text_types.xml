@@ -59,7 +59,7 @@
     <tokenizer class="solr.ICUTokenizerFactory"/>
     <filter class="solr.ICUFoldingFilterFactory"/>
     <filter class="solr.CJKWidthFilterFactory"/>
-<!--     <filter class="solr.CJKBigramFilterFactory"/> -->
+    <filter class="solr.CJKBigramFilterFactory"/>
     <filter class="solr.DecimalDigitFilterFactory"/>
     <filter class="solr.KeywordRepeatFilterFactory"/>
       &stemmer;
