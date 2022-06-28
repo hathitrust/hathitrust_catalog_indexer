@@ -1,4 +1,4 @@
-require 'httpclient'
+require 'httpx'
 require 'zlib'
 
 filename = ARGV[0]
@@ -14,7 +14,11 @@ end
 
 
 
-client = HTTPClient.new
+client = HTTPX.with(headers: {'Content-Type' => 'application/json'})
+
+def deleted_doc(id)
+  {id: id, deleted: true }
+end
 
 total = 0
 begin
@@ -23,19 +27,13 @@ begin
     file = Zlib::GzipReader.new(file)
   end
 
-  body = "<delete>"
-  file.each do |l|
-    body << "<id>#{l.chomp}</id>"
-    total += 1
-  end
-  body << "</delete>"
-
-  if total > 0
-    client.post(url, body, {'Content-Type' => 'text/xml'})  
+  docs = file.map{|x| deleted_doc(x.chomp) }
+  if docs.size > 0
+    client.post(url, json: docs)
   else
     puts "File #{filename} is empty"
   end
-  puts "Deleted #{total} ids from #{url}\n\n"
+  puts "Deleted #{docs.size} ids from #{url}\n\n"
 rescue Exception => e
   puts "Problem deleting: #{e}"
 end

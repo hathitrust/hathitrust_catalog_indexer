@@ -7,6 +7,7 @@ group :development do
 end
 
 gem 'httpclient'
+gem 'httpx'
 gem 'library_stdnums'
 gem 'match_map'
 gem 'sequel'
