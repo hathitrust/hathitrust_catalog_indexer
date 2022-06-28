@@ -53,9 +53,6 @@
   <analyzer>
     <charFilter class="solr.ICUNormalizer2CharFilterFactory"/>
     <charFilter class="solr.MappingCharFilterFactory" mapping="&char_expansion_file;"/>
-    <!-- Eliminate leading and trailing punctuation and add on a prefix -->
-    <charFilter class="solr.PatternReplaceCharFilterFactory"
-                pattern="^\p{Punct}*(.*?)\p{Punct}*$" replacement="aaaaa$1" />
     <tokenizer class="solr.ICUTokenizerFactory"/>
     <filter class="solr.ICUFoldingFilterFactory"/>
     <filter class="solr.CJKWidthFilterFactory"/>
@@ -64,43 +61,26 @@
     <filter class="solr.KeywordRepeatFilterFactory"/>
       &stemmer;
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+    <filter class="edu.umich.lib.solr_filters.LeftAnchoredSearchFilterFactory"/>
+    <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
 
-<!-- exactish - a text type that only matches on the whole string, but with
-     case folding, removal of punctuation, etc.
-
-     This is a more gentle replacement for a String field, which is a bit too
-     extreme in its definition of matching for things like titles
-
-     For general use, this works only if you put in the whole search string
-     as a phrase.
-
-     However, it's probably a pretty good sort key as well if you make it unique
--->
-
 <fieldType name="exactish" class="solr.TextField" positionIncrementGap="&tpig;">
-  <analyzer>
-    <charFilter class="solr.ICUNormalizer2CharFilterFactory"/>
-    <charFilter class="solr.MappingCharFilterFactory" mapping="&char_expansion_file;"/>
-    <tokenizer class="solr.KeywordTokenizerFactory"/>
-    <filter class="solr.ICUFoldingFilterFactory"/>
-    <filter class="solr.CJKWidthFilterFactory"/>
-    <filter class="solr.CJKBigramFilterFactory"/>
-    <filter class="solr.DecimalDigitFilterFactory"/>
-    <filter class="solr.KeywordRepeatFilterFactory"/>
-    <!-- Some punctuation that should be turned into a space (probably just - and :). -->
-    <filter class="solr.PatternReplaceFilterFactory"
-            pattern="([:\-])" replacement=" " replace="all"
-            />
-
-    <!-- Remove all other punctuation -->
-    <filter class="solr.PatternReplaceFilterFactory"
-            pattern="(\p{Punct})" replacement="" replace="all"
-            />
-        <filter class="solr.TrimFilterFactory"/>
-   <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
-  </analyzer>
+<analyzer>
+  <charFilter class="solr.ICUNormalizer2CharFilterFactory"/>
+  <charFilter class="solr.MappingCharFilterFactory" mapping="&char_expansion_file;"/>
+  <tokenizer class="solr.ICUTokenizerFactory"/>
+  <filter class="solr.ICUFoldingFilterFactory"/>
+  <filter class="solr.CJKWidthFilterFactory"/>
+  <filter class="solr.CJKBigramFilterFactory"/>
+  <filter class="solr.DecimalDigitFilterFactory"/>
+  <filter class="solr.KeywordRepeatFilterFactory"/>
+  &stemmer;
+  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+  <filter class="edu.umich.lib.solr_filters.AnchoredSearchFilterFactory"/>
+  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+</analyzer>
 </fieldType>
 
 <!-- a simple text type that only strips trailing punctuation, currently used for the author facet -->
