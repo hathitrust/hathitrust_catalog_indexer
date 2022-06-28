@@ -36,12 +36,12 @@ extend Traject::UMichFormat::Macros
 require 'ht_traject/basic_macros'
 extend HathiTrust::BasicMacros
 
-if ENV["NO_DB"]
+if ENV["NO_DB"] or ENV["HT_NO_EXTERNAL_DATA"]
   require 'ht_traject/mock_oclc_resolution'
 else require 'ht_traject/oclc_resolution'
 end
 
-unless ENV['NO_REDIRECTS']
+if !(ENV['NO_REDIRECTS'] or ENV["HT_NO_EXTERNAL_DATA"])
   require 'ht_traject/redirects'
 end
 
@@ -70,7 +70,7 @@ each_record HathiTrust::Traject::Macros.setup
 
 to_field 'id', extract_marc('001', first: true)
 
-unless ENV['NO_REDIRECTS']
+unless ENV['NO_REDIRECTS'] or ENV["HT_NO_EXTERNAL_DATA"]
   to_field 'old_ids' do |_rec, acc, context|
     id = context.output_hash['id'].first
     acc.replace HathiTrust::Redirects.old_ids_for(id)
