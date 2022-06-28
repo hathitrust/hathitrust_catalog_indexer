@@ -154,7 +154,7 @@ to_field 'mainauthor_role', extract_marc('100e:110e:111e', trim_punctuation: tru
 to_field 'mainauthor_role', extract_marc('1004:1104:1114', translation_map: 'ht/relators')
 to_field 'mainauthor_just_name', extract_marc('100abc:110abc:111abc')
 
-to_field 'author', extract_marc_unless('100abcdq:110abcd:111abc:700abcdq:710abcd:711abc', skipWaSeSS)
+to_field 'author', extract_marc_unless("100abcdjq:110abcd:111acden:700abcdjq:710abcd:711acden", skipWaSeSS)
 to_field 'author2', extract_marc_unless('110ab:111ab:700abcd:710ab:711ab', skipWaSeSS)
 to_field 'author_top', extract_marc_unless('100abcdefgjklnpqtu0:110abcdefgklnptu04:111acdefgjklnpqtu04:700abcdejqux034:710abcdeux034:711acdegjnqux034:720a:765a:767a:770a:772a:774a:775a:776a:777a:780a:785a:786a:787a:245c', skipWaSeSS)
 to_field 'author_rest', extract_marc('505r')
