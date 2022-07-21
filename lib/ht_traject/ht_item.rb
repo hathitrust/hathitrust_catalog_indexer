@@ -88,7 +88,7 @@ module HathiTrust
         @intl
       end
 
-      PH = if ENV['NO_DB']
+      PH = if ENV['NO_DB'] or ENV["HT_NO_EXTERNAL_DATA"]
              require_relative 'ht_mock_print_holdings'
              HathiTrust::MockPrintHoldings
            else
