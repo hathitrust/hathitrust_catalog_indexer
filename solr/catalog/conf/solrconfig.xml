@@ -49,10 +49,7 @@
 
 
    <!-- Load up the libaries -->
-    <lib dir="${solr.install.dir}/contrib/analysis-extras/lucene-libs" regex=".*\.jar"/>
-    <lib dir="${solr.install.dir}/contrib/analysis-extras/lib" regex=".*\.jar"/>
-    <lib dir="${solr.solr.home}/lib" regex=".*\.jar"/>
-    <lib dir="${solr.solr.home}/../lib" regex=".*\.jar"/>
+    <lib dir="${solr.solr.home}/${solr.core.name}/conf/lib" regex=".*\.jar"/>
 
   <!-- The DirectoryFactory to use for indexes.
        
