@@ -1,42 +1,56 @@
-require 'httpclient'
-require 'zlib'
+#!/bin/bash
 
-filename = ARGV[0]
+if [ $# -lt 1 -o $# -gt 2 ]
+then
+  echo
+  echo "delete_ids (from the given file)"
+  echo
+  echo "USAGE:"
+  echo "    delete_ids <filename> <optional_logfile>"
+  echo
+  exit
+fi
 
+DEFAULT_WRITER="localhost"
 
-url = ENV['SOLR_URL'] + '/update'
+HERE=`dirname $0`
+SCRIPTDIR=`realpath $HERE`
+delfile=`realpath $1`
 
-unless url
-  raise "SOLR_URL environment variable not defined"
-end
+if [[ ! -z "$2" ]]; then
+    logfile=`realpath "$2"`
+fi
 
+# Make sure we're using a valid java
+# and get the utility scripts
+source $SCRIPTDIR/set_java_home.sh
+source $SCRIPTDIR/utils.sh
 
+# Put jruby in the path
+PATH=/htsolr/catalog/bin/jruby/bin:$PATH
 
+HOSTNAME=`hostname -s`
+TDIR=`realpath $SCRIPTDIR/..`
 
+log "Working on $HOSTNAME in $TDIR" $logfile
 
-client = HTTPClient.new
+# The whole ridiculous `tee` pipeline is in service of trying to output errors to STDOUT as well as the logfile, so
+# they show up in cron jobs. This might not be the place to do it, though...
 
-total = 0
-begin
-  file = File.open(filename)
-  if /\.gz\Z/.match(filename)
-    file = Zlib::GzipReader.new(file)
-  end
+if [ -f "$delfile" ] 
+then
+    export -f log
+    cd $TDIR
+    bundle exec jruby $SCRIPTDIR/delete_ids.rb "$delfile"
+    exit_status=$?
 
-  body = "<delete>"
-  file.each do |l|
-    body << "<id>#{l.chomp}</id>"
-    total += 1
-  end
-  body << "</delete>"
+else
+  log  "No indexing: Could not find delfile '$delfile'" $logfile
+fi
 
-  if total > 0
-    client.post(url, body, {'Content-Type' => 'text/xml'})  
-  else
-    puts "File #{filename} is empty"
-  end
-  puts "Deleted #{total} ids from #{url}\n\n"
-rescue Exception => e
-  puts "Problem deleting: #{e}"
-end
-    
+if [ ! -z $logfile ]; then
+    log "$(tail -1 $logfile)"
+fi
+
+exit $exit_status
+

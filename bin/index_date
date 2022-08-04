@@ -32,7 +32,7 @@ if [ -f "$delfile" ]
 then
   log  "Deleting from $delfile, targeting $SOLR_URL" $logfile
   cd $TDIR
-  delout=`bundle exec jruby $SCRIPTDIR/delete_ids $delfile`
+  delout=`$SCRIPTDIR/delete_ids $delfile`
   log "$delout" "$logfile"
 else
   log  "No Deletes: Could not find delfile '$delfile'" $logfile

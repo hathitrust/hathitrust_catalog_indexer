@@ -74,7 +74,7 @@
  http://wiki.apache.org/solr/SchemaXml
 -->
 
-<schema name="mirlyn_ht_catalog" version="0.1">
+<schema name="mirlyn_ht_catalog" version="1.6">
   <!-- attribute "name" is the name of this schema and is only used for display purposes.
        version="x.y" is Solr's version number for the schema syntax and
        semantics.  It should not normally be changed by applications.
@@ -188,6 +188,8 @@
       Unless this field is marked with required="false", it will be a required field
    -->
  <uniqueKey>id</uniqueKey>
+    <field name="deleted" type="boolean" indexed="true" stored="true" multiValued="false" default="false"/>
+
 
 
     <!-- IDs that used to be valid for this set of HTIDs -->
@@ -198,7 +200,7 @@
 
  <!-- Core Fields  -->
 
- <field name="id_int"          type="long"      indexed="true" stored="true"/>
+ <field name="id_int"          type="long"      indexed="true" stored="true" multiValued="false"/>
  <copyField source="id" dest="id_int"/>
 
  <field name="fullrecord"      type="string"     indexed="false" stored="true" docValues="false"/>

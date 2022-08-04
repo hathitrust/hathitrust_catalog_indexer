@@ -43,5 +43,5 @@ function commit() {
 
 function empty_solr() {
     log "Emptying $SOLR_URL"
-    curl  -H "Content-Type: application/json" -X POST -d'{"delete": {"query": "*:*"}}' "$SOLR_URL/update"
+    curl  -H "Content-Type: application/json" -X POST -d'{"delete": {"query": "deleted:(NOT true)"}}' "$SOLR_URL/update"
 }
