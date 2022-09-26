@@ -1,6 +1,6 @@
 # First, transform the MARC in JSON into Solr documents
 
-FROM jruby:9.3 AS traject
+FROM --platform=$BUILDPLATFORM jruby:9.3 AS traject
 
 ARG UNAME=app
 ARG UID=1000
@@ -33,7 +33,7 @@ ENV NO_DB 1
 # records-to-index.json should be in ./example-index
 RUN bin/tindex json example-index/records-to-index.jsonl
 
-FROM solr:8.11 AS indexer
+FROM --platform=$BUILDPLATFORM solr:8.11 AS indexer
 
 ENV SOLR_PORT=9033
 

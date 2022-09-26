@@ -50,6 +50,12 @@ docker build . -f example-index/Dockerfile -t my-sample-solr
 and run e.g. `docker run -p 9033:9033 my-sample-solr`, or use in another
 `docker-compose.yml`, etc.
 
+To generate a multi-platform image, follow the instructions from https://docs.docker.com/build/building/multi-platform/ to get set up with multi-platform capability, then e.g.
+
+```
+docker buildx build --platform linux/amd64,linux/arm64 . -f example-index/Dockerfile -t ghcr.io/hathitrust/catalog-solr-sample:some-tag --push
+```
+
 ### Index one file into Solr
 
 Index a file of records without using the database or hardcoded filesystem paths:
