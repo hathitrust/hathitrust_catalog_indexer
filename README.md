@@ -39,7 +39,10 @@ Output will be in `debug.json`.
 
 This will build a docker image with a Solr core pre-loaded with a set of records.
 
-* As above, put records you want to load in `example-index/records-to-index.jsonl`
+* As above, put records you want to load in
+  `example-index/records-to-index.jsonl`. Some records are included with this
+repository; this is a set of 2,000 records from a variety of contributors that
+were updated in HathiTrust on May 1, 2022.
 
 * Then run:
 
@@ -50,11 +53,16 @@ docker build . -f example-index/Dockerfile -t my-sample-solr
 and run e.g. `docker run -p 9033:9033 my-sample-solr`, or use in another
 `docker-compose.yml`, etc.
 
-To generate a multi-platform image, follow the instructions from https://docs.docker.com/build/building/multi-platform/ to get set up with multi-platform capability, then e.g.
+A multi-platform (amd64/arm64) image with the sample records pre-loaded is
+available:
 
 ```
-docker buildx build --platform linux/amd64,linux/arm64 . -f example-index/Dockerfile -t ghcr.io/hathitrust/catalog-solr-sample:some-tag --push
+docker pull ghcr.io/hathitrust/catalog-solr-sample
 ```
+
+The sample HathiTrust catalog records are made available for development and
+testing purposes only, and are not intended for further re-use in other
+contexts.
 
 ### Index one file into Solr
 
