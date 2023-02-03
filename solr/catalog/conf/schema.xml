@@ -336,6 +336,9 @@
  <copyField source="topic" dest="topicProper"/>
  <copyField source="genre" dest="genreStr"/>
 
+<field name="lc_subject_display" type="string" indexed="false" multiValued="true"/>
+<field name="non_lc_subject_display" type="string" indexed="false" multiValued="true"/>
+
  
  <!-- Time and Place -->
 
