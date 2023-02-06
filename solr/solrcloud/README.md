@@ -113,7 +113,7 @@ For example for [the HathiTrust catalog](https://github.com/hathitrust/hathitrus
 ```bash
 git clone https://github.com/hathitrust/hathitrust_catalog_indexer
 cd hathitrust_catalog_indexer/solr/catalog/conf
-zip -r ../ht_catalog_configset.zip
+zip -r ../ht_catalog_configset.zip .
 cd ..
 ```
 
