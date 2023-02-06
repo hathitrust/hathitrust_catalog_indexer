@@ -121,6 +121,9 @@ cd ..
 
 Ensure the port forwarding is running and that you have an environment variable with the Solr admin password, then use curl to upload the configuration:
 
+> **Warning**
+> This will likely not work well if the config includes custom .jars. If so, the best course of action is either to bake them into the solr image (if they are unlikely to change) or to use the Solr plugin system (see https://github.com/mlibrary/solr-cloud-package-manager-demo)
+
 ```bash
 CONFIGSET=ht_catalog_configset
 curl -u admin:$SOLR_PASS -X PUT \
@@ -148,7 +151,7 @@ curl -u admin:$SOLR_PASS "http://localhost:8983/solr/catalog/admin/ping"
 You should now be able to index and query just as you would to a standalone Solr, although you'll need to use HTTP basic authentication. By default you'll need to use the `admin` user to index; there is a `solr` user as well created by default that you can use for querying. You can get the password similar to how you got the admin password:
 
 ```bash
-echo $(kubectl -n $SOLRCLOUD get secret htsolr-solrcloud-security-bootstrap -o jsonpath='{.data.solr}' | base64 -d)
+echo $(kubectl -n $SOLRCLOUD get secret $SOLRCLOUD-solrcloud-security-bootstrap -o jsonpath='{.data.solr}' | base66 -d)
 ```
 
 With traject, the `SolrJsonWriter` can use HTTP basic authentication by using a solr URL of the form `http://user:pass@host/solr` (see https://www.rubydoc.info/gems/traject/Traject/SolrJsonWriter). Note this may cause issues with non-alphanumeric characters in the password, and URL-encoding these  characters doesn't appear to work with traject and the underlying httpclient gem it uses. If need be, change the password from the Solr admin interface under "security"; using a `!` as the required special character seems to work.
