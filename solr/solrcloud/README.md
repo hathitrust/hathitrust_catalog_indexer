@@ -104,6 +104,12 @@ Now that Solr is up and running, we need to get the configuration for our Solr c
 
 To date, we have only used static Solr configuration via a `solrconfig.xml` typically managed alongside the indexing configuration, rather than using the [Schema API](https://solr.apache.org/guide/8_11/schema-api.html) to dynamically define fields.
 
+Make sure that `solrconfig.xml` references where you put the jars, typically:
+
+```xml
+<lib dir="${solr.solr.home}/../lib" regex=".*\.jar"/>
+```
+
 ### Prepare configuration
 
 Zip up the complete core configuration, including `schema.xml` and anything it references. There should not be any subdirectories in the zip; i.e. the files should not be in the `conf` directory.
