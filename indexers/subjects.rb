@@ -1,7 +1,7 @@
 $:.unshift "#{File.dirname(__FILE__)}/../lib"
 
-require_relative "../lib/hathitrust/subjects"
-extend Traject::Macros::HathiTrust::SubjectMacros
+require_relative "../lib/traject/macros/hathitrust/subject"
+extend Traject::Macros::HathiTrust::Subject
 
 ################################
 ######## SUBJECT / TOPIC  ######
@@ -36,6 +36,6 @@ to_field "topic", extract_marc_unless(%w(
 
   ), skip_FAST, :trim_punctuation => true)
 
-to_field 'lc_subject_display', lcsh_subjects
-to_field 'non_lc_subject_display', non_lcsh_subjects
+to_field 'lc_subject_display', lcsh_subjects, unique
+to_field 'non_lc_subject_display', non_lcsh_subjects, unique
 
