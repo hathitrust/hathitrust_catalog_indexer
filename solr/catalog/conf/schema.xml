@@ -338,6 +338,9 @@
 
 <field name="lc_subject_display" type="string" indexed="false" multiValued="true"/>
 <field name="non_lc_subject_display" type="string" indexed="false" multiValued="true"/>
+<field name="subject_display" type="string" indexed="false" multiValued="true"/>
+<copyField source="lc_subject_display" dest="subject_display"/>
+<copyField source="non_lc_subject_display" dest="subject_display"/>
 
  
  <!-- Time and Place -->

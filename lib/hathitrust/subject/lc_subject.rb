@@ -7,7 +7,9 @@ module HathiTrust::Subject
   class LCSubject
     include HathiTrust::Subject::Normalize
 
-    # @param [MARC::DataField] field
+    # Create an LC Subject object from the passed field
+    # @param [MARC::DataField] field _that has already been determined to be LC_
+    # @return [LCSubject] An LC Subject or appropriate subclass
     def self.from_field(field)
       case field.tag
         when "658"
@@ -19,9 +21,11 @@ module HathiTrust::Subject
       end
     end
 
+    # Define an LC subject field as any 6xx with ind2==0
     # @param [MARC::DataField] field
+    # @return [Boolean]
     def self.lc_subject_field?(field)
-      ('600'..'699').cover?(field.tag) and
+      SUBJECT_FIELDS.include?(field.tag) and
         field.indicator2 == '0'
     end
 
@@ -29,7 +33,7 @@ module HathiTrust::Subject
       @field = field
     end
 
-    def alphabetic_subfields
+    def subject_data_subfield_codes
       @field.select { |sf| ('a'..'z').cover?(sf.code) }
     end
 
@@ -37,13 +41,16 @@ module HathiTrust::Subject
       "--"
     end
 
+    # Only some fields get delimiters before them in a standard LC Subject field
+    DELIMITED_FIELDS = %w(v x y z)
+
     # Most subject fields are constructed by joining together the alphabetic subfields
     # with either a '--' (before a $v, $x, $y, or $z) or a space (before everything else).
     # @return [String] An appropriately-delimited string
     def subject_string
-      str = alphabetic_subfields.map do |sf|
+      str = subject_data_subfield_codes.map do |sf|
         case sf.code
-          when 'v', 'x', 'y', 'z'
+          when *DELIMITED_FIELDS
             "#{delimiter}#{sf.value}"
           else
             " #{sf.value}"
@@ -56,8 +63,10 @@ module HathiTrust::Subject
 
   class LCSubject658 < LCSubject
 
+    # Format taken from the MARC 658 documentation
+    # @return [String] Subject string ready for output
     def subject_string
-      str = alphabetic_subfields.map do |sf|
+      str = subject_data_subfield_codes.map do |sf|
         case sf.code
           when 'b'
             ": #{sf.value}"
@@ -77,8 +86,11 @@ module HathiTrust::Subject
   # joined together with the delimiter
   class LCSubjectHierarchical < LCSubject
 
+    # At least one subject field in LC, the 652, just gets delimiters everywhere
+    # Format taken from the MARC 652 documentation
+    # @return [String] Subject string ready for output
     def subject_string
-      normalize(alphabetic_subfields.map(&:value).join("--"))
+      normalize(subject_data_subfield_codes.map(&:value).join(delimiter))
     end
   end
 

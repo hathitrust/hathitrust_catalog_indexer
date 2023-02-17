@@ -38,4 +38,3 @@ to_field "topic", extract_marc_unless(%w(
 
 to_field 'lc_subject_display', lcsh_subjects, unique
 to_field 'non_lc_subject_display', non_lcsh_subjects, unique
-
