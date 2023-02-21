@@ -502,6 +502,10 @@
      </lst>
   </requestHandler>
 
+  <requestHandler name="/mlt" class="solr.MoreLikeThisHandler">
+    <str name="mlt.fl">allfields</str>
+  </requestHandler>
+
   <initParams path="/update/**,/query,/tvrh,/elevate,/spell">
     <lst name="defaults">
       <str name="wt">json</str>
