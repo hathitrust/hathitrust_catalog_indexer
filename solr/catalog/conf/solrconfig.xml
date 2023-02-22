@@ -49,7 +49,8 @@
 
 
    <!-- Load up the libaries -->
-    <lib dir="${solr.solr.home}/${solr.core.name}/conf/lib" regex=".*\.jar"/>
+  <lib dir="${solr.solr.home}/${solr.core.name}/lib" regex=".*\.jar"/>
+  <lib dir="${solr.solr.home}/${solr.core.name}/conf/lib" regex=".*\.jar"/>
 
   <!-- The DirectoryFactory to use for indexes.
        
@@ -499,6 +500,10 @@
        <str name="indent">true</str>
        <str name="df">text</str>
      </lst>
+  </requestHandler>
+
+  <requestHandler name="/mlt" class="solr.MoreLikeThisHandler">
+    <str name="mlt.fl">allfields</str>
   </requestHandler>
 
   <initParams path="/update/**,/query,/tvrh,/elevate,/spell">

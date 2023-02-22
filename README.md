@@ -120,6 +120,24 @@ Solr should be reachable via the `solr-sdr-catalog` hostname.
 
 ## How to do the basics
 
+
+### Putting a new solr configuration into place
+
+* On `beeftea-2`, go to `/htsolr/catalog/bin/ht_catalog_indexer` and `git 
+  pull` to get up to date
+* Shut down the catalog indexing solr with `systemctl stop 
+  solr-current-catalog`. 
+* Copy the new configuration over:
+  * `cd /htsolr/catalog/cores/catalog`
+  * `rm -rf conf`
+  * `rm core.properties`
+  * `cp -r /htsolr/catalog/bin/ht_catalog_indexer/solr/catalog/conf .`
+* (Optional) If your new solr config requires a full reindex, go ahead and 
+  get rid of the data with `rm -rf data`
+* Fire solr back up: `systemctl start solr-current-catalog`
+* Give it a minute and then go to http://beeftea-2.umdl.umich.edu:9033/solr` to make sure the core came back up.
+* Do whatever indexing needs doing.
+
 ### Indexing
 
 Note that "today's file" is "the file that became available today", which 
@@ -136,9 +154,9 @@ Re-build the entire index based on the last full file, making sure
 everything is up-to-date:
 * `bin/fullindex <optional_log_file>`
 
-Note that the fullindex file _does not contain the updates from the update 
-file with the same embedded date_! The `fullindex` script takes care of that, 
-but 
+Note that the fullindex file _does not contain that day's updates_ (e.g., on 
+July 1, you need to index both the `zephir_full_20230630` file _and_ the `zephir_upd_20230630` file. 
+The `fullindex` script takes care of that, but 
 if running stuff by hand keep in mind that you need to index the full file 
 and the update file for that day as well.
 

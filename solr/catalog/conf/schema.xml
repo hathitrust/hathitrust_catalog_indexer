@@ -205,7 +205,7 @@
 
  <field name="fullrecord"      type="string"     indexed="false" stored="true" docValues="false"/>
 
- <field name="allfields"       type="text"       indexed="true" stored="false"/>
+ <field name="allfields"       type="text"       indexed="true" stored="false" termVectors="true"/>
  <field name="allfieldsProper" type="text_nostem" indexed="true" stored="false"/>
 
  <copyField source="allfields" dest="allfieldsProper"/>
@@ -267,7 +267,7 @@
  <field name="mainauthor_just_name" type="string" indexed="false" stored="true" multiValued="true"/>
  <field name="mainauthor_role" type="string" indexed="true" stored="true" multiValued="true"/>
 
- <field name="author"      type="text_nostem" indexed="true" stored="true"    multiValued="true"/>
+ <field name="author"      type="text_nostem" indexed="true" stored="true"    multiValued="true" termVectors="true"/>
  <field name="authorStr"   type="textFacet"     indexed="true" stored="true"   multiValued="true" />
  <field name="author_top"  type="text_nostem" indexed="true" stored="true"   multiValued="true" />
  <field name="author_rest" type="text_nostem" indexed="true" stored="true"   multiValued="true" />
@@ -283,7 +283,7 @@
  <!-- Title fields -->
 
  <field name="titleSort"        type="exactish" indexed="true"  stored="true" multiValued="false"/>
- <field name="title"            type="text"          indexed="true"  stored="true"  multiValued="true" />
+ <field name="title"            type="text"          indexed="true"  stored="true"  multiValued="true" termVectors="true" />
  <field name="title_l"          type="text_leftjustified" indexed="true" stored="false" multiValued="true" />
  <field name="vtitle"           type="string"        indexed="false" stored="true" multiValued="false" />
  <field name="titleProper"      type="text_nostem"    indexed="true"  stored="false" multiValued="true" />
@@ -325,7 +325,7 @@
 
  <!-- Categorization -->
 
- <field name="topic"       type="text"       indexed="true" stored="false" multiValued="true"  omitNorms="true"/>
+ <field name="topic"       type="text"       indexed="true" stored="false" multiValued="true"  omitNorms="true" termVectors="true"/>
  <field name="topicProper" type="text_nostem" indexed="true" stored="false" multiValued="true"  omitNorms="true"  />
  <field name="topicStr"    type="string" indexed="true" stored="true"  multiValued="true"/>
  <field name="lcshID"      type="string"     indexed="true" stored="true"  multiValued="true"/>
@@ -335,6 +335,12 @@
  <copyField source="topic" dest="topicStr"/>
  <copyField source="topic" dest="topicProper"/>
  <copyField source="genre" dest="genreStr"/>
+
+<field name="lc_subject_display" type="string" indexed="false" multiValued="true"/>
+<field name="non_lc_subject_display" type="string" indexed="false" multiValued="true"/>
+<field name="subject_display" type="string" indexed="false" multiValued="true"/>
+<copyField source="lc_subject_display" dest="subject_display"/>
+<copyField source="non_lc_subject_display" dest="subject_display"/>
 
  
  <!-- Time and Place -->
