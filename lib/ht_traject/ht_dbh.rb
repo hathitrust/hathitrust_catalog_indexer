@@ -1,4 +1,4 @@
-require_relative '../ht_secure_data'
+require_relative '../ht_db_config'
 require 'sequel'
 
 
