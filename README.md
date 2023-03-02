@@ -168,7 +168,7 @@ Adding a field requires two things:
 
 After that, of course, you need to get the solr conf directory on the 
 catalog indexing solr updated, restart that solr, and then reindex 
-everything. 
+everything. See [solr/README.md](solr/README.md).
 
 While solr support for dynamic fields has gotten pretty good, we've never 
 used it.
