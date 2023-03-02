@@ -14,6 +14,7 @@ touch /htsolr/catalog/flags/STOPCATALOGRELEASE
 cd /htsolr/catalog/cores
 systemctl stop solr-current-catalog
 mv catalog "catalog_$(date %Y%m%d)"
+# cd in there and rm core.properties
 cp -r /htsolr/catalog/bin/ht_catalog_indexer/solr/catalog .
 systemctl start solr-current-catalog; sleep 10
 # Sanity check to see if it's up and returns a 200 (empty) set of documents
