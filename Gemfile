@@ -29,5 +29,6 @@ gem 'pry'
 gem 'simple_solr_client'
 
 gem 'zinzout'
+gem 'thor'
 
 # gem 'hanami-cli'
