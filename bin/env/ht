@@ -56,5 +56,5 @@ export delfile=`find_del_file_for_date "$datestr"`
 
 if [ -z $READER ]
 then
-  export READER="ndj"
+  export READER="jsonl"
 fi

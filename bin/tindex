@@ -23,7 +23,7 @@ then
   echo "  - 'logfile' is the name of the log file"
   echo 
   echo "You can set the environment variable READER to the name of the reader config file (without"
-  echo "the .rb) if you want to override whatever is normally used (ndj for HT, alephsequential for UM)"
+  echo "the .rb) if you want to override whatever is normally used (jsonl for HT, alephsequential for UM)"
   echo
   exit 1
 fi
@@ -32,7 +32,7 @@ fi
 HERE=`dirname $0`
 SCRIPTDIR=`realpath $HERE`
 
-READER=ndj
+READER=jsonl
 
 WRITER=$1
 

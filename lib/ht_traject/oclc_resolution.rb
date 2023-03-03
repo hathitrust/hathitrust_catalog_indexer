@@ -1,4 +1,6 @@
-require_relative 'ht_dbh'
+# frozen_string_literal: true
+
+require_relative "../services"
 
 module HathiTrust
   class OCLCResolution
@@ -8,7 +10,7 @@ module HathiTrust
                   where o2.canonical = o1.canonical and (o1.oclc = ? OR o1.canonical = ?)"
 
 
-      raw_query = HathiTrust::DBH::DB[sql_expr, :$oclc, :$oclc]
+      raw_query = Services[:db][sql_expr, :$oclc, :$oclc]
       @query = raw_query.prepare(:select, :oclc_concordance)
     end
 
