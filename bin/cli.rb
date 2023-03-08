@@ -6,12 +6,16 @@
 # if a DB connection is needed
 
 require "date"
+#require "httpx"
 require "logger"
 require "open3"
 require "pry"
 require "socket"
 require "thor"
 require "yaml"
+require 'zlib'
+
+require_relative "../lib/cli"
 
 unless ENV["NO_DB"]
   require_relative "../lib/ht_traject/ht_dbh"
@@ -211,6 +215,37 @@ class CLI < Thor
   def commit
     logger.info "Committing"
     `curl  -H "Content-Type: application/json" -X POST -d'{"commit": {}}' "#{solr_url}/update?wt=json"`
+  end
+
+  def deletes_url
+    ENV['SOLR_URL'] + '/update'
+  end
+
+  def process_deletes(deletes_file)
+    client = HTTPX.with(headers: {'Content-Type' => 'application/json'})
+
+    #def deleted_doc(id)
+    #  { id: id, deleted: true }
+    #end
+
+    total = 0
+    begin
+      file = File.open(deletes_file)
+      if /\.gz\Z/.match(deletes_file)
+        file = Zlib::GzipReader.new(file)
+      end
+      docs = file.map do |line|
+        deleted_doc({ id: line.chomp, deleted: true })
+      end
+      if docs.size > 0
+        client.post(url, json: docs)
+      else
+        logger.error "File #{deletes_file} is empty"
+      end
+      logger.info "Deleted #{docs.size} ids from #{url}\n\n"
+    rescue Exception => e
+      puts "Problem deleting: #{e}"
+    end
   end
 end
 

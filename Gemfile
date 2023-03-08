@@ -1,9 +1,13 @@
 source 'https://rubygems.org'
 
-group :development do
+group :development, :test do
   gem 'bundler', '~>2.0'
   gem 'minitest'
   gem 'rake', '~> 12.3'
+  gem "standard"
+  gem "rspec"
+  gem "simplecov"
+  gem "simplecov-lcov"
 end
 
 gem 'httpclient'
@@ -19,7 +23,7 @@ gem 'date_named_file'
 if defined? JRUBY_VERSION
   gem 'jdbc-mysql'
   gem 'traject-marc4j_reader'
-#  gem 'jruby-launcher', '~>1.1'
+  # gem 'jruby-launcher', '~>1.1'
   gem 'naconormalizer'
 end
 
@@ -30,5 +34,3 @@ gem 'simple_solr_client'
 
 gem 'zinzout'
 gem 'thor'
-
-# gem 'hanami-cli'

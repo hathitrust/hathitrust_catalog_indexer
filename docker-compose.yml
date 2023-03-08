@@ -18,5 +18,16 @@ services:
     ports:
       - "9033:9033"
 
+  test:
+    build: .
+    volumes:
+      - .:/app
+      - gem_cache:/gems
+    command: bash -c "wait-for solr-sdr-catalog:9033 && bundle exec rspec"
+    environment:
+      SOLR_URL: http://solr-sdr-catalog:9033/solr/catalog
+    depends_on:
+      - solr-sdr-catalog
+
 volumes:
   gem_cache:
