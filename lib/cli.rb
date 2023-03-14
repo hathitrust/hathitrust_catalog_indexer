@@ -1,5 +1,5 @@
 module HathiTrust
   module CLI
-    require "lib/environment"
+    require_relative "cli/environment"
   end
 end

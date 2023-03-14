@@ -6,7 +6,9 @@ module HathiTrust
       JRUBY_BIN_PATH = "/htsolr/catalog/bin/jruby/bin"
       
       def setup
-        ENV["JRUBY_OPTS"] = "--server -J-Xmx2048m -Xcompile.invokedynamic=true"
+        # This goes to the Dockerfile
+        # This goes into a .env/dotenv for the beeves tea
+        ENV["JRUBY_OPTS"] = "-J-Xmx2048m -Xcompile.invokedynamic=true"
         # Avoid spamming PATH with repeated calls
         unless ENV["PATH"].split(":").any? JRUBY_BIN_PATH
           ENV["PATH"] = ENV["PATH"].split(":").unshift(JRUBY_BIN_PATH).join(":")
