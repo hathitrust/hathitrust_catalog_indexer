@@ -5,27 +5,70 @@ All indexing is done on the "reindexing solr", currently
 every night to the production servers, which we never actually need to 
 touch.
 
-Deploying a new solr configuration is as follows:
+Deploying a new solr configuration is as follows. First, in
+`/htsolr/catalog/bin/ht_catalog_indexer`, check that there aren't any
+unexpected uncommitted changes with `git status`. It's expected that the
+translation maps such as `collection_code_to_original_from.yaml` will have
+changed, as they're generated from the database on each run. Stash or commit
+any other changes as needed. Then, get the new code:
 
 ```shell
-cd /htsolr/catalog/bin/ht_catalog_indexer
-git pull origin main # get the new code
+git pull origin main
+```
+
+To prevent the catalog from being released before we verify it is correct:
+
+```shell
 touch /htsolr/catalog/flags/STOPCATALOGRELEASE 
+```
+
+Then: stop solr, move the existing catalog core aside, copy the new schema in place,
+`chmod` the new core so Solr can write to it, and restart solr:
+
+```shell
 cd /htsolr/catalog/cores
 systemctl stop solr-current-catalog
-mv catalog "catalog_$(date %Y%m%d)"
-# cd in there and rm core.properties
+mv catalog "catalog_$(date +%Y%m%d)"
+rm "catalog_$(date %Y%m%d)/core.properties" # ensure solr doesn't load the backup as a core
 cp -r /htsolr/catalog/bin/ht_catalog_indexer/solr/catalog .
-systemctl start solr-current-catalog; sleep 10
-# Sanity check to see if it's up and returns a 200 (empty) set of documents
+chmod o+w /htsolr/catalog/cores/catalog
+sudo systemctl start solr-current-catalog; sleep 10
+```
+
+Do a basic check to see if it's up and returns HTTP 200 with an empty)set of documents:
+
+```shell
 curl 'http://localhost:9033/solr/catalog/select?q=*:*&wt=json' | json_xs
+```
+
+Then, do a full catalog index:
+```shell
 cd /htsolr/catalog/bin/ht_catalog_indexer
 /usr/bin/nohup bin/fullindex "logs/full_$(date +%Y%m%d).txt"
-# wait a few hours
-# point a catalog instance directly at beeftea-2 to make sure it works well
-rm -rf "/htsolr/catalog/cores/catalog_$(date %Y%m%d)"
-rm /htsolr/catalog/flags/STOPCATALOGRELEASE
+```
+
+You can follow the logfile listed above for progress; the full index typically takes 
+several hours.
+
+You can then point a catalog instance directly at this "catalog build" solr to ensure
+everything looks OK. Change (for example) `/htapps/dev-1.catalog/web/conf/solrURL.ini`
+to contain:
+
+```ini
+url = http://beeftea-2:9033/solr/
+full_url = http://beeftea-2:9033/solr/catalog/
+```
+
+Then, remove the set-aside copy and the flag stopping release:
 
 ```
+rm -rf "/htsolr/catalog/cores/catalog_$(date +%Y%m%d)"
+rm /htsolr/catalog/flags/STOPCATALOGRELEASE
+```
+
+N.B.: If, after the new catalog is released, you discover problems and need to roll back, 
+this can be done by manually adjusting the catalog release script 
+`/l/local/bin/index-release-catalog` on `squishee-2` and `slurpee-2` to point 
+to a snapshot from a particular previous date.
 
 
