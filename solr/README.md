@@ -19,15 +19,16 @@ To prevent the catalog from being released before we verify it is correct:
 touch /htsolr/catalog/flags/STOPCATALOGRELEASE 
 ```
 
-Then: stop solr, move the existing catalog core aside, copy the new schema in place, 
-and restart solr:
+Then: stop solr, move the existing catalog core aside, copy the new schema in place,
+`chmod` the new core so Solr can write to it, and restart solr:
 
 ```shell
 cd /htsolr/catalog/cores
 systemctl stop solr-current-catalog
-mv catalog "catalog_$(date %Y%m%d)"
+mv catalog "catalog_$(date +%Y%m%d)"
 rm "catalog_$(date %Y%m%d)/core.properties" # ensure solr doesn't load the backup as a core
 cp -r /htsolr/catalog/bin/ht_catalog_indexer/solr/catalog .
+chmod o+w /htsolr/catalog/cores/catalog
 sudo systemctl start solr-current-catalog; sleep 10
 ```
 
@@ -58,7 +59,7 @@ full_url = http://beeftea-2:9033/solr/catalog/
 Then, remove the set-aside copy and the flag stopping release:
 
 ```
-rm -rf "/htsolr/catalog/cores/catalog_$(date %Y%m%d)"
+rm -rf "/htsolr/catalog/cores/catalog_$(date +%Y%m%d)"
 rm /htsolr/catalog/flags/STOPCATALOGRELEASE
 ```
 
