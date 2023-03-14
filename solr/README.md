@@ -5,11 +5,14 @@ All indexing is done on the "reindexing solr", currently
 every night to the production servers, which we never actually need to 
 touch.
 
-Deploying a new solr configuration is as follows. First, get the new code:
+Deploying a new solr configuration is as follows. First, in
+`/htsolr/catalog/bin/ht_catalog_indexer`, check that there aren't any
+unexpected uncommitted changes with `git status`. It's expected that the
+translation maps such as `collection_code_to_original_from.yaml` will have
+changed, as they're generated from the database on each run. Stash or commit
+any other changes as needed. Then, get the new code:
 
 ```shell
-cd /htsolr/catalog/bin/ht_catalog_indexer
-# verify there is nothing uncommitted with git status; commit or git stash as needed
 git pull origin main
 ```
 
