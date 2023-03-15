@@ -2,39 +2,34 @@
 
 # frozen_string_literal: true
 
-# FIXME: use require_relative 'some_path/ht_db_config'
-# if a DB connection is needed
-
 require "date"
 require "date_named_file"
+require "dotenv"
 require "httpx"
-require "logger"
-#require "open3"
 require "pry"
 require "socket"
 require "thor"
+require "traject"
 require "yaml"
-require 'zlib'
+require "yell"
+require "zlib"
 
 unless ENV["NO_DB"]
   require_relative "ht_traject/ht_dbh"
 end
 
-# Logs errors to STDERR as well as the log
-class CopyLogger < Logger
-  def error message
-    STDERR.puts message
-    super message
-  end
-end
-
 module CICTL
   class CICTL < Thor
-    class_option :verbose, :type => :boolean
+    class_option :verbose, type: :boolean
     attr_accessor :logfile_path
 
     def self.exit_on_failure?
       true
+    end
+
+    def initialize(args = [], local_options = {}, config = {})
+      Dotenv.load
+      super args, local_options, config
     end
 
     desc "index_file FILE (LOGFILE)", "index a single file"
@@ -44,14 +39,13 @@ module CICTL
     end
 
     desc "index_date YYYYMMDD (LOGFILE)", "run the catchup (delete and index) for a particular date"
-    option :reader, :type => :string, :banner => "<reader>"
-    option :writer, :type => :string, :banner => "<writer>"
+    option :reader, type: :string, banner: "<reader>"
+    option :writer, type: :string, banner: "<writer>"
     def index_date(date_string, logfile = nil)
       self.logfile_path = File.expand_path(logfile) if logfile
-      setup_environment
       delfile = del_file_for_date(date_string)
       if File.exist? delfile
-        logger.info  "Deleting from #{delfile}, targeting #{ENV["SOLR_URL"]}"
+        logger.info "Deleting from #{delfile}, targeting #{ENV["SOLR_URL"]}"
         process_deletes delfile
       else
         logger.warn "No deletes: could not find delfile '#{delfile}'"
@@ -66,10 +60,9 @@ module CICTL
     end
 
     desc "catchup_today (LOGFILE)", "run the catchup (delete and index) for last night's files"
-    option :reader, :type => :string, :banner => "<reader>"
-    option :writer, :type => :string, :banner => "<writer>"
+    option :reader, type: :string, banner: "<reader>"
+    option :writer, type: :string, banner: "<writer>"
     def catchup_today(logfile = nil)
-      puts "OPTIONS: #{options}"
       # HT's "today" file is dated yesterday
       yesterday = (Date.today - 1).strftime("%Y%m%d")
       # We'll use the actual date in the logfile, though
@@ -100,11 +93,10 @@ module CICTL
 
     def run_traject(marcfile)
       # Note: hostname will likely be gibberish under Docker
-      logger.info "Working on #{Socket.gethostname} in #{hathitrust_catalog_indexer_path}"
+      logger.info "Working on #{Socket.gethostname} in #{tdir}"
       unless File.exist? marcfile
         fatal "No indexing: Could not find marcfile '#{marcfile}'"
       end
-      #setup_environment
       if File.exist? reader_path
         logger.debug "reader at #{reader_path}"
       else
@@ -116,35 +108,30 @@ module CICTL
         fatal "Can't find writer #{writer_path}"
       end
       update_collection_map
-      call_traject_binary(marcfile)
+      call_indexer marcfile
     end
 
-    def call_traject_binary(marcfile)
+    def call_indexer(marcfile)
       logger.info "Indexing from #{marcfile}, reader #{reader_path} writer #{writer_path} (#{ENV["SOLR_URL"]})"
-
-      cmd = ["bundle exec traject",
-        "-c #{reader_path}",
-        "-c #{writer_path}",
-        "-c #{tdir}/indexers/common.rb",
-        "-c #{tdir}/indexers/common_ht.rb",
-        "-c #{tdir}/indexers/ht.rb",
-        "-c #{tdir}/indexers/subjects.rb",
-        "-s log.file=STDOUT",
-        "#{marcfile}"
-      ].join(" ")
-
-      logger.debug "Indexing command '#{cmd}'"
-      # Keep Open3 quiet when processing is interrupted with Ctrl-C.
-      Thread.report_on_exception = false
-      stdout_str, stderr_str, code = Open3.capture3(cmd)
-      if stdout_str.length.positive?
-        logger.info "traject output: #{stdout_str}"
-      end
-      if stderr_str.length.positive?
-        logger.error "traject error: #{stderr_str}"
-      end
-      if !code.success?
+      success = indexer.process File.open(marcfile, "r")
+      unless success
         fatal "traject returned #{code.exitstatus}, shutting down"
+      end
+    end
+
+    def indexer
+      @indexer ||= begin
+        config_paths = [
+          reader_path,
+          writer_path,
+          "#{tdir}/indexers/common.rb",
+          "#{tdir}/indexers/common_ht.rb",
+          "#{tdir}/indexers/ht.rb",
+          "#{tdir}/indexers/subjects.rb"
+        ]
+        Traject::Indexer::MarcIndexer.new(logger: logger) do |ind|
+          config_paths.each { |config_path| load_config_file(config_path) }
+        end
       end
     end
 
@@ -164,17 +151,22 @@ module CICTL
       db[sql].order(:collection).each do |h|
         ccof[h[:collection].downcase] = h[:name]
       end
-      tmap_dir = File.join(hathitrust_catalog_indexer_path, 'lib', 'translation_maps', 'ht')
-      File.open(File.join(tmap_dir, 'collection_code_to_original_from.yaml'), 'w:utf-8') do |f|
+      tmap_dir = File.join(hathitrust_catalog_indexer_path, "lib", "translation_maps", "ht")
+      File.open(File.join(tmap_dir, "collection_code_to_original_from.yaml"), "w:utf-8") do |f|
         f.puts ccof.to_yaml
       end
     end
 
     def logger
-      @logger ||= begin
-        target = logfile_path ? File.open(logfile_path, 'a+') : STDOUT
-        level = options[:verbose] ? Logger::DEBUG : Logger::INFO
-        Logger.new(target, level: level)
+      @logger ||= Yell.new do |l|
+        l.level = options[:verbose] ? "gte.debug" : "gte.info"
+        if logfile_path
+          l.adapter :file, logfile_path
+        else
+          l.adapter :stdout, level: [:debug, :info, :warn]
+        end
+        # Always log errors to STDOUT even if there is a log file.
+        l.adapter :stderr, level: [:error, :fatal]
       end
     end
 
@@ -184,21 +176,12 @@ module CICTL
       exit 1
     end
 
-    # Do various JRuby / Java setup activities.
-    # Only runs once to avoid spamming PATH.
-    def setup_environment
-      return if @setup_environment_finished
-      logger.info "Setting up JRuby/Java environment"
-      ENV["JRUBY_OPTS"] = "--server -J-Xmx2048m -Xcompile.invokedynamic=true"
-      ENV["PATH"] = ENV["PATH"].split(":").unshift("/htsolr/catalog/bin/jruby/bin").join(":")
-      ENV.delete "JAVA_HOME"
-      ENV["SOLR_URL"] ||= "http://localhost:9033/solr/catalog"
-      @setup_environment_finished = true
+    def solr_url
+      ENV["SOLR_URL"]
     end
 
-    def solr_url
-      setup_environment
-      ENV["SOLR_URL"]
+    def deletes_url
+      solr_url + "/update"
     end
 
     # The top-level repo path.
@@ -207,36 +190,33 @@ module CICTL
     def hathitrust_catalog_indexer_path
       File.expand_path(File.join(File.dirname(__FILE__), ".."))
     end
-  
+
     alias_method :tdir, :hathitrust_catalog_indexer_path
 
     # If --reader has been passed, try that as relative and absolute path.
     def reader_path
       return default_reader_path unless options["reader"]
-      @reader_path ||= begin
-        [
-          File.join(tdir, "readers", options["reader"]),
-          File.join(tdir, "readers", options["reader"] + ".rb"),
-          File.join(tdir, options["reader"]),
-          File.join(tdir, options["reader"] + ".rb")
-        ].find(default_reader_path) { |candidate| puts "CHECK #{candidate}" ; File.exist? candidate }
-      end
+      @reader_path ||=
+        if File.exist? File.expand_path(options["reader"])
+          File.expand_path(options["reader"])
+        else
+          File.join(tdir, "readers", options["reader"])
+        end
     end
-    
+
     # If --writer has been passed, try that as relative and absolute path.
     def writer_path
       return default_writer_path unless options["writer"]
-      @writer_path ||= begin
-        [
-          File.join(tdir, "writers", options["writer"]),
-          File.join(tdir, "writers", options["writer"] + ".rb"),
-          File.join(tdir, options["writer"]),
-          File.join(tdir, options["writer"] + ".rb")
-        ].find(default_writer_path) { |candidate| File.exist? candidate }
-      end
+      @writer_path ||=
+        if File.exist? File.expand_path(options["writer"])
+          File.expand_path(options["writer"])
+        else
+          File.join(tdir, "writers", options["writer"])
+        end
     end
 
     # FIXME: call this "jsonld"
+    # FIXME: nope, it kinda looks like it should be ndjson
     def default_reader_path
       @default_reader_path ||= File.join(tdir, "readers", "ndj.rb")
     end
@@ -250,31 +230,21 @@ module CICTL
       `curl  -H "Content-Type: application/json" -X POST -d'{"commit": {}}' "#{solr_url}/update?wt=json"`
     end
 
-    def deletes_url
-      ENV['SOLR_URL'] + '/update'
-    end
-
     def process_deletes(deletes_file)
-      client = HTTPX.with(headers: {'Content-Type' => 'application/json'})
-      total = 0
-      begin
-        file = File.open(deletes_file)
-        if /\.gz\Z/.match(deletes_file)
-          file = Zlib::GzipReader.new(file)
-        end
-        docs = file.map do |line|
-          { id: line.chomp, deleted: true }
-        end
-        if docs.size > 0
-          client.post(url, json: docs)
-        else
-          logger.error "File #{deletes_file} is empty"
-        end
-        logger.info "Deleted #{docs.size} ids from #{url}\n\n"
-      rescue Exception => e
-        puts "Problem deleting: #{e}"
+      file = File.open deletes_file
+      if /\.gz\Z/.match? deletes_file
+        file = Zlib::GzipReader.new(file)
       end
+      docs = file.map do |line|
+        {id: line.chomp, deleted: true}
+      end
+      if docs.size > 0
+        client = HTTPX.with(headers: {"Content-Type" => "application/json"})
+        client.post(deletes_url, json: docs)
+      else
+        logger.error "File #{deletes_file} is empty"
+      end
+      logger.info "Deleted #{docs.size} ids from #{deletes_url}\n\n"
     end
   end
 end
-
