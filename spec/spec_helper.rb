@@ -11,7 +11,9 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
   SimpleCov::Formatter::HTMLFormatter,
   SimpleCov::Formatter::LcovFormatter
 ])
-SimpleCov.start
+SimpleCov.start do
+  add_filter "/spec/"
+end
 
 require_relative "../lib/cictl"
 

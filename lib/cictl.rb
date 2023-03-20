@@ -5,7 +5,7 @@
 require "date"
 require "date_named_file"
 require "dotenv"
-require "httpx"
+#require "httpx"
 require "pry"
 require "socket"
 require "thor"
@@ -14,6 +14,8 @@ require "yaml"
 require "yell"
 require "zlib"
 
+require_relative "cictl/solr_client"
+
 unless ENV["NO_DB"]
   require_relative "ht_traject/ht_dbh"
 end
@@ -21,7 +23,6 @@ end
 module CICTL
   class CICTL < Thor
     class_option :verbose, type: :boolean
-    attr_accessor :logfile_path
 
     def self.exit_on_failure?
       true
@@ -34,7 +35,7 @@ module CICTL
 
     desc "index_file FILE (LOGFILE)", "index a single file"
     def index_file(marcfile, logfile = nil)
-      self.logfile_path = File.expand_path(logfile) if logfile
+      setup_logfile(logfile)
       run_traject marcfile
     end
 
@@ -42,10 +43,10 @@ module CICTL
     option :reader, type: :string, banner: "<reader>"
     option :writer, type: :string, banner: "<writer>"
     def index_date(date_string, logfile = nil)
-      self.logfile_path = File.expand_path(logfile) if logfile
+      setup_logfile(logfile)
       delfile = del_file_for_date(date_string)
       if File.exist? delfile
-        logger.info "Deleting from #{delfile}, targeting #{ENV["SOLR_URL"]}"
+        logger.info "Deleting from #{delfile}, targeting #{solr_client}"
         process_deletes delfile
       else
         logger.warn "No deletes: could not find delfile '#{delfile}'"
@@ -53,7 +54,7 @@ module CICTL
       marcfile = marc_file_for_date(date_string)
       if File.exist? marcfile
         run_traject marcfile
-        commit
+        solr_client.commit!
       else
         fatal "No indexing: Could not find marcfile '#{marcfile}'"
       end
@@ -63,13 +64,56 @@ module CICTL
     option :reader, type: :string, banner: "<reader>"
     option :writer, type: :string, banner: "<writer>"
     def catchup_today(logfile = nil)
+      setup_logfile(logfile)
       # HT's "today" file is dated yesterday
       yesterday = (Date.today - 1).strftime("%Y%m%d")
       # We'll use the actual date in the logfile, though
       today = Date.today.strftime("%Y%m%d")
       logger.debug "catchup_today: using #{yesterday} as file date"
+      # FIXME: why does this have a default logfile where catchup_since does not?
       logfile ||= File.join(hathitrust_catalog_indexer_path, "logs/daily_#{today}.txt")
       index_date yesterday, logfile
+    end
+
+    desc "catchup_since YYYYMMDD (LOGFILE)", "run all deletes/includes in order since the given date"
+    option :reader, type: :string, banner: "<reader>"
+    option :writer, type: :string, banner: "<writer>"
+    def catchup_since(date, logfile = nil)
+      setup_logfile(logfile)
+      yesterday = Date.today - 1
+      begin
+        start_date = Date.parse(date) - 1
+      rescue Date::Error => e
+        fatal e.message
+      end
+      logger.info "Keep in mind that the files are dated one day back"
+      (start_date .. yesterday).each do |index_date|
+        logger.info("\n------- #{index_date} -----------\n")
+        index_date index_date.strftime("%Y%m%d"), logfile
+      end
+    end
+
+    desc "fullindex (LOGFILE)", "empty the catalog and index the most recent monthly"
+    option :reader, type: :string, banner: "<reader>"
+    option :writer, type: :string, banner: "<writer>"
+    def fullindex(logfile = nil)
+      setup_logfile(logfile)
+      # FIXME: put these two in util functions
+      last_of_last_month = Date.today - Date.today.mday
+      #first_of_this_month = last_of_last_month + 1
+      marcfile = File.join(data_directory, "zephir_full_#{last_of_last_month.strftime("%Y%m%d")}_vufind.json.gz")
+      echo "5 second delay if you need it..."
+      sleep 5
+      logger.info "Empty Solr"
+      solr_client.empty!
+      logger.info "Commit"
+      solr_client.commit!
+      logger.info "Index #{marcfile}"
+      run_traject marcfile
+      logger.info "Catch up since #{last_of_last_month}"
+      catchup_since last_of_last_month
+      logger.info "Commit"
+      solr_client.commit!
     end
 
     private
@@ -112,7 +156,7 @@ module CICTL
     end
 
     def call_indexer(marcfile)
-      logger.info "Indexing from #{marcfile}, reader #{reader_path} writer #{writer_path} (#{ENV["SOLR_URL"]})"
+      logger.info "Indexing from #{marcfile}, reader #{reader_path} writer #{writer_path} (#{solr_client})"
       success = indexer.process File.open(marcfile, "r")
       unless success
         fatal "traject returned #{code.exitstatus}, shutting down"
@@ -156,12 +200,19 @@ module CICTL
         f.puts ccof.to_yaml
       end
     end
+    
+    # Unfortunately this seems necessary for each top-level command that takes
+    # a logfile arg. If the logfile were a "--log LOGFILE" type of parameter we could
+    # probably set up the logger in #initialize.
+    def setup_logfile(logfile)
+      @logfile_path = File.expand_path(logfile) if logfile
+    end
 
     def logger
       @logger ||= Yell.new do |l|
         l.level = options[:verbose] ? "gte.debug" : "gte.info"
-        if logfile_path
-          l.adapter :file, logfile_path
+        if @logfile_path
+          l.adapter :file, @logfile_path
         else
           l.adapter :stdout, level: [:debug, :info, :warn]
         end
@@ -176,12 +227,8 @@ module CICTL
       exit 1
     end
 
-    def solr_url
-      ENV["SOLR_URL"]
-    end
-
-    def deletes_url
-      solr_url + "/update"
+    def solr_client
+      @solr_client ||= SolrClient.new
     end
 
     # The top-level repo path.
@@ -225,11 +272,6 @@ module CICTL
       @default_writer_path ||= File.join(tdir, "writers", "localhost.rb")
     end
 
-    def commit
-      logger.info "Committing"
-      `curl  -H "Content-Type: application/json" -X POST -d'{"commit": {}}' "#{solr_url}/update?wt=json"`
-    end
-
     def process_deletes(deletes_file)
       file = File.open deletes_file
       if /\.gz\Z/.match? deletes_file
@@ -239,12 +281,11 @@ module CICTL
         {id: line.chomp, deleted: true}
       end
       if docs.size > 0
-        client = HTTPX.with(headers: {"Content-Type" => "application/json"})
-        client.post(deletes_url, json: docs)
+        solr_client.post! docs
       else
         logger.error "File #{deletes_file} is empty"
       end
-      logger.info "Deleted #{docs.size} ids from #{deletes_url}\n\n"
+      logger.info "Deleted #{docs.size} ids from #{solr_client}\n\n"
     end
   end
 end

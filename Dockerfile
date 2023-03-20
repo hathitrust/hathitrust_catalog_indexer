@@ -22,6 +22,4 @@ USER $UNAME
 
 ENV BUNDLE_PATH /gems
 
-RUN mkdir -p /gems
-
 WORKDIR /app
