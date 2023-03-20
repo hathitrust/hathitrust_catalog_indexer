@@ -4,7 +4,6 @@ solr/catalog/data
 zephir**.json.gz
 
 .bundle
-Gemfile.lock
 bin/bundle
 bin/rake
 bin/solr
