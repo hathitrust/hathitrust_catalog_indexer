@@ -2,31 +2,25 @@
 
 # frozen_string_literal: true
 
-#require "date"
-#require "date_named_file"
-#require "dotenv"
 require "httpx"
 require "pry"
-#require "socket"
-#require "thor"
-#require "traject"
-#require "yaml"
-#require "yell"
-#require "zlib"
-
 
 module CICTL
   class SolrClient
+    def initialize(httpx = nil)
+      @httpx_client = httpx
+    end
+
     def to_s
       "CICTL::SolrClient for #{solr_url}"
     end
 
     def commit!
-      post! **{"commit" => {}}
+      post!("commit" => {})
     end
 
     def empty!
-      post! **{"delete" => {"query" => "deleted:(NOT true)"}}
+      post!("delete" => {"query" => "deleted:(NOT true)"})
     end
 
     def post!(json)
@@ -48,4 +42,3 @@ module CICTL
     end
   end
 end
-    

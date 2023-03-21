@@ -5,7 +5,6 @@
 require "date"
 require "date_named_file"
 require "dotenv"
-#require "httpx"
 require "pry"
 require "socket"
 require "thor"
@@ -87,7 +86,7 @@ module CICTL
         fatal e.message
       end
       logger.info "Keep in mind that the files are dated one day back"
-      (start_date .. yesterday).each do |index_date|
+      (start_date..yesterday).each do |index_date|
         logger.info("\n------- #{index_date} -----------\n")
         index_date index_date.strftime("%Y%m%d"), logfile
       end
@@ -98,10 +97,7 @@ module CICTL
     option :writer, type: :string, banner: "<writer>"
     def fullindex(logfile = nil)
       setup_logfile(logfile)
-      # FIXME: put these two in util functions
-      last_of_last_month = Date.today - Date.today.mday
-      #first_of_this_month = last_of_last_month + 1
-      marcfile = File.join(data_directory, "zephir_full_#{last_of_last_month.strftime("%Y%m%d")}_vufind.json.gz")
+      marcfile = File.join(data_directory, previous_full_marcfile_name)
       echo "5 second delay if you need it..."
       sleep 5
       logger.info "Empty Solr"
@@ -110,13 +106,22 @@ module CICTL
       solr_client.commit!
       logger.info "Index #{marcfile}"
       run_traject marcfile
-      logger.info "Catch up since #{last_of_last_month}"
-      catchup_since last_of_last_month
+      logger.info "Catch up since #{last_day_of_last_month}"
+      catchup_since last_day_of_last_month.strftime("%Y%m%d")
       logger.info "Commit"
       solr_client.commit!
     end
 
     private
+
+    # Returns Date object
+    def last_day_of_last_month
+      Date.today - Date.today.mday
+    end
+
+    def previous_full_marcfile_name
+      "zephir_full_#{last_day_of_last_month.strftime("%Y%m%d")}_vufind.json.gz"
+    end
 
     # Read the data directory from ENV falling back to the default.
     def data_directory
@@ -200,7 +205,7 @@ module CICTL
         f.puts ccof.to_yaml
       end
     end
-    
+
     # Unfortunately this seems necessary for each top-level command that takes
     # a logfile arg. If the logfile were a "--log LOGFILE" type of parameter we could
     # probably set up the logger in #initialize.
