@@ -8,19 +8,26 @@ RSpec.describe CICTL::SolrClient do
   end
 
   describe "#commit!" do
-    it "calls the post method with the correct arguments" do
-      mock = double("HTTPX")
-      expect(mock).to receive(:post).with(instance_of(String),
-        hash_including(json: {"commit" => {}}))
+    it "calls the commit method with no arguments" do
+      mock = double("RSolr")
+      expect(mock).to receive(:commit).with(no_args)
       described_class.new(mock).commit!
     end
   end
 
+  describe "#count" do
+    def count
+      mock = double("RSolr")
+      expect(mock).to receive(:get).with(instance_of(String),
+        hash_including(q: ":", wt: "ruby", rows: 1))
+      described_class.new(mock).count
+    end
+  end
+
   describe "#empty!" do
-    it "calls the post method with the correct arguments" do
-      mock = double("HTTPX")
-      expect(mock).to receive(:post).with(instance_of(String),
-        hash_including(json: {"delete" => {"query" => "deleted:(NOT true)"}}))
+    it "calls the delete_by_query method with the correct arguments" do
+      mock = double("RSolr")
+      expect(mock).to receive(:delete_by_query).with(instance_of(String))
       described_class.new(mock).empty!
     end
   end

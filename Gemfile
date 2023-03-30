@@ -10,15 +10,23 @@ group :development, :test do
   gem "simplecov-lcov"
 end
 
+gem "canister"
+gem "date_named_file"
+gem "dotenv"
 gem "httpclient"
-gem "httpx"
+# gem "httpx"
 gem "library_stdnums"
+gem "marc-fastxmlwriter", "~> 1.1"
 gem "match_map"
+gem "pry"
+gem "rsolr"
 gem "sequel"
+gem "thor"
 gem "traject", "~>3.0"
 gem "traject_alephsequential_reader"
 gem "traject_umich_format"
-gem "date_named_file"
+gem "yell"
+gem "zinzout"
 
 if defined? JRUBY_VERSION
   gem "jdbc-mysql"
@@ -26,13 +34,3 @@ if defined? JRUBY_VERSION
   # gem "jruby-launcher", "~>1.1"
   gem "naconormalizer"
 end
-
-gem "marc-fastxmlwriter", "~> 1.1"
-
-gem "pry"
-gem "simple_solr_client"
-
-gem "zinzout"
-gem "thor"
-gem "dotenv"
-gem "yell"

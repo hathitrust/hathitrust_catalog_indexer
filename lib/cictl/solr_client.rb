@@ -1,44 +1,43 @@
-#!/usr/bin/env ruby
-
 # frozen_string_literal: true
 
-require "httpx"
+require "rsolr"
 require "pry"
 
 module CICTL
   class SolrClient
-    def initialize(httpx = nil)
-      @httpx_client = httpx
+    def initialize(rsolr = nil)
+      @solr = rsolr
+      @solr ||= RSolr.connect url: solr_url
     end
 
     def to_s
-      "CICTL::SolrClient for #{solr_url}"
+      "CICTL::SolrClient for #{solr_url}, #{count} documents"
+    end
+
+    def count
+      solr_params = {q: "*:*", wt: "ruby", rows: 1}
+      @solr.get("select", params: solr_params)["response"]["numFound"]
     end
 
     def commit!
-      post!("commit" => {})
+      @solr.commit
+      self
     end
 
     def empty!
-      post!("delete" => {"query" => "deleted:(NOT true)"})
+      @solr.delete_by_query "*:*"
+      self
     end
 
-    def post!(json)
-      httpx_client.post update_url, json: json
+    def delete!(ids)
+      @solr.delete_by_id Array(ids)
+      self
     end
 
     private
 
     def solr_url
       ENV["SOLR_URL"]
-    end
-
-    def update_url
-      solr_url + "/update"
-    end
-
-    def httpx_client
-      @httpx_client ||= HTTPX.with(headers: {"Content-Type" => "application/json"})
     end
   end
 end

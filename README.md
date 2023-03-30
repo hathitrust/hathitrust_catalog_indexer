@@ -206,7 +206,7 @@ files will be, where the redirect file will be, etc.
     stuff is all defined. 
 * [`readers/`](readers/) have a variety of files that contain nothing but 
   traject settings that specify what reader to use. We use 
-  newline-delimited-marc (`ndj`) but others are available for running test 
+  newline-delimited-marc (`jsonl`) but others are available for running test 
   files.
 * [`writers/`](writers/), similarly, has files with traject settings for 
   different writers.  This might involve pushing the resulting documents 

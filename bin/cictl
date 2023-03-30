@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "../lib/cictl"
+
+begin
+  CICTL::CICTL.start(ARGV)
+rescue CICTL::CICTLError => e
+  puts "CICTL Error: #{e}"
+  exit 1
+end

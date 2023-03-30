@@ -113,3 +113,17 @@ RSpec.configure do |config|
   #   # as the one that triggered the failure.
   #   Kernel.srand config.seed
 end
+
+def test_log
+  "TEST_LOG.txt"
+end
+
+def solr_count
+  CICTL::SolrClient.new.count
+end
+
+# def solr_ids
+#  solr_params = {q: "*:*", wt: "ruby", rows: 1}
+#  response = CICTL::SolrClient.new.solr.get("select", params: solr_params)
+#  response["response"]["docs"].map { |doc| doc["id"] }
+# end
