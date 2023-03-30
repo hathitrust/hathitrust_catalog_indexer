@@ -37,7 +37,7 @@ services:
       - "9033:9033"
 
   mariadb:
-    image: db-image-mariadb
+    image: ghcr.io/hathitrust/db-image:latest
     ports:
       - "3306:3306"
 
