@@ -30,7 +30,7 @@ docker-compose run --rm traject bundle install
 Generate Solr documents given an input file of MARC records in JSON format, one per line:
 
 ```
-docker-compose run traject bin/tindex json input-marc-records.jsonl 
+docker-compose run --rm traject bundle exec bin/cictl index file --writer=json input-marc-records.jsonl
 ```
 
 Output will be in `debug.json`.
@@ -66,13 +66,11 @@ contexts.
 
 ### Index one file into Solr
 
-Index a file of records without using the database or hardcoded filesystem paths:
+Index a file of records without using ~~the database or~~ hardcoded filesystem paths:
 
 ```
 # get some sample records somehow
-docker-compose run traject bin/index_file examples/sample_records.json.gz
-# ensure documents are committed
-source bin/utils.sh; solr_url; commit
+docker-compose run --rm traject bundle exec bin/cictl index file examples/sample_records.json.gz
 ```
 
 ### Do a full index
@@ -80,7 +78,7 @@ source bin/utils.sh; solr_url; commit
 Zephir records for the last monthly up to the current date should be in `examples`:
 
 ```bash
-docker-compose run traject bin/fullindex
+docker-compose run --rm traject bundle exec bin/cictl index all
 ```
 
 ### Query Solr
@@ -145,18 +143,18 @@ will have _yesterday's_ date embedded in it. If you use these scripts you
 don't have to worry about any off-by-one errors. 
 
 Re-run today's file: 
-* `bin/catchup_today <optional_log_file>`
+* `bin/cictl index today <optional_log_file>`
 
 Run all the update files since a given date (YYYYMMDD):
-* `bin/catchup_since 20220302`
+* `bin/cictl index since 20220302`
 
 Re-build the entire index based on the last full file, making sure 
 everything is up-to-date:
-* `bin/fullindex <optional_log_file>`
+* `bin/cictl index all <optional_log_file>`
 
 Note that the fullindex file _does not contain that day's updates_ (e.g., on 
 July 1, you need to index both the `zephir_full_20230630` file _and_ the `zephir_upd_20230630` file. 
-The `fullindex` script takes care of that, but 
+The `index all` command takes care of that, but 
 if running stuff by hand keep in mind that you need to index the full file 
 and the update file for that day as well.
 
@@ -176,14 +174,45 @@ used it.
 
 ## Scripts
 
-`bin/` holds scripts for indexing marc files. 98% of it is 
-    high-ceremony bash stuff to find the "correct" jruby file, do date 
-    arithmetic, find the zephir and delete files, etc. 
+The main driver script is `bin/cictl`:
 
-See [`bin/README.md`](bin/README.md) for more details.
+```
+> bundle exec bin/cictl help
+Commands:
+  cictl delete SUBCOMMAND ARGS  # Delete some or all Solr records
+  cictl help [COMMAND]          # Describe available commands or one specific...
+  cictl index SUBCOMMAND ARGS   # Index a set of records from a file or date
+  cictl pry                     # Open a pry-shell with environment loaded
 
-TODO: Take the whole `bin/` mess apart and build all the date arithmetic in a 
-ruby cli based on `dry-cli` or `thor` or something.
+Options:
+  [--verbose], [--no-verbose]  # Emit 'debug' in addition to 'info' log entries
+  [--log=<logfile>]            # Log to <logfile> instead of STDOUT/STDERR
+```
+
+The `index` command has a number of possibilities:
+```
+> bundle exec bin/cictl help index
+Commands:
+  cictl index all             # Empty the catalog and index the most recent m...
+  cictl index date YYYYMMDD   # Run the catchup (delete and index) for a part...
+  cictl index file FILE       # Index a single file
+  cictl index help [COMMAND]  # Describe subcommands or one specific subcommand
+  cictl index since YYYYMMDD  # Run all deletes/includes in order since the g...
+  cictl index today           # Run the catchup (delete and index) for last n...
+
+Options:
+  [--reader=READER]  # Reader name/path
+  [--writer=WRITER]  # Writer name/path
+```
+
+The `delete` command has fewer subcommands:
+```
+> bundle exec bin/cictl help delete
+Commands:
+  cictl delete all             # Delete all records from the Solr index
+  cictl delete file FILE       # Delete records from a single file
+  cictl delete help [COMMAND]  # Describe subcommands or one specific subcommand
+```
 
 TODO: Add in non-hardcoded mechanisms for dictating where the marc/delete 
 files will be, where the redirect file will be, etc.
@@ -191,9 +220,7 @@ files will be, where the redirect file will be, etc.
 
 ## Structure of this repository
 
-* [`bin/`](bin/) has all the scripts that control indexing, most of which is 
-  actually horrendous date-arithmetic and environment switches from back 
-  when the HT and UMich indexing were one system.
+* [`bin/`](bin/) contains the `cictl` indexing CLI.
 * [`indexers`](indexers/) would more appropriately be called "indexing 
   rules". It contains all the traject rules for turning a marc record into 
   a solr document, independent of the source of the marc record or where 
@@ -235,10 +262,10 @@ more than once isn't a big deal.
 In addition to the obvious target solr instance, the indexing process pulls 
 data from a number of external sources:
 
-  * Mapping of collections to institution names. This is pulled byt the 
+  * Mapping of collections to institution names. This is pulled by the 
     script [bin/get_collection_map.rb](bin/get_collection_map.rb) from the 
     database tables `ht_institutions` and `ht_collections` and is cached 
-    locally in `lib/translation_maps/ht`.
+    locally in `lib/translation_maps/ht`. *(FIXME: should `cictl` expose this functionality?)*
   * The `holdings_htitem_htmember` database table for print holdings
   * The `oclc_concordance` table for adding in canonical OCLC numbers
   * The file for the current month in 
@@ -251,23 +278,19 @@ of us having to split out the namespace...
 
 ## Database access
 
-...is controlled by [`lib/ht_traject/ht_dbh.rb`]
-(lib/ht_traject/ht_dbh.rb) with passwords/etc. in `lib/ht_secure_data.rb` 
-(not in this repo, obviously). 
-
-TODO: Put connection/ authentication info in ENV (and/or eventually k8s 
-secrets)
+Controlled by [`lib/ht_traject/ht_dbh.rb`](lib/ht_traject/ht_dbh.rb)
+with default passwords/etc. in `docker-compose` and `.env`, and -- eventually -- k8s secrets.
 
 ## Environment variables
 
   * `SOLR_URL` with the solr _core_ URL (i.e, ending in `/catalog`)
   * `REDIRECT_FILE` (optional) if you don't want to use the default 
     redirect file
-  * `NO_DB` if you want to skip all the database stuff. Useful for testing.
+  * ~~`NO_DB` if you want to skip all the database stuff. Useful for testing.~~
 
 TODO: Add an env variable to skip using the redirect file as well.
 
-TODO: Change to use `dotenv`?
+~~TODO: Change to use `dotenv`?~~
 
 TODO: Add environment variables for file locations
 
