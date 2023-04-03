@@ -4,6 +4,7 @@ require "thor"
 
 require_relative "common"
 require_relative "date_extra"
+require_relative "zephir_file"
 
 module CICTL
   class IndexCommand < Thor
@@ -93,19 +94,19 @@ module CICTL
     private
 
     def last_full_marc_file(reference_date = today)
-      DateNamedFile.new("zephir_full_%Y%m%d_vufind.json.gz")
+      DateNamedFile.new(ZephirFile.full_template)
         .in_dir(data_directory)
         .at(Date.last_day_of_last_month(reference_date))
     end
 
     def delete_file_for_date(date)
-      DateNamedFile.new("zephir_upd_%Y%m%d_delete.txt.gz")
+      DateNamedFile.new(ZephirFile.delete_template)
         .in_dir(data_directory)
         .at(date)
     end
 
     def marc_file_for_date(date)
-      DateNamedFile.new("zephir_upd_%Y%m%d.json.gz")
+      DateNamedFile.new(ZephirFile.update_template)
         .in_dir(data_directory)
         .at(date)
     end

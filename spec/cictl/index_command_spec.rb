@@ -5,8 +5,13 @@ RSpec.describe CICTL::IndexCommand do
     CICTL::SolrClient.new.empty!.commit!
   end
 
+  before(:each) do
+    ENV["CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"] = "sample"
+  end
+
   after(:each) do
     CICTL::SolrClient.new.empty!.commit!
+    ENV.delete "CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"
   end
 
   describe "#index all" do
@@ -26,7 +31,7 @@ RSpec.describe CICTL::IndexCommand do
   describe "#index file" do
     context "with no additional parameters" do
       it "indexes 10 records" do
-        file = File.join(ENV["DDIR"], "zephir_upd_20230103.json.gz")
+        file = File.join(ENV["DDIR"], "sample_upd_20230103.json.gz")
         CICTL::CICTL.start(["index", "file", file, "--log", test_log])
         expect(solr_count).to eq 8
       end
@@ -35,7 +40,7 @@ RSpec.describe CICTL::IndexCommand do
     context "with an explicit reader" do
       context "that exists" do
         it "indexes 10 records" do
-          file = File.join(ENV["DDIR"], "zephir_upd_20230103.json.gz")
+          file = File.join(ENV["DDIR"], "sample_upd_20230103.json.gz")
           CICTL::CICTL.start(["index", "file", file, "--log", test_log, "--reader", "readers/jsonl"])
           expect(solr_count).to eq 8
         end
@@ -43,7 +48,7 @@ RSpec.describe CICTL::IndexCommand do
 
       context "that does not exist" do
         it "fails" do
-          file = File.join(ENV["DDIR"], "zephir_upd_20230223.json.gz")
+          file = File.join(ENV["DDIR"], "sample_upd_20230223.json.gz")
           expect {
             CICTL::CICTL.start(["index", "file", file, "--log", "TEST_LOG.txt", "--reader", "no_such_reader"])
           }.to raise_error(CICTL::CICTLError)
@@ -54,7 +59,7 @@ RSpec.describe CICTL::IndexCommand do
     context "with an explicit writer" do
       context "that exists" do
         it "indexes 10 records" do
-          file = File.join(ENV["DDIR"], "zephir_upd_20230103.json.gz")
+          file = File.join(ENV["DDIR"], "sample_upd_20230103.json.gz")
           CICTL::CICTL.start(["index", "file", file, "--log", test_log, "--writer", "writers/localhost"])
           expect(solr_count).to eq 8
         end
@@ -62,7 +67,7 @@ RSpec.describe CICTL::IndexCommand do
 
       context "that does not exist" do
         it "fails" do
-          file = File.join(ENV["DDIR"], "zephir_upd_20230103.json.gz")
+          file = File.join(ENV["DDIR"], "sample_upd_20230103.json.gz")
           expect {
             CICTL::CICTL.start(["index", "file", file, "--log", test_log, "--writer", "no_such_writer"])
           }.to raise_error(CICTL::CICTLError)
