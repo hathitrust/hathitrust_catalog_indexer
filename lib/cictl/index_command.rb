@@ -42,7 +42,7 @@ module CICTL
       solr_client.commit!
     end
 
-    desc "date YYYYMMDD", "Run the catchup (delete and index) for a particular date"
+    desc "date YYYYMMDD", "Process the delete and index files timestamped YYYYMMDD"
     def date(date)
       date = Date.with date
       delfile = delete_file_for_date date

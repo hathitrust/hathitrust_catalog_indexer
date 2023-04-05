@@ -16,7 +16,7 @@ module CICTL
         end
         ids = file.map { |line| line.chomp }
         if ids.size > 0
-          solr_client.delete! ids
+          solr_client.set_deleted ids
         else
           logger.error "File #{deletes_file} is empty"
         end

@@ -5,6 +5,7 @@ require "pry"
 
 module CICTL
   class SolrClient
+    attr_reader :solr
     def initialize(rsolr = nil)
       @solr = rsolr
       @solr ||= RSolr.connect url: solr_url
@@ -14,9 +15,15 @@ module CICTL
       "CICTL::SolrClient for #{solr_url}, #{count} documents"
     end
 
-    def count
-      solr_params = {q: "*:*", wt: "ruby", rows: 1}
+    # Count all records including those with the "deleted" flag set.
+    def count(q = "*:*")
+      solr_params = {q: q, wt: "ruby", rows: 1}
       @solr.get("select", params: solr_params)["response"]["numFound"]
+    end
+
+    # Count only records with the "deleted" flag.
+    def count_deleted
+      count "deleted:true"
     end
 
     def commit!
@@ -29,12 +36,16 @@ module CICTL
       self
     end
 
-    def delete!(ids)
-      @solr.delete_by_id Array(ids)
-      self
+    def set_deleted(ids)
+      solr_data = Array(ids).map { |id| deleted_id id }
+      @solr.update data: solr_data.to_json, headers: {"Content-Type" => "application/json"}
     end
 
     private
+
+    def deleted_id(id)
+      {id: id, deleted: true}
+    end
 
     def solr_url
       ENV["SOLR_URL"]

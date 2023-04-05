@@ -1,11 +1,8 @@
 require "spec_helper"
 
 RSpec.describe CICTL::IndexCommand do
-  before(:all) do
-    CICTL::SolrClient.new.empty!.commit!
-  end
-
   before(:each) do
+    CICTL::SolrClient.new.empty!.commit!
     ENV["CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"] = "sample"
   end
 
@@ -15,34 +12,37 @@ RSpec.describe CICTL::IndexCommand do
   end
 
   describe "#index all" do
-    it "indexes 27 records" do
-      CICTL::CICTL.start(["index", "all", "--log", "TEST_LOG.txt", "--today", "20230103", "--no-wait"])
-      expect(solr_count).to eq 27
+    it "indexes all example records" do
+      CICTL::CICTL.start(["index", "all", "--today", "20230103", "--no-wait", "--log", test_log])
+      expect(solr_count).to eq CICTL::Examples.all_ids.count
     end
   end
 
   describe "#index date" do
-    it "indexes 10 records" do
+    it "indexes full records and deleted record from example date" do
+      examples = CICTL::Examples.for_date("20230103")
       CICTL::CICTL.start(["index", "date", "20230103", "--log", test_log])
-      expect(solr_count).to eq 8
+      expect(solr_count).to eq examples.map { |ex| ex[:ids] }.flatten.uniq.count
     end
   end
 
   describe "#index file" do
     context "with no additional parameters" do
-      it "indexes 10 records" do
-        file = File.join(ENV["DDIR"], "sample_upd_20230103.json.gz")
+      it "indexes full records and no deletes from example file" do
+        example = CICTL::Examples.for_date("20230103", type: :upd).first
+        file = File.join(ENV["DDIR"], example[:file])
         CICTL::CICTL.start(["index", "file", file, "--log", test_log])
-        expect(solr_count).to eq 8
+        expect(solr_count).to eq example[:ids].count
       end
     end
 
     context "with an explicit reader" do
       context "that exists" do
-        it "indexes 10 records" do
-          file = File.join(ENV["DDIR"], "sample_upd_20230103.json.gz")
-          CICTL::CICTL.start(["index", "file", file, "--log", test_log, "--reader", "readers/jsonl"])
-          expect(solr_count).to eq 8
+        it "indexes full records and no deletes from example file" do
+          example = CICTL::Examples.for_date("20230103", type: :upd).first
+          file = File.join(ENV["DDIR"], example[:file])
+          CICTL::CICTL.start(["index", "file", file, "--reader", "readers/jsonl", "--log", test_log])
+          expect(solr_count).to eq example[:ids].count
         end
       end
 
@@ -50,7 +50,7 @@ RSpec.describe CICTL::IndexCommand do
         it "fails" do
           file = File.join(ENV["DDIR"], "sample_upd_20230223.json.gz")
           expect {
-            CICTL::CICTL.start(["index", "file", file, "--log", "TEST_LOG.txt", "--reader", "no_such_reader"])
+            CICTL::CICTL.start(["index", "file", file, "--reader", "no_such_reader", "--log", test_log])
           }.to raise_error(CICTL::CICTLError)
         end
       end
@@ -58,10 +58,11 @@ RSpec.describe CICTL::IndexCommand do
 
     context "with an explicit writer" do
       context "that exists" do
-        it "indexes 10 records" do
-          file = File.join(ENV["DDIR"], "sample_upd_20230103.json.gz")
-          CICTL::CICTL.start(["index", "file", file, "--log", test_log, "--writer", "writers/localhost"])
-          expect(solr_count).to eq 8
+        it "indexes full records and no deletes from example file" do
+          example = CICTL::Examples.for_date("20230103", type: :upd).first
+          file = File.join(ENV["DDIR"], example[:file])
+          CICTL::CICTL.start(["index", "file", file, "--writer", "writers/localhost", "--log", test_log])
+          expect(solr_count).to eq example[:ids].count
         end
       end
 
@@ -69,7 +70,7 @@ RSpec.describe CICTL::IndexCommand do
         it "fails" do
           file = File.join(ENV["DDIR"], "sample_upd_20230103.json.gz")
           expect {
-            CICTL::CICTL.start(["index", "file", file, "--log", test_log, "--writer", "no_such_writer"])
+            CICTL::CICTL.start(["index", "file", file, "--writer", "no_such_writer", "--log", test_log])
           }.to raise_error(CICTL::CICTLError)
         end
       end
