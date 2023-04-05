@@ -286,7 +286,7 @@ with default passwords/etc. in `docker-compose` and `.env`, and -- eventually --
   * `SOLR_URL` with the solr _core_ URL (i.e, ending in `/catalog`)
   * `REDIRECT_FILE` (optional) if you don't want to use the default 
     redirect file
-  * ~~`NO_DB` if you want to skip all the database stuff. Useful for testing.~~
+  * `NO_DB` if you want to skip all the database stuff. Useful for testing.
 
 TODO: Add an env variable to skip using the redirect file as well.
 
