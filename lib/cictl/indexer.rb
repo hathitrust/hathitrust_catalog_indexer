@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "socket"
+require "traject"
 
 require_relative "common"
 
@@ -23,7 +24,7 @@ module CICTL
       end
     end
 
-    def run!(marcfile)
+    def run(marcfile)
       # Note: hostname will likely be gibberish under Docker
       logger.info "Working on #{Socket.gethostname} in #{home}"
       unless File.exist? marcfile
@@ -80,10 +81,13 @@ module CICTL
     # FIXME: does this belong here or cictl.rb?
     def update_collection_map
       logger.info "updating collection map"
-      tmap_dir = File.join(home, "lib", "translation_maps", "ht")
-      File.open(File.join(tmap_dir, COLLECTION_MAP_FILE), "w:utf-8") do |f|
+      File.open(File.join(collection_map_directory, COLLECTION_MAP_FILE), "w:utf-8") do |f|
         f.puts CollectionMap.new.to_yaml
       end
+    end
+
+    def collection_map_directory
+      @collection_map_directory ||= File.join(home, "lib", "translation_maps", "ht")
     end
   end
 end

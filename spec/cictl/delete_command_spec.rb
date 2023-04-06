@@ -17,7 +17,7 @@ RSpec.describe CICTL::DeleteCommand do
       file = File.join(ENV["DDIR"], example[:file])
       CICTL::CICTL.start(["index", "file", file, "--log", test_log])
       expect(solr_count).to be > 0
-      CICTL::CICTL.start(["delete", "all"])
+      CICTL::CICTL.start(["delete", "all", "--log", test_log])
       expect(solr_count).to eq 0
     end
   end

@@ -22,6 +22,7 @@ module CICTL
         sleep 5
       end
       logger.info "Empty Solr"
+      # FIXME: this should only delete records with "deleted:NOT true"
       solr_client.empty!
       logger.info "Commit"
       solr_client.commit!
@@ -37,30 +38,15 @@ module CICTL
 
     desc "file FILE", "Index a single file"
     def file(marcfile)
-      Indexer.new(reader: options[:reader], writer: options[:writer])
-        .run! marcfile
+      Indexer.new(reader: options[:reader], writer: options[:writer]).run marcfile
       solr_client.commit!
     end
 
     desc "date YYYYMMDD", "Process the delete and index files timestamped YYYYMMDD"
     def date(date)
       date = Date.with date
-      delfile = delete_file_for_date date
-      if File.exist? delfile
-        logger.info "Deleting from #{delfile}, targeting #{solr_client}"
-        Deleter.new.run! delfile
-        solr_client.commit!
-      else
-        logger.warn "could not find delfile '#{delfile}'"
-      end
-      marcfile = marc_file_for_date date
-      if File.exist? marcfile
-        Indexer.new(reader: options[:reader], writer: options[:writer]).run! marcfile
-        solr_client.commit!
-        logger.debug "index date(#{date}): Solr count now #{solr_client.count}"
-      else
-        logger.warn "could not find marcfile '#{marcfile}'"
-      end
+      index_deletes_for_date date
+      index_records_for_date date
     end
 
     desc "since YYYYMMDD", "Run all deletes/includes in order since the given date"
@@ -109,6 +95,28 @@ module CICTL
       DateNamedFile.new(ZephirFile.update_template)
         .in_dir(data_directory)
         .at(date)
+    end
+
+    def index_records_for_date(date)
+      marcfile = marc_file_for_date date
+      if File.exist? marcfile
+        Indexer.new(reader: options[:reader], writer: options[:writer]).run marcfile
+        solr_client.commit!
+        logger.debug "index date(#{date}): Solr count now #{solr_client.count}"
+      else
+        logger.warn "could not find marcfile '#{marcfile}'"
+      end
+    end
+
+    def index_deletes_for_date(date)
+      delfile = delete_file_for_date date
+      if File.exist? delfile
+        logger.info "Deleting from #{delfile}, targeting #{solr_client}"
+        Deleter.new.run delfile
+        solr_client.commit!
+      else
+        logger.warn "could not find delfile '#{delfile}'"
+      end
     end
   end
 end

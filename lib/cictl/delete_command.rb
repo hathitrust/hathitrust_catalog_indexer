@@ -20,7 +20,7 @@ module CICTL
     def file(delfile)
       fatal "Could not find deletes file '#{delfile}'" unless File.exist?(delfile)
       logger.info "Deleting from #{delfile}, targeting #{solr_client}"
-      Deleter.new.run! delfile
+      Deleter.new.run delfile
       logger.info "Commit"
       solr_client.commit!
     end

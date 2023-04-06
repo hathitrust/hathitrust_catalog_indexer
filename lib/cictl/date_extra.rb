@@ -9,10 +9,13 @@ class Date
   end
 
   # Return argument intact if Date object, or new Date object if String
-  # or able to return a string.
-  # FIXME: this can raise if the string cannot be parsed as a date,
-  # make sure bogus inputs are intercepted or exceptions are handled.
+  # or coercible to String.
   def self.with(obj)
-    obj.is_a?(Date) ? obj : Date.parse(obj.to_s)
+    return obj if obj.is_a? Date
+    begin
+      Date.parse(obj.to_s)
+    rescue => e
+      raise CICTL::CICTLError.new "unable to parse \"#{obj}\" (#{e})"
+    end
   end
 end

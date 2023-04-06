@@ -10,11 +10,17 @@ RSpec.describe Date do
     it "returns Date based on String" do
       expect(described_class.with("2000-01-01")).to eq Date.parse("2000-01-01")
     end
+
+    it "raises on bogus date" do
+      expect { described_class.with("this is not even remotely datelike") }
+        .to raise_error(CICTL::CICTLError)
+    end
   end
 
   describe ".last_day_of_last_month" do
     it "returns the last day of the previous month given a date" do
-      expect(described_class.last_day_of_last_month(Date.parse("2020-01-01")).to_s).to eq "2019-12-31"
+      expect(described_class.last_day_of_last_month(Date.parse("2020-01-01")).to_s)
+        .to eq "2019-12-31"
     end
 
     it "returns the last day of the previous month by default" do

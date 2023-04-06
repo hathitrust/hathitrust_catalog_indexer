@@ -1,14 +1,8 @@
 # frozen_string_literal: true
 
-require "date"
-require "date_named_file"
 require "dotenv"
 require "pry"
-require "socket"
 require "thor"
-require "traject"
-require "yaml"
-require "zlib"
 
 require_relative "cictl/collection_map"
 require_relative "cictl/date_extra"
@@ -19,11 +13,6 @@ require_relative "cictl/index_command"
 require_relative "cictl/indexer"
 require_relative "cictl/logger"
 require_relative "cictl/services"
-require_relative "cictl/solr_client"
-
-unless ENV["NO_DB"]
-  require_relative "ht_traject/ht_dbh"
-end
 
 module CICTL
   class CICTL < Thor
