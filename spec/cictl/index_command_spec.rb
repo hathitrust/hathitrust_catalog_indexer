@@ -13,8 +13,13 @@ RSpec.describe CICTL::IndexCommand do
 
   describe "#index all" do
     it "indexes all example records" do
+      # Make a fake delete entry for a bogus id
+      bogus_delete = "000000000"
+      CICTL::SolrClient.new.set_deleted [bogus_delete]
       CICTL::CICTL.start(["index", "all", "--today", "20230103", "--no-wait", "--log", test_log])
-      expect(solr_count).to eq CICTL::Examples.all_ids.count
+      expect(solr_count).to eq CICTL::Examples.all_ids.count + 1
+      expect(solr_deleted_count).to be > 0
+      expect(solr_ids("deleted:true")).to include(bogus_delete)
     end
   end
 

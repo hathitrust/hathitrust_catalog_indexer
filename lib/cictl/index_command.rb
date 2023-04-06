@@ -21,9 +21,8 @@ module CICTL
         puts "5 second delay if you need it..."
         sleep 5
       end
-      logger.info "Empty Solr"
-      # FIXME: this should only delete records with "deleted:NOT true"
-      solr_client.empty!
+      logger.info "Empty full Solr records"
+      solr_client.empty_records!
       logger.info "Commit"
       solr_client.commit!
       reference_date = Date.with(options[:today] || Date.today)

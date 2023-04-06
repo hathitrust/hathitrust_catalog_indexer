@@ -31,6 +31,14 @@ module CICTL
       self
     end
 
+    # FIXME: not happy about the naming convention.
+    # This removes full records but leaves intact the tombstoned "deletes"
+    def empty_records!
+      @solr.delete_by_query "deleted:(NOT true)"
+      self
+    end
+
+    # FIXME: ditto above re not happy about the naming convention.
     def empty!
       @solr.delete_by_query "*:*"
       self

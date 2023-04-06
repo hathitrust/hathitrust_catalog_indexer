@@ -127,8 +127,8 @@ def solr_deleted_count
   CICTL::SolrClient.new.count_deleted
 end
 
-# def solr_ids(q = "*:*")
-#   solr_params = {q: q, wt: "ruby", rows: 100}
-#   response = CICTL::SolrClient.new.solr.get("select", params: solr_params)
-#   response["response"]["docs"].map { |doc| doc["id"] }
-# end
+def solr_ids(q = "*:*")
+  solr_params = {q: q, wt: "ruby", rows: 100}
+  response = CICTL::SolrClient.new.solr.get("select", params: solr_params)
+  response["response"]["docs"].map { |doc| doc["id"] }
+end
