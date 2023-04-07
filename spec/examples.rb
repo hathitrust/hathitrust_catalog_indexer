@@ -2,8 +2,9 @@
 
 # These are the examples used as fixtures in the cictl specs.
 # There is a single monthly file with 16 items.
-# There are three daily items with 2, 4, and 8 records in chronological order.
-# Each daily has a delete file that deletes one record (the first) from the previous day.
+# There is an update file with the same date as the monthly, having 32 items.
+# There are three subsequent daily items with 2, 4, and 8 records in chronological order.
+# Each of these dailies has a delete file that deletes one record (the first) from the previous day.
 module CICTL
   module Examples
     EXAMPLES = [
@@ -14,8 +15,18 @@ module CICTL
          000165447],
        type: :full,
        date: "20221231"},
-      {file: "sample_upd_20230101.json.gz",
+      {file: "sample_upd_20221231.json.gz",
        ids: %w[000009336 000014526],
+       type: :upd,
+       date: "20221231"},
+      {file: "sample_upd_20230101.json.gz",
+       ids: %w[000007392 000020235 000030447 000006709 000019736
+         000045827 000045652 000047519 000050019 000050384
+         000049738 000050857 000048474 000046126 000050023
+         000049721 000051290 000051910 000047070 000051354
+         000051907 000051550 000053471 000046651 000052581
+         000046914 000052525 000052613 000051947 000053000
+         000049292 000045245],
        type: :upd,
        date: "20230101"},
       {file: "sample_upd_20230101_delete.txt.gz",

@@ -28,9 +28,9 @@ module CICTL
       reference_date = Date.with(options[:today] || Date.today)
       logger.info "Looking for full marcfile #{last_full_marc_file(reference_date)}"
       file last_full_marc_file(reference_date)
-      # "since" command for a month starts on the second day of the month
-      # because it is looking for a file dated the previous day.
-      since Date.last_day_of_last_month(reference_date) + 2
+      # "since" command for a month starts on the last day of last month
+      # because there will generally be both an "upd" and a "full" file.
+      since Date.last_day_of_last_month(reference_date)
       logger.info "Commit"
       solr_client.commit!
     end
@@ -48,7 +48,7 @@ module CICTL
       index_records_for_date date
     end
 
-    desc "since YYYYMMDD", "Run all deletes/includes in order since the given date"
+    desc "since YYYYMMDD", "Run all deletes/marcfiles in order since the given date"
     def since(date)
       date = Date.with date
       yesterday = Date.today - 1
