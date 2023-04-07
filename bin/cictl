@@ -4,7 +4,7 @@
 require_relative "../lib/cictl"
 
 begin
-  CICTL::CICTL.start(ARGV)
+  CICTL::Command.start(ARGV)
 rescue CICTL::CICTLError => e
   puts "CICTL Error: #{e}"
   exit 1

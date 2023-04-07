@@ -11,11 +11,6 @@ services:
       - SOLR_URL=http://solr-sdr-catalog:9033/solr/catalog
       - redirect_file=/dev/null
       - NO_DB=1
-      - DDIR=/app/examples
-      - MYSQL_HOST=mariadb
-      - MYSQL_DATABASE=ht
-      - MYSQL_USER=mdp-lib
-      - MYSQL_PASSWORD=mdp-lib
 
   test:
     build: .
@@ -26,11 +21,6 @@ services:
     environment:
       - SOLR_URL=http://solr-sdr-catalog:9033/solr/catalog
       - redirect_file=/dev/null
-      - DDIR=/app/examples
-      - MYSQL_HOST=mariadb
-      - MYSQL_DATABASE=ht
-      - MYSQL_USER=mdp-lib
-      - MYSQL_PASSWORD=mdp-lib
     depends_on:
       - solr-sdr-catalog
       - mariadb

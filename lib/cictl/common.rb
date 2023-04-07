@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "services"
+require_relative "../services"
 
 module CICTL
   # Mix-in with mainly accessors to Services plus some miscellaneous junk
@@ -17,15 +17,15 @@ module CICTL
     end
 
     def home
-      Services[:home]
+      HathiTrust::Services[:home]
     end
 
     def logger
-      Services[:logger]
+      HathiTrust::Services[:logger]
     end
 
     def solr_client
-      Services[:solr]
+      HathiTrust::Services[:solr]
     end
   end
 end

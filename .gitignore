@@ -17,3 +17,5 @@ lib/translation_maps/hlb.json.gz
 
 # Ignore Mac OS X Desktop Services Store files
 .DS_Store
+
+config/env.local

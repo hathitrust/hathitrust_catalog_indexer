@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "date"
-require "pry"
 
 class Date
   def self.last_day_of_last_month(reference_date = today)

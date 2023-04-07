@@ -1,4 +1,4 @@
-require_relative 'ht_dbh'
+require_relative "../services"
 
 module HathiTrust
   class PrintHoldings
@@ -6,7 +6,7 @@ module HathiTrust
       return @query if @query
 
       nocache_volume_id = Sequel.lit('SQL_NO_CACHE volume_id')
-      @query = HathiTrust::DBH::DB[:holdings_htitem_htmember].join(:ht_institutions, inst_id: :member_id).select(nocache_volume_id, :mapto_inst_id).distinct
+      @query = Services[:db][:holdings_htitem_htmember].join(:ht_institutions, inst_id: :member_id).select(nocache_volume_id, :mapto_inst_id).distinct
     end
 
     # I use a db driver per thread to avoid any conflicts

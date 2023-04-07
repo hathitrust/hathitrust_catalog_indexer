@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 RSpec.describe CICTL::DeleteCommand do
@@ -15,9 +17,9 @@ RSpec.describe CICTL::DeleteCommand do
     it "deletes all records" do
       example = CICTL::Examples.for_date("20230103", type: :upd).first
       file = File.join(ENV["DDIR"], example[:file])
-      CICTL::CICTL.start(["index", "file", file, "--log", test_log])
+      CICTL::Command.start(["index", "file", file, "--log", test_log])
       expect(solr_count).to be > 0
-      CICTL::CICTL.start(["delete", "all", "--log", test_log])
+      CICTL::Command.start(["delete", "all", "--log", test_log])
       expect(solr_count).to eq 0
     end
   end
@@ -26,12 +28,12 @@ RSpec.describe CICTL::DeleteCommand do
     it "deletes 1 record" do
       upd_example = CICTL::Examples.for_date("20230102", type: :upd).first
       file = File.join(ENV["DDIR"], upd_example[:file])
-      CICTL::CICTL.start(["index", "file", file, "--log", test_log])
+      CICTL::Command.start(["index", "file", file, "--log", test_log])
       expect(solr_count).to eq upd_example[:ids].count
       expect(solr_deleted_count).to eq 0
       delete_example = CICTL::Examples.for_date("20230102", type: :delete).first
       file = File.join(ENV["DDIR"], delete_example[:file])
-      CICTL::CICTL.start(["delete", "file", file, "--log", test_log])
+      CICTL::Command.start(["delete", "file", file, "--log", test_log])
       expect(solr_count).to eq (upd_example[:ids] + delete_example[:ids]).uniq.count
       expect(solr_deleted_count).to eq delete_example[:ids].count
     end

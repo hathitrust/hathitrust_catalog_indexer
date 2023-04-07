@@ -143,14 +143,14 @@ will have _yesterday's_ date embedded in it. If you use these scripts you
 don't have to worry about any off-by-one errors. 
 
 Re-run today's file: 
-* `bin/cictl index today <optional_log_file>`
+* `bin/cictl index today`
 
 Run all the update files since a given date (YYYYMMDD):
 * `bin/cictl index since 20220302`
 
 Re-build the entire index based on the last full file, making sure 
 everything is up-to-date:
-* `bin/cictl index all <optional_log_file>`
+* `bin/cictl index all`
 
 Note that the fullindex file _does not contain that day's updates_ (e.g., on 
 July 1, you need to index both the `zephir_full_20230630` file _and_ the `zephir_upd_20230630` file. 

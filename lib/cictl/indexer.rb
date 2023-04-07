@@ -40,7 +40,7 @@ module CICTL
     private
 
     def call_indexer(marcfile)
-      logger.info "Indexing from #{marcfile}, reader #{reader_path} writer #{writer_path} (#{Services[:solr]})"
+      logger.info "Indexing from #{marcfile}, reader #{reader_path} writer #{writer_path} (#{solr_client})"
       success = @indexer.process File.open(marcfile, "r")
       unless success
         fatal "traject failed, shutting down"
@@ -78,7 +78,6 @@ module CICTL
       ].find { |path| File.exist? path } || fatal("Unable to find requested config file #{custom_file}")
     end
 
-    # FIXME: does this belong here or cictl.rb?
     def update_collection_map
       logger.info "updating collection map"
       File.open(File.join(collection_map_directory, COLLECTION_MAP_FILE), "w:utf-8") do |f|

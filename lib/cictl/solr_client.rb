@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "rsolr"
-require "pry"
 
 module CICTL
   class SolrClient
