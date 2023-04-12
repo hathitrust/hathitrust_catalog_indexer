@@ -30,7 +30,7 @@ docker-compose run --rm traject bundle install
 Generate Solr documents given an input file of MARC records in JSON format, one per line:
 
 ```
-docker-compose run --rm traject bundle exec bin/cictl index file --writer=json input-marc-records.jsonl
+docker-compose run --rm traject bundle exec bin/cictl index file --no-commit --writer=json input-marc-records.jsonl
 ```
 
 Output will be in `debug.json`.

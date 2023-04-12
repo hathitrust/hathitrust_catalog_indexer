@@ -35,10 +35,11 @@ module CICTL
       solr_client.commit!
     end
 
+    option :commit, type: :boolean, desc: "Commit changes to Solr", default: true
     desc "file FILE", "Index a single file"
     def file(marcfile)
       Indexer.new(reader: options[:reader], writer: options[:writer]).run marcfile
-      solr_client.commit!
+      solr_client.commit! if options[:commit]
     end
 
     desc "date YYYYMMDD", "Process the delete and index files timestamped YYYYMMDD"

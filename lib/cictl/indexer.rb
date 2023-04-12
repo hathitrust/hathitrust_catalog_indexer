@@ -40,7 +40,7 @@ module CICTL
     private
 
     def call_indexer(marcfile)
-      logger.info "Indexing from #{marcfile}, reader #{reader_path} writer #{writer_path} (#{solr_client})"
+      logger.info "Indexing from #{marcfile}, reader #{reader_path} writer #{writer_path} (#{ENV["SOLR_URL"]})"
       success = @indexer.process File.open(marcfile, "r")
       unless success
         fatal "traject failed, shutting down"
@@ -79,6 +79,7 @@ module CICTL
     end
 
     def update_collection_map
+      return if ENV["NO_DB"]
       logger.info "updating collection map"
       File.open(File.join(collection_map_directory, COLLECTION_MAP_FILE), "w:utf-8") do |f|
         f.puts CollectionMap.new.to_yaml
