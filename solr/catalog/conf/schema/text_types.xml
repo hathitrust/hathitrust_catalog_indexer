@@ -83,6 +83,30 @@
 </analyzer>
 </fieldType>
 
+
+<!-- For sort keys, just want to downcase/normalize everything we can. Mostly copied from the
+ umich config. -->
+<fieldType name="exactishSort" class="solr.TextField" positionIncrementGap="&tpig;">
+<analyzer>
+  <charFilter class="solr.MappingCharFilterFactory" mapping="schema/exactish_char_substitution.txt"/>
+  <tokenizer class="solr.KeywordTokenizerFactory"/>
+  <filter class="solr.PatternReplaceFilterFactory" pattern="([:\-])" replacement=" " replace="all"/>
+  <filter class="solr.PatternReplaceFilterFactory" pattern="[\p{P}\p{Sm}\p{Sc}\p{So}]" replacement="" replace="all"/>
+  <filter class="solr.ICUFoldingFilterFactory"/>
+  <filter class="solr.CJKWidthFilterFactory"/>
+  <filter class="solr.DecimalDigitFilterFactory"/>
+  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+
+  <!-- Left-pad numbers with zeroes -->
+  <filter class="solr.PatternReplaceFilterFactory" pattern="(\d+)" replacement="00000$1" replace="all"/>
+  <!-- Left-trim zeroes to produce 6 digit numbers -->
+  <filter class="solr.PatternReplaceFilterFactory" pattern="0*([0-9]{6,})" replacement="$1" replace="all"/>
+  <!-- squeeze multiple spaces to 1 -->
+  <filter class="solr.PatternReplaceFilterFactory" pattern="\s\s+" replacement=" " replace="all"/>
+</analyzer>
+</fieldType>
+
+
 <!-- a simple text type that only strips trailing punctuation, currently used for the author facet -->
 <fieldType name="textFacet" class="solr.TextField" sortMissingLast="true" omitNorms="true">
   <analyzer>

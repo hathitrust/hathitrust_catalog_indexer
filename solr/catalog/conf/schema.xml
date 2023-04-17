@@ -272,9 +272,9 @@
  <field name="author_top"  type="text_nostem" indexed="true" stored="true"   multiValued="true" />
  <field name="author_rest" type="text_nostem" indexed="true" stored="true"   multiValued="true" />
  <field name="author2"     type="text_nostem" indexed="true" stored="true"   multiValued="true" />
- <field name="authorSort" type="exactish" indexed="true" stored="false" multiValued="false"/>
+ <field name="authorSort" type="exactishSort" indexed="true" stored="false" multiValued="false"/>
 
- <field name="author_sortkey"        type="exactish" indexed="true"  stored="true" multiValued="false"/>
+ <field name="author_sortkey"        type="exactishSort" indexed="true"  stored="true" multiValued="false"/>
 
 
  <copyField source="author" dest="authorStr"/>
@@ -282,7 +282,7 @@
 
  <!-- Title fields -->
 
- <field name="titleSort"        type="exactish" indexed="true"  stored="true" multiValued="false"/>
+ <field name="titleSort"        type="exactishSort" indexed="true"  stored="true" multiValued="false"/>
  <field name="title"            type="text"          indexed="true"  stored="true"  multiValued="true" termVectors="true" />
  <field name="title_l"          type="text_leftjustified" indexed="true" stored="false" multiValued="true" />
  <field name="vtitle"           type="string"        indexed="false" stored="true" multiValued="false" />
@@ -298,7 +298,7 @@
 
  <field name="title_ab_exact"    type="exactish"  indexed="true"  stored="false" multiValued="true"/>
 
- <field name="title_sortkey"        type="exactish" indexed="true"  stored="true" multiValued="false"/>
+ <field name="title_sortkey"        type="exactishSort" indexed="true"  stored="true" multiValued="false"/>
  <field name="title_display" type="string" indexed="false" stored="true" multiValued="false"/>
 
 
