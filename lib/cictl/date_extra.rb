@@ -2,11 +2,8 @@
 
 require "date"
 
+# FIXME: do this without monkeypatching Date
 class Date
-  def self.last_day_of_last_month(reference_date = today)
-    reference_date - reference_date.mday
-  end
-
   # Return argument intact if Date object, or new Date object if String
   # or coercible to String.
   def self.with(obj)

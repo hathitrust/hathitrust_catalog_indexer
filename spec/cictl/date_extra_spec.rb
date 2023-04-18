@@ -18,15 +18,4 @@ RSpec.describe Date do
         .to raise_error(CICTL::CICTLError)
     end
   end
-
-  describe ".last_day_of_last_month" do
-    it "returns the last day of the previous month given a date" do
-      expect(described_class.last_day_of_last_month(Date.parse("2020-01-01")).to_s)
-        .to eq "2019-12-31"
-    end
-
-    it "returns the last day of the previous month by default" do
-      expect(described_class.last_day_of_last_month).to eq Date.today - Date.today.mday
-    end
-  end
 end
