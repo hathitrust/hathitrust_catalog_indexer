@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "socket"
 require "traject"
 
 require_relative "common"
@@ -25,10 +24,9 @@ module CICTL
     end
 
     def run(marcfile)
-      # Note: hostname will likely be gibberish under Docker
-      logger.info "Working on #{Socket.gethostname} in #{home}"
-      unless File.exist? marcfile
-        fatal "No indexing: Could not find marcfile '#{marcfile}'"
+      logger.info "Working in #{home}"
+      unless File.readable?(marcfile)
+        fatal "No indexing: Could not read marcfile '#{marcfile}'"
       end
       fatal "Can't find reader #{reader_path}" unless File.exist?(reader_path)
       fatal "Can't find writer #{writer_path}" unless File.exist?(writer_path)
