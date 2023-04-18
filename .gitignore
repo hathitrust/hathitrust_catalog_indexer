@@ -14,6 +14,7 @@ debug.json
 nohup.out
 
 lib/translation_maps/hlb.json.gz
+lib/translation_maps/ht/collection_code_to_original_from.yaml
 
 # Ignore Mac OS X Desktop Services Store files
 .DS_Store

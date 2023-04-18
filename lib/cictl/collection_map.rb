@@ -4,12 +4,6 @@ require_relative "../services"
 
 module CICTL
   class CollectionMap
-    def to_yaml
-      collection_map.to_yaml
-    end
-
-    private
-
     def collection_map
       @collection_map ||= begin
         sql = <<~SQL
@@ -23,6 +17,10 @@ module CICTL
         end
         ccof
       end
+    end
+
+    def to_yaml
+      collection_map.to_yaml
     end
   end
 end
