@@ -18,7 +18,7 @@ module CICTL
 
     desc "file FILE", "Delete records from a single file"
     def file(delfile)
-      fatal "Could not find deletes file '#{delfile}'" unless File.exist?(delfile)
+      fatal "Could not read deletes file '#{delfile}'" unless File.readable?(delfile)
       logger.info "Deleting from #{delfile}, targeting #{solr_client}"
       Deleter.new.run delfile
       logger.info "Commit"
