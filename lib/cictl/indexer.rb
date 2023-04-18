@@ -11,9 +11,11 @@ module CICTL
     DEFAULT_WRITER_NAME = "localhost"
     COLLECTION_MAP_FILE = "collection_code_to_original_from.yaml"
 
+    attr_reader :reader_path, :writer_path
+
     def initialize(reader: nil, writer: nil)
-      @reader = reader
-      @writer = writer
+      @reader_path = find_reader reader
+      @writer_path = find_writer writer
       config_paths = [reader_path, writer_path]
       %w[common common_ht ht subjects].each do |conf|
         config_paths << File.join(home, "indexers", conf + ".rb")
@@ -45,16 +47,16 @@ module CICTL
       end
     end
 
-    # Absolute path to traject reader file
-    def reader_path
-      return default_reader_path unless @reader
-      @reader_path ||= find_custom_config_file("readers", @reader)
+    # Returns full path to traject reader file based on name or partial path
+    def find_reader(reader_name)
+      return default_reader_path unless reader_name
+      find_custom_config_file("readers", reader_name)
     end
 
-    # Absolute path to traject writer file
-    def writer_path
-      return default_writer_path unless @writer
-      @writer_path ||= find_custom_config_file("writers", @writer)
+    # Returns full path to traject writer file based on name or partial path
+    def find_writer(writer_name)
+      return default_writer_path unless writer_name
+      find_custom_config_file("writers", writer_name)
     end
 
     def default_reader_path
