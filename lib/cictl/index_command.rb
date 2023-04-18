@@ -27,6 +27,7 @@ module CICTL
       solr_client.commit!
       reference_date = Date.with(options[:today] || Date.today)
       logger.info "Looking for full marcfile #{last_full_marc_file(reference_date)}"
+      # Calling the Thor "file" command.
       file last_full_marc_file(reference_date)
       # "since" command for a month starts on the last day of last month
       # because there will generally be both an "upd" and a "full" file.
