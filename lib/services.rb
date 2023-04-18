@@ -15,8 +15,8 @@ module HathiTrust
   module Env
     # Load env file and env.local if it exists.
     # Precedence from high to low:
-    #  config/emv.local for non-k8s production use
     #  ENV set by Docker, docker-compose, kubectl, etc.
+    #  config/env.local for non-k8s production use
     #  config/env which has defaults for development and testing
     def env_file
       @env_file ||= File.join(HOME, "config", "env")
@@ -27,10 +27,8 @@ module HathiTrust
     end
 
     module_function :env_file, :env_local_file
-    # Okay to clobber ENV with this file because it takes precedence.
-    Dotenv.overload env_local_file
-    # Don't modify existing values.
-    Dotenv.load env_file
+    # From the Dotenv README: "The first value set for a variable will win."
+    Dotenv.load env_local_file, env_file
   end
 
   Services = Canister.new
