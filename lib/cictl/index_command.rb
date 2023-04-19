@@ -3,7 +3,6 @@
 require "thor"
 
 require_relative "common"
-require_relative "date_extra"
 require_relative "zephir_file"
 
 module CICTL
@@ -43,24 +42,26 @@ module CICTL
 
     desc "date YYYYMMDD", "Process the delete and index files timestamped YYYYMMDD"
     def date(date)
-      date = Date.with date
-      index_deletes_for_date date
-      index_records_for_date date
+      with_date(date) do |date|
+        index_deletes_for_date date
+        index_records_for_date date
+      end
     end
 
     desc "since YYYYMMDD", "Run all deletes/marcfiles in order since the given date"
     def since(date)
-      date = Date.with date
-      yesterday = Date.today - 1
-      begin
-        start_date = date - 1
-      rescue Date::Error => e
-        fatal e.message
-      end
-      logger.debug "index since(#{date}): #{start_date} to #{yesterday}"
-      (start_date..yesterday).each do |index_date|
-        logger.info("\n------- #{index_date} -----------\n")
-        call_date_command index_date
+      with_date(date) do |date|
+        yesterday = Date.today - 1
+        begin
+          start_date = date - 1
+        rescue Date::Error => e
+          fatal e.message
+        end
+        logger.debug "index since(#{date}): #{start_date} to #{yesterday}"
+        (start_date..yesterday).each do |index_date|
+          logger.info("\n------- #{index_date} -----------\n")
+          call_date_command index_date
+        end
       end
     end
 

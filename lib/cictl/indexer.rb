@@ -27,9 +27,7 @@ module CICTL
 
     def run(marcfile)
       logger.info "Working in #{home}"
-      unless File.readable?(marcfile)
-        fatal "No indexing: Could not read marcfile '#{marcfile}'"
-      end
+      fatal "Cen't read marcfile '#{marcfile}'" unless File.readable?(marcfile)
       fatal "Can't find reader #{reader_path}" unless File.exist?(reader_path)
       fatal "Can't find writer #{writer_path}" unless File.exist?(writer_path)
       logger.debug "reader: #{reader_path}; writer: #{writer_path}"
