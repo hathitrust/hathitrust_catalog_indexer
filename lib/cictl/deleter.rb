@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "date_named_file"
+require "zinzout"
 
 require_relative "common"
 
@@ -9,10 +10,7 @@ module CICTL
     include Common
 
     def run(deletes_file)
-      File.open(deletes_file) do |file|
-        if /\.gz\Z/.match? deletes_file.to_s
-          file = Zlib::GzipReader.new(file)
-        end
+      Zinzout.zin(deletes_file) do |file|
         ids = file.map { |line| line.chomp }
         if ids.size > 0
           solr_client.set_deleted ids

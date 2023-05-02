@@ -3,11 +3,10 @@
 require "rsolr"
 
 module CICTL
-  class SolrClient
-    attr_reader :solr
+  class SolrClient < SimpleDelegator
     def initialize(rsolr = nil)
-      @solr = rsolr
-      @solr ||= RSolr.connect url: solr_url
+      rsolr ||= RSolr.connect url: solr_url
+      super rsolr
     end
 
     def to_s
@@ -17,7 +16,7 @@ module CICTL
     # Count all records including those with the "deleted" flag set.
     def count(q = "*:*")
       solr_params = {q: q, wt: "ruby", rows: 1}
-      @solr.get("select", params: solr_params)["response"]["numFound"]
+      get("select", params: solr_params)["response"]["numFound"]
     end
 
     # Count only records with the "deleted" flag.
@@ -26,26 +25,26 @@ module CICTL
     end
 
     def commit!
-      @solr.commit
+      commit
       self
     end
 
     # FIXME: not happy about the naming convention.
     # This removes full records but leaves intact the tombstoned "deletes"
     def empty_records!
-      @solr.delete_by_query "deleted:(NOT true)"
+      delete_by_query "deleted:(NOT true)"
       self
     end
 
     # FIXME: ditto above re not happy about the naming convention.
     def empty!
-      @solr.delete_by_query "*:*"
+      delete_by_query "*:*"
       self
     end
 
     def set_deleted(ids)
       solr_data = Array(ids).map { |id| deleted_id id }
-      @solr.update data: solr_data.to_json, headers: {"Content-Type" => "application/json"}
+      update data: solr_data.to_json, headers: {"Content-Type" => "application/json"}
     end
 
     private

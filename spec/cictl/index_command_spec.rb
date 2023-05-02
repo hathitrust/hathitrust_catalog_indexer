@@ -18,7 +18,7 @@ RSpec.describe CICTL::IndexCommand do
       # Make a fake delete entry for a bogus id
       bogus_delete = "000000000"
       CICTL::SolrClient.new.set_deleted [bogus_delete]
-      CICTL::Command.start(["index", "all", "--today", "20230103", "--no-wait", "--log", test_log])
+      CICTL::Command.start(["index", "all", "--no-wait", "--log", test_log])
       expect(solr_count).to eq CICTL::Examples.all_ids.count + 1
       expect(solr_deleted_count).to be > 0
       expect(solr_ids("deleted:true")).to include(bogus_delete)
@@ -31,6 +31,11 @@ RSpec.describe CICTL::IndexCommand do
       CICTL::Command.start(["index", "date", "20230103", "--log", test_log])
       expect(solr_count).to eq examples.map { |ex| ex[:ids] }.flatten.uniq.count
     end
+
+    it "raises on bogus date" do
+      expect { CICTL::Command.start(["index", "date", "this is not even remotely datelike", "--log", test_log]) }
+        .to raise_error(CICTL::CICTLError)
+    end
   end
 
   describe "#index file" do
@@ -40,6 +45,15 @@ RSpec.describe CICTL::IndexCommand do
         file = File.join(ENV["DDIR"], example[:file])
         CICTL::Command.start(["index", "file", file, "--log", test_log])
         expect(solr_count).to eq example[:ids].count
+      end
+    end
+
+    context "that does not exist" do
+      it "fails" do
+        file = File.join(ENV["DDIR"], "there_is_no_file_by_that_name_here.json.gz")
+        expect {
+          CICTL::Command.start(["index", "file", file, "--log", test_log])
+        }.to raise_error(CICTL::CICTLError)
       end
     end
 
