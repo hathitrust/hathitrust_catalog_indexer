@@ -13,6 +13,11 @@ module CICTL
       solr_client.commit!
     end
 
+    desc "dump_deleted FILE", "Dump the solr docs marked as `deleted` to the given .jsonl file"
+    def dump_deleted(filename)
+      solr_client.dump_deletes_as_jsonl(filename)
+    end
+
     desc "send_jsonl FILE", "Send pre-created records from a .jsonl(.gz.) file into solr"
     option :batch_size, type: :numeric, desc: "Batch size when sending records", default: 1000
 
@@ -33,14 +38,11 @@ module CICTL
         else
           puts "SUCCESS: #{client.solr_url} is alive"
         end
+      elsif options[:silent]
+        exit 1
       else
-        if options[:silent]
-          exit 1
-        else
-          puts "FAILURE: #{client.solr_url} could not be reached"
-        end
+        puts "FAILURE: #{client.solr_url} could not be reached"
       end
     end
   end
 end
-

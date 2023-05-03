@@ -8,7 +8,6 @@ require_relative "../services"
 
 module CICTL
   class SolrClient < SimpleDelegator
-
     # @param [RSolr] rsolr An existing rsolr instance
     # @param [Fixnum] timeout Timeout, in seconds
     def initialize(rsolr = nil, timeout: 15)
@@ -62,15 +61,14 @@ module CICTL
 
     # An http client for sending jsonl (nee "ndj") documents to solr in batches
     def batch_sender_client
-      @batch_sender ||= begin
+      @batch_sender ||=
         Faraday.new(request: {params_encoder: Faraday::FlatParamsEncoder}) do |builder|
           builder.use Faraday::Response::RaiseError
           builder.request :url_encoded
           builder.response :json
           builder.adapter :httpx
-          builder.headers['Content-Type'] = 'application/json'
+          builder.headers["Content-Type"] = "application/json"
         end
-      end
     end
 
     # Send the solr documents in an jsonl/ndj file in batches
@@ -127,6 +125,5 @@ module CICTL
     def deleted_id(id)
       {id: id, deleted: true}
     end
-
   end
 end
