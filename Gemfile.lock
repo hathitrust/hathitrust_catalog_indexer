@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.1)
+    addressable (2.8.4)
       public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
     builder (3.2.4)
@@ -25,21 +25,22 @@ GEM
       ffi (>= 1.0.0)
       rake
     hashie (5.0.0)
-    http (4.4.1)
-      addressable (~> 2.3)
+    http (5.1.1)
+      addressable (~> 2.8)
       http-cookie (~> 1.0)
       http-form_data (~> 2.2)
-      http-parser (~> 1.2.0)
+      llhttp-ffi (~> 0.4.0)
     http-cookie (1.0.5)
       domain_name (~> 0.5)
     http-form_data (2.3.0)
-    http-parser (1.2.3)
-      ffi-compiler (>= 1.0, < 2.0)
     httpclient (2.8.3)
     jdbc-mysql (8.0.27)
     json (2.6.3-java)
     language_server-protocol (3.17.0.3)
     library_stdnums (1.6.0)
+    llhttp-ffi (0.4.0)
+      ffi-compiler (~> 1.0)
+      rake (~> 13.0)
     marc (1.2.0)
       rexml
       scrub_rb (>= 1.0.1, < 2)
@@ -53,7 +54,6 @@ GEM
       yell (~> 2)
     match_map (3.0.0)
     method_source (1.0.0)
-    minitest (5.18.0)
     naconormalizer (1.0.1-java)
     nokogiri (1.13.10-java)
       racc (~> 1.4)
@@ -67,7 +67,7 @@ GEM
     public_suffix (5.0.1)
     racc (1.6.2-java)
     rainbow (3.1.1)
-    rake (12.3.3)
+    rake (13.0.6)
     regexp_parser (2.7.0)
     rexml (3.2.5)
     rsolr (2.5.0)
@@ -146,21 +146,22 @@ GEM
 
 PLATFORMS
   universal-java-1.8
+  universal-java-19
 
 DEPENDENCIES
   bundler (~> 2.0)
   canister
   date_named_file
   dotenv
+  http (~> 5.0)
   httpclient
   jdbc-mysql
   library_stdnums
   marc-fastxmlwriter (~> 1.1)
   match_map
-  minitest
   naconormalizer
   pry
-  rake (~> 12.3)
+  rake (~> 13.0)
   rsolr
   rspec
   sequel
@@ -176,4 +177,4 @@ DEPENDENCIES
   zinzout
 
 BUNDLED WITH
-   2.4.8
+   2.4.12
