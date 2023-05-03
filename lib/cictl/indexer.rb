@@ -20,14 +20,15 @@ module CICTL
       %w[common common_ht ht subjects].each do |conf|
         config_paths << File.join(home, "indexers", conf + ".rb")
       end
-      @indexer = Traject::Indexer::MarcIndexer.new(logger: logger) do |ind|
+      traject_logger = HathiTrust::Services[:logger_factory].logger(owner: "Traject")
+      @indexer = Traject::Indexer::MarcIndexer.new(logger: traject_logger) do |ind|
         config_paths.each { |config_path| load_config_file(config_path) }
       end
     end
 
     def run(marcfile)
       logger.info "Working in #{home}"
-      fatal "Cen't read marcfile '#{marcfile}'" unless File.readable?(marcfile)
+      fatal "Can't read marcfile '#{marcfile}'" unless File.readable?(marcfile)
       fatal "Can't find reader #{reader_path}" unless File.exist?(reader_path)
       fatal "Can't find writer #{writer_path}" unless File.exist?(writer_path)
       logger.debug "reader: #{reader_path}; writer: #{writer_path}"
