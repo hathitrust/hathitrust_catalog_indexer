@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rsolr"
+require "delegate"
 
 module CICTL
   class SolrClient < SimpleDelegator
