@@ -24,6 +24,7 @@ module CICTL
       HathiTrust::Services[:logger]
     end
 
+    # @return [CICTL::SolrClient]
     def solr_client
       HathiTrust::Services[:solr]
     end

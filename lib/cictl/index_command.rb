@@ -34,7 +34,7 @@ module CICTL
     end
 
     option :commit, type: :boolean, desc: "Commit changes to Solr", default: true
-    desc "file FILE", "Index a single file"
+    desc "file FILE", "Index a single MARC file"
     def file(marcfile)
       Indexer.new(reader: options[:reader], writer: options[:writer]).run marcfile
       solr_client.commit! if options[:commit]

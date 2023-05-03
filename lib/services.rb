@@ -32,6 +32,11 @@ module HathiTrust
   end
 
   Services = Canister.new
+
+  Services.register(:solr_url) do
+    ENV["SOLR_URL"]
+  end
+
   Services.register(:solr) do
     CICTL::SolrClient.new
   end

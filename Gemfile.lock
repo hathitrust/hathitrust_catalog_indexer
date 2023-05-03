@@ -25,6 +25,7 @@ GEM
       ffi (>= 1.0.0)
       rake
     hashie (5.0.0)
+    http-2-next (0.5.1)
     http (4.4.1)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
@@ -36,6 +37,8 @@ GEM
     http-parser (1.2.3)
       ffi-compiler (>= 1.0, < 2.0)
     httpclient (2.8.3)
+    httpx (0.22.5)
+      http-2-next (>= 0.4.1)
     jdbc-mysql (8.0.27)
     json (2.6.3-java)
     language_server-protocol (3.17.0.3)
@@ -146,6 +149,7 @@ GEM
 
 PLATFORMS
   universal-java-1.8
+  universal-java-19
 
 DEPENDENCIES
   bundler (~> 2.0)
@@ -153,6 +157,7 @@ DEPENDENCIES
   date_named_file
   dotenv
   httpclient
+  httpx
   jdbc-mysql
   library_stdnums
   marc-fastxmlwriter (~> 1.1)
