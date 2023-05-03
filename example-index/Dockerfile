@@ -1,6 +1,6 @@
 # First, transform the MARC in JSON into Solr documents
 
-FROM --platform=$BUILDPLATFORM jruby:9.3 AS traject
+FROM --platform=$BUILDPLATFORM jruby:9.4 AS traject
 
 ARG UNAME=app
 ARG UID=1000
