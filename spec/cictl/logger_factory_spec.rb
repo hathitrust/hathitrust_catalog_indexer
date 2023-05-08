@@ -12,6 +12,12 @@ RSpec.describe CICTL::LoggerFactory do
     it "sends #fatal to STDERR" do
       expect { subject.fatal "fatal shwoozle" }.to output(/shwoozle/).to_stderr
     end
+
+    it "does not send anything less than #error to STDERR" do
+      %i[debug info warn].each do |level|
+        expect { subject.send(level, "#{level} shwoozle") }.not_to output(/shwoozle/).to_stderr
+      end
+    end
   end
 
   describe "#logger" do
@@ -21,20 +27,6 @@ RSpec.describe CICTL::LoggerFactory do
 
     context "without a log file" do
       it_behaves_like "any logger", false, nil
-
-      context "in verbose mode" do
-        it "sends #debug to STDOUT" do
-          logger = described_class.new(verbose: true).logger
-          expect { logger.debug "debug shwoozle" }.to output(/debug shwoozle/).to_stdout
-        end
-      end
-
-      context "in non-verbose mode" do
-        it "does not send #debug to STDOUT" do
-          logger = described_class.new.logger
-          expect { logger.debug "debug shwoozle" }.not_to output(/debug shwoozle/).to_stdout
-        end
-      end
     end
   end
 end

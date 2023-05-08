@@ -18,34 +18,13 @@ module CICTL
       SemanticLogger.clear_appenders!
       if @log_file
         SemanticLogger.add_appender(file_name: @log_file, level: min_level)
-        SemanticLogger.add_appender(appender: DualIOAppender.new(level: :error, formatter: :color))
-      else
-        SemanticLogger.add_appender(appender: DualIOAppender.new(level: min_level, formatter: :color))
       end
+      SemanticLogger.add_appender(io: $stderr, level: :error)
       SemanticLogger[owner]
     end
 
     def min_level
       @verbose ? :debug : :info
-    end
-  end
-
-  # A variation on the IO appender, writes normal messages to STDOUT
-  # and error/fatal messages to STDERR.
-  class DualIOAppender < SemanticLogger::Subscriber
-    def log(log)
-      io = %i[error fatal].include?(log.level) ? $stderr : $stdout
-      io.write(formatter.call(log, self) << "\n")
-      true
-    end
-
-    def flush
-      $stdout.flush
-      $stderr.flush
-    end
-
-    def console_output?
-      true
     end
   end
 end
