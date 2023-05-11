@@ -104,6 +104,8 @@ GEM
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     scrub_rb (1.0.1)
+    semantic_logger (4.13.0)
+      concurrent-ruby (~> 1.0)
     sequel (5.66.0)
     simplecov (0.22.0)
       docile (~> 1.1)
@@ -164,6 +166,7 @@ DEPENDENCIES
   rake (~> 13.0)
   rsolr
   rspec
+  semantic_logger
   sequel
   simplecov
   simplecov-lcov
@@ -173,7 +176,6 @@ DEPENDENCIES
   traject-marc4j_reader
   traject_alephsequential_reader
   traject_umich_format
-  yell
   zinzout
 
 BUNDLED WITH

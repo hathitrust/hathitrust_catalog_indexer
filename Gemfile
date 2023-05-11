@@ -19,12 +19,12 @@ gem "library_stdnums"
 gem "marc-fastxmlwriter", "~> 1.1"
 gem "match_map"
 gem "rsolr"
+gem "semantic_logger"
 gem "sequel"
 gem "thor"
 gem "traject", "~>3.0"
 gem "traject_alephsequential_reader"
 gem "traject_umich_format"
-gem "yell"
 gem "zinzout"
 
 if defined? JRUBY_VERSION
