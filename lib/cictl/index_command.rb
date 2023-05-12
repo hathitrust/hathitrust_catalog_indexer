@@ -24,9 +24,10 @@ module CICTL
       solr_client.empty_records!
       logger.info "Load most recent set of deleted records into solr"
       if DeletedRecords.most_recent_non_empty_file
+        logger.info "Found #{DeletedRecords.most_recent_non_empty_file}"
         solr_client.send_jsonl(DeletedRecords.most_recent_non_empty_file)
       else
-        logger.error "Can't find any non_empty deleted_record files in #{DeletedRecords.daily_file.dir_path}"
+        logger.error "Can't find any non_empty deleted_record files in #{DeletedRecords.save_directory}"
       end
       logger.info "Commit"
       solr_client.commit!
