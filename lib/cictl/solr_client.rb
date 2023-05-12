@@ -6,7 +6,6 @@ require "faraday"
 require "httpx/adapters/faraday"
 require_relative "../services"
 
-
 module CICTL
   class SolrClient < SimpleDelegator
     # @param [RSolr] rsolr An existing rsolr instance

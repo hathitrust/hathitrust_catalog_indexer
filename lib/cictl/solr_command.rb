@@ -13,16 +13,16 @@ module CICTL
       solr_client.commit!
     end
 
-    desc "dump_deleted FILE", "Dump the solr docs marked as `deleted` to the given .jsonl file"
+    desc "dump-deleted FILE", "Dump the solr docs marked as `deleted` to the given .jsonl file"
     def dump_deleted(filename)
       solr_client.dump_deletes_as_jsonl(filename)
     end
 
-    desc "send_jsonl FILE", "Send pre-created records from a .jsonl(.gz.) file into solr"
+    desc "send-jsonl FILE", "Send pre-created records from a .jsonl(.gz.) file into solr"
     option :batch_size, type: :numeric, desc: "Batch size when sending records", default: 1000
 
     def send_jsonl(filename)
-      raise "'#{filename}' not found" unless File.exist?(filename)
+      raise CICTLError, "'#{filename}' not readable" unless File.readable?(filename)
       solr_client.send_jsonl(filename, batch_size: options[:batch_size]).commit!
     end
 

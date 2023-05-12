@@ -48,6 +48,10 @@ module HathiTrust
     HOME
   end
 
+  Services.register(:data_directory) do
+    ENV["DDIR"] || "/htsolr/catalog/prep"
+  end
+
   Services.register(:db) do
     DBH.connect
   end

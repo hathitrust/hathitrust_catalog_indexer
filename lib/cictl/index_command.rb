@@ -4,6 +4,7 @@ require "thor"
 
 require_relative "common"
 require_relative "zephir_file"
+require_relative "deleted_records"
 
 module CICTL
   class IndexCommand < Thor
@@ -21,6 +22,12 @@ module CICTL
       end
       logger.info "Empty full Solr records"
       solr_client.empty_records!
+      logger.info "Load most recent set of deleted records into solr"
+      if DeletedRecords.most_recent_non_empty_file
+        solr_client.send_jsonl(DeletedRecords.most_recent_non_empty_file)
+      else
+        logger.error "Can't find any non_empty deleted_record files in #{DeletedRecords.daily_file.dir_path}"
+      end
       logger.info "Commit"
       solr_client.commit!
       logger.info "Using full marcfile #{last_full_marc_file}"
@@ -75,6 +82,9 @@ module CICTL
       # FIXME: why does this have a default logfile where catchup_since does not?
       # _logfile ||= File.join(home, "logs/daily_#{today}.txt")
       call_date_command yesterday
+
+      logger.info "Dump deleted_records to #{DeletedRecords.daily_file}"
+      solr_client.dump_deletes_as_jsonl(DeletedRecords.daily_file)
     end
 
     no_commands do
