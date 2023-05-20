@@ -156,6 +156,7 @@ GEM
     zinzout (0.1.1)
 
 PLATFORMS
+  universal-java-1.8
   universal-java-19
 
 DEPENDENCIES
