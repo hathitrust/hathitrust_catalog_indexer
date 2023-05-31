@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "cictl/deleted_records"
 
 RSpec.describe CICTL::IndexCommand do
   before(:each) do
@@ -99,14 +100,27 @@ RSpec.describe CICTL::IndexCommand do
   end
 
   describe "#index today" do
-    it "indexes 0 records when no file exists" do
-      CICTL::Command.start(["index", "today", "--log", test_log])
-      expect(solr_count).to eq 0
-    end
+    # Note that "today" means "index today, using the file dated yesterday"
 
     it "indexes 'today' and produces deletes file" do
+      zyesterday = CICTL::ZephirFile.update_files.yesterday
+      delyesterday = CICTL::ZephirFile.delete_files.yesterday
 
+      # Get some data into those files
+      FileUtils.cp(CICTL::ZephirFile.update_files.last, zyesterday)
+      FileUtils.cp(CICTL::ZephirFile.delete_files.last, delyesterday)
+
+      # How many records/deletes do we have?
+      zcount = Zinzout.zin(zyesterday).count
+      delcount = Zinzout.zin(delyesterday).count
+
+      CICTL::Command.start(%w[index today])
+
+      expect(solr_count).to eq(zcount + delcount)
+      expect(CICTL::DeletedRecords.daily_file.readable?)
+      expect(Zinzout.zin(CICTL::DeletedRecords.daily_file).count).to eq(delcount)
+
+      FileUtils.rm([zyesterday, delyesterday])
     end
-
   end
 end
