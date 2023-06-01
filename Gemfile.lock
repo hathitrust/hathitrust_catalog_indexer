@@ -16,11 +16,10 @@ GEM
     dot-properties (0.1.4)
       bundler (>= 2.2.33)
     dotenv (2.8.1)
-    faraday (2.7.4)
+    faraday (2.7.5)
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (3.0.2)
-    ffi (1.15.5)
     ffi (1.15.5-java)
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
@@ -36,10 +35,9 @@ GEM
       domain_name (~> 0.5)
     http-form_data (2.3.0)
     httpclient (2.8.3)
-    httpx (0.23.2)
+    httpx (0.23.3)
       http-2-next (>= 0.4.1)
     jdbc-mysql (8.0.27)
-    json (2.6.3)
     json (2.6.3-java)
     language_server-protocol (3.17.0.3)
     library_stdnums (1.6.0)
@@ -61,22 +59,16 @@ GEM
     match_map (3.0.0)
     method_source (1.0.0)
     naconormalizer (1.0.1-java)
-    nokogiri (1.14.4-arm64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.14.4-java)
+    nokogiri (1.15.2-java)
       racc (~> 1.4)
     parallel (1.23.0)
     parser (3.2.2.1)
       ast (~> 2.4.1)
-    pry (0.14.2)
-      coderay (~> 1.1)
-      method_source (~> 1.0)
     pry (0.14.2-java)
       coderay (~> 1.1)
       method_source (~> 1.0)
       spoon (~> 0.0)
     public_suffix (5.0.1)
-    racc (1.6.2)
     racc (1.6.2-java)
     rainbow (3.1.1)
     rake (13.0.6)
@@ -108,7 +100,7 @@ GEM
       rubocop-ast (>= 1.28.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
-    rubocop-ast (1.28.1)
+    rubocop-ast (1.29.0)
       parser (>= 3.2.1.0)
     rubocop-performance (1.16.0)
       rubocop (>= 1.7.0, < 2.0)
@@ -116,7 +108,9 @@ GEM
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     scrub_rb (1.0.1)
-    sequel (5.68.0)
+    semantic_logger (4.13.0)
+      concurrent-ruby (~> 1.0)
+    sequel (5.69.0)
     simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -127,7 +121,7 @@ GEM
     slop (4.10.1)
     spoon (0.0.6)
       ffi
-    standard (1.28.2)
+    standard (1.28.5)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
       rubocop (~> 1.50.2)
@@ -138,7 +132,7 @@ GEM
     standard-performance (1.0.1)
       lint_roller (~> 1.0)
       rubocop-performance (~> 1.16.0)
-    thor (1.2.1)
+    thor (1.2.2)
     traject (3.8.1)
       concurrent-ruby (>= 0.8.0)
       dot-properties (>= 0.1.1)
@@ -158,19 +152,13 @@ GEM
       marc_alephsequential (~> 2)
       yell
     traject_umich_format (0.4.4)
-    unf (0.1.4)
-      unf_ext
     unf (0.1.4-java)
-    unf_ext (0.0.8.2)
     unicode-display_width (2.4.2)
     yell (2.2.2)
     zinzout (0.1.1)
 
 PLATFORMS
-  arm64-darwin-22
-  universal-java-1.8
-  universal-java-19
-  universal-java-20
+  universal-java-17
 
 DEPENDENCIES
   bundler (~> 2.0)
@@ -189,6 +177,7 @@ DEPENDENCIES
   rake (~> 13.0)
   rsolr
   rspec
+  semantic_logger
   sequel
   simplecov
   simplecov-lcov
@@ -202,4 +191,4 @@ DEPENDENCIES
   zinzout
 
 BUNDLED WITH
-   2.4.12
+   2.4.13

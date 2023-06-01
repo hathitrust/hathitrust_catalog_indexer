@@ -10,6 +10,7 @@ group :development, :test do
   gem "pry"
 end
 
+gem "semantic_logger"
 gem "http", "~>5.0"
 gem "canister"
 gem "date_named_file"

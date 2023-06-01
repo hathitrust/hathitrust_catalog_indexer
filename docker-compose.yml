@@ -17,7 +17,9 @@ services:
     volumes:
       - .:/app
       - gem_cache:/gems
-    command: bash -c "wait-for solr-sdr-catalog:9033 mariadb:3306 && JRUBY_OPTS="--debug" bundle exec rspec"
+    command: bash -c "wait-for solr-sdr-catalog:9033 mariadb:3306 &&  \
+             JRUBY_OPTS="--debug" \
+             bundle exec rspec"
     environment:
       - SOLR_URL=http://solr-sdr-catalog:9033/solr/catalog
       - redirect_file=/dev/null
