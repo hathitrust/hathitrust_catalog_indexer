@@ -1,4 +1,3 @@
-
 require "rsolr"
 require "delegate"
 require "pathname"
