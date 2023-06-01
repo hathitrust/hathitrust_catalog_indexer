@@ -97,20 +97,15 @@ module CICTL
     private
 
     def last_full_marc_file
-      @last_full_marc_file ||= DateNamedFile.new(ZephirFile.full_template)
-        .in_dir(data_directory).last
+      @last_full_marc_file ||= ZephirFile.full_files.last
     end
 
     def delete_file_for_date(date)
-      DateNamedFile.new(ZephirFile.delete_template)
-        .in_dir(data_directory)
-        .at(date)
+      ZephirFile.delete_files.at(date)
     end
 
     def marc_file_for_date(date)
-      DateNamedFile.new(ZephirFile.update_template)
-        .in_dir(data_directory)
-        .at(date)
+      ZephirFile.update_files.at(date)
     end
 
     def index_records_for_date(date)

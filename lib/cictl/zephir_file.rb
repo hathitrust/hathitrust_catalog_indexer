@@ -20,14 +20,17 @@ module CICTL
       ENV["CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"] || "zephir"
     end
 
+    # @return [DateNamedFile::Directory]
     def full_files
       DateNamedFile.new(full_template).in_dir(HathiTrust::Services["data_directory"])
     end
 
+    # @return [DateNamedFile::Directory]
     def update_files
       DateNamedFile.new(update_template).in_dir(HathiTrust::Services["data_directory"])
     end
 
+    # @return [DateNamedFile::Directory]
     def delete_files
       DateNamedFile.new(delete_template).in_dir(HathiTrust::Services["data_directory"])
     end
