@@ -9,9 +9,9 @@ require 'traject/macros/marc21_semantics'
 #
 # Gotta submit a PR
 
-module Traject::Macros::Marc21Semantics
+module Traject::Macros::Marc21SemanticsExtensions
   class << self
-    alias old_filing_version filing_version
+    #alias old_filing_version filing_version
 
     def filing_version(field, str, spec)
       return str if field.is_a? MARC::ControlField
@@ -19,9 +19,13 @@ module Traject::Macros::Marc21Semantics
       ind2 = field.indicator2.to_i
       return str if ind2 > str.length
 
-      old_filing_version(field, str, spec)
+      super(field, str, spec)
     end
   end
+end
+
+module Traject::Macros::Marc21Semantics
+  prepend Traject::Macros::Marc21SemanticsExtensions
 end
 
 extend Traject::Macros::Marc21Semantics

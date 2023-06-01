@@ -1,0 +1,50 @@
+# frozen_string_literal: true
+
+require "pry"
+require "thor"
+
+require_relative "../services"
+require_relative "delete_command"
+require_relative "index_command"
+
+module CICTL
+  class Command < Thor
+    include Common
+
+    class_option :verbose, type: :boolean,
+      desc: "Emit 'debug' in addition to 'info' log entries"
+    class_option :log, type: :string,
+      desc: "Log to <logfile> instead of STDOUT/STDERR",
+      banner: "<logfile>"
+
+    def self.exit_on_failure?
+      true
+    end
+
+    def initialize(args = [], local_options = {}, config = {})
+      # For creating the default CICTL logger as well as one for calling Traject
+      # an any other subcomponents we want to stick a custom logger into.
+      HathiTrust::Services.register(:logger_factory) do
+        LoggerFactory.new(verbose: options["verbose"], log_file: options["log"])
+      end
+      # Default CICRL logger
+      HathiTrust::Services.register(:logger) do
+        HathiTrust::Services[:logger_factory].logger
+      end
+      super args, local_options, config
+    end
+
+    desc "delete SUBCOMMAND ARGS", "Delete some or all Solr records"
+    subcommand "delete", DeleteCommand
+
+    desc "index SUBCOMMAND ARGS", "Index a set of records from a file or date"
+    subcommand "index", IndexCommand
+
+    # standard:disable Lint/Debugger
+    desc "pry", "Open a pry-shell with environment loaded"
+    def pry
+      binding.pry
+    end
+    # standard:enable Lint/Debugger
+  end
+end
