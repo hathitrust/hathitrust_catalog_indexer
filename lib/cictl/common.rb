@@ -8,7 +8,7 @@ module CICTL
   module Common
     # Read the data directory from ENV falling back to the default.
     def data_directory
-      ENV["DDIR"] || "/htsolr/catalog/prep"
+      HathiTrust::Services[:data_directory]
     end
 
     def fatal(message)
@@ -24,6 +24,7 @@ module CICTL
       HathiTrust::Services[:logger]
     end
 
+    # @return [CICTL::SolrClient]
     def solr_client
       HathiTrust::Services[:solr]
     end

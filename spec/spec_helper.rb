@@ -15,12 +15,6 @@ SimpleCov.start do
   add_filter "/spec/"
 end
 
-require "semantic_logger"
-
-# Try to suppress sporadic "Ignoring attempt to add a second console appender"
-# warnings which seem to be triggered by a subtle race condition.
-SemanticLogger.sync!
-
 require_relative "../lib/cictl"
 require_relative "examples"
 

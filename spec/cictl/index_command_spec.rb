@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "cictl/deleted_records"
 
 RSpec.describe CICTL::IndexCommand do
   before(:each) do
@@ -42,7 +43,7 @@ RSpec.describe CICTL::IndexCommand do
     context "with no additional parameters" do
       it "indexes full records and no deletes from example file" do
         example = CICTL::Examples.for_date("20230103", type: :upd).first
-        file = File.join(ENV["DDIR"], example[:file])
+        file = File.join(HathiTrust::Services[:data_directory], example[:file])
         CICTL::Command.start(["index", "file", file, "--log", test_log])
         expect(solr_count).to eq example[:ids].count
       end
@@ -50,7 +51,7 @@ RSpec.describe CICTL::IndexCommand do
 
     context "that does not exist" do
       it "fails" do
-        file = File.join(ENV["DDIR"], "there_is_no_file_by_that_name_here.json.gz")
+        file = File.join(HathiTrust::Services[:data_directory], "there_is_no_file_by_that_name_here.json.gz")
         expect {
           CICTL::Command.start(["index", "file", file, "--log", test_log])
         }.to raise_error(CICTL::CICTLError)
@@ -61,7 +62,7 @@ RSpec.describe CICTL::IndexCommand do
       context "that exists" do
         it "indexes full records and no deletes from example file" do
           example = CICTL::Examples.for_date("20230103", type: :upd).first
-          file = File.join(ENV["DDIR"], example[:file])
+          file = File.join(HathiTrust::Services[:data_directory], example[:file])
           CICTL::Command.start(["index", "file", file, "--reader", "readers/jsonl", "--log", test_log])
           expect(solr_count).to eq example[:ids].count
         end
@@ -69,7 +70,7 @@ RSpec.describe CICTL::IndexCommand do
 
       context "that does not exist" do
         it "fails" do
-          file = File.join(ENV["DDIR"], "sample_upd_20230223.json.gz")
+          file = File.join(HathiTrust::Services[:data_directory], "sample_upd_20230223.json.gz")
           expect {
             CICTL::Command.start(["index", "file", file, "--reader", "no_such_reader", "--log", test_log])
           }.to raise_error(CICTL::CICTLError)
@@ -81,7 +82,7 @@ RSpec.describe CICTL::IndexCommand do
       context "that exists" do
         it "indexes full records and no deletes from example file" do
           example = CICTL::Examples.for_date("20230103", type: :upd).first
-          file = File.join(ENV["DDIR"], example[:file])
+          file = File.join(HathiTrust::Services[:data_directory], example[:file])
           CICTL::Command.start(["index", "file", file, "--writer", "writers/localhost", "--log", test_log])
           expect(solr_count).to eq example[:ids].count
         end
@@ -89,7 +90,7 @@ RSpec.describe CICTL::IndexCommand do
 
       context "that does not exist" do
         it "fails" do
-          file = File.join(ENV["DDIR"], "sample_upd_20230103.json.gz")
+          file = File.join(HathiTrust::Services[:data_directory], "sample_upd_20230103.json.gz")
           expect {
             CICTL::Command.start(["index", "file", file, "--writer", "no_such_writer", "--log", test_log])
           }.to raise_error(CICTL::CICTLError)
@@ -99,9 +100,27 @@ RSpec.describe CICTL::IndexCommand do
   end
 
   describe "#index today" do
-    it "indexes 0 records" do
-      CICTL::Command.start(["index", "today", "--log", test_log])
-      expect(solr_count).to eq 0
+    # Note that "today" means "index today, using the file dated yesterday"
+
+    it "indexes 'today' and produces deletes file" do
+      zyesterday = CICTL::ZephirFile.update_files.yesterday
+      delyesterday = CICTL::ZephirFile.delete_files.yesterday
+
+      # Get some data into those files
+      FileUtils.cp(CICTL::ZephirFile.update_files.last, zyesterday)
+      FileUtils.cp(CICTL::ZephirFile.delete_files.last, delyesterday)
+
+      # How many records/deletes do we have?
+      zcount = Zinzout.zin(zyesterday).count
+      delcount = Zinzout.zin(delyesterday).count
+
+      CICTL::Command.start(%w[index today])
+
+      expect(solr_count).to eq(zcount + delcount)
+      expect(CICTL::DeletedRecords.daily_file.readable?)
+      expect(Zinzout.zin(CICTL::DeletedRecords.daily_file).count).to eq(delcount)
+
+      FileUtils.rm([zyesterday, delyesterday])
     end
   end
 end

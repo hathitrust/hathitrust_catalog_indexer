@@ -4,6 +4,7 @@ require "thor"
 
 require_relative "common"
 require_relative "zephir_file"
+require_relative "deleted_records"
 
 module CICTL
   class IndexCommand < Thor
@@ -21,6 +22,13 @@ module CICTL
       end
       logger.info "Empty full Solr records"
       solr_client.empty_records!
+      logger.info "Load most recent set of deleted records into solr"
+      if DeletedRecords.most_recent_non_empty_file
+        logger.info "Found #{DeletedRecords.most_recent_non_empty_file}"
+        solr_client.send_jsonl(DeletedRecords.most_recent_non_empty_file)
+      else
+        logger.error "Can't find any non_empty deleted_record files in #{DeletedRecords.save_directory}"
+      end
       logger.info "Commit"
       solr_client.commit!
       logger.info "Using full marcfile #{last_full_marc_file}"
@@ -34,7 +42,7 @@ module CICTL
     end
 
     option :commit, type: :boolean, desc: "Commit changes to Solr", default: true
-    desc "file FILE", "Index a single file"
+    desc "file FILE", "Index a single MARC file"
     def file(marcfile)
       Indexer.new(reader: options[:reader], writer: options[:writer]).run marcfile
       solr_client.commit! if options[:commit]
@@ -75,6 +83,9 @@ module CICTL
       # FIXME: why does this have a default logfile where catchup_since does not?
       # _logfile ||= File.join(home, "logs/daily_#{today}.txt")
       call_date_command yesterday
+
+      logger.info "Dump deleted_records to #{DeletedRecords.daily_file}"
+      solr_client.dump_deletes_as_jsonl(DeletedRecords.daily_file)
     end
 
     no_commands do
@@ -86,20 +97,15 @@ module CICTL
     private
 
     def last_full_marc_file
-      @last_full_marc_file ||= DateNamedFile.new(ZephirFile.full_template)
-        .in_dir(data_directory).last
+      @last_full_marc_file ||= ZephirFile.full_files.last
     end
 
     def delete_file_for_date(date)
-      DateNamedFile.new(ZephirFile.delete_template)
-        .in_dir(data_directory)
-        .at(date)
+      ZephirFile.delete_files.at(date)
     end
 
     def marc_file_for_date(date)
-      DateNamedFile.new(ZephirFile.update_template)
-        .in_dir(data_directory)
-        .at(date)
+      ZephirFile.update_files.at(date)
     end
 
     def index_records_for_date(date)

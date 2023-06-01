@@ -32,6 +32,11 @@ module HathiTrust
   end
 
   Services = Canister.new
+
+  Services.register(:solr_url) do
+    ENV["SOLR_URL"]
+  end
+
   Services.register(:solr) do
     CICTL::SolrClient.new
   end
@@ -41,6 +46,10 @@ module HathiTrust
   # Appears as $TDIR in the old bin/ shell scripts
   Services.register(:home) do
     HOME
+  end
+
+  Services.register(:data_directory) do
+    ENV["DDIR"] || "/htsolr/catalog/prep"
   end
 
   Services.register(:db) do

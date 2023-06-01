@@ -6,6 +6,7 @@ require "thor"
 require_relative "../services"
 require_relative "delete_command"
 require_relative "index_command"
+require_relative "solr_command"
 
 module CICTL
   class Command < Thor
@@ -39,6 +40,9 @@ module CICTL
 
     desc "index SUBCOMMAND ARGS", "Index a set of records from a file or date"
     subcommand "index", IndexCommand
+
+    desc "solr SUBCOMMAND ARGS", "Send finds/command directly to solr"
+    subcommand "solr", SolrCommand
 
     # standard:disable Lint/Debugger
     desc "pry", "Open a pry-shell with environment loaded"
