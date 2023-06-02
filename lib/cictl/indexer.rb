@@ -39,7 +39,7 @@ module CICTL
     private
 
     def call_indexer(marcfile)
-      logger.info "Indexing from #{marcfile}, reader #{reader_path} writer #{writer_path} (#{ENV["SOLR_URL"]})"
+      logger.info "Indexing from #{marcfile}, reader #{reader_path} writer #{writer_path} (#{HathiTrust::Services[:solr_url]})"
       success = @indexer.process File.open(marcfile, "r")
       unless success
         fatal "traject failed, shutting down"
