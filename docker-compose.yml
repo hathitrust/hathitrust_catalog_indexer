@@ -11,12 +11,29 @@ services:
       - SOLR_URL=http://solr-sdr-catalog:9033/solr/catalog
       - redirect_file=/dev/null
       - NO_DB=1
-      - DDIR=/app/examples
+
+  test:
+    build: .
+    volumes:
+      - .:/app
+      - gem_cache:/gems
+    command: bash -c "wait-for solr-sdr-catalog:9033 mariadb:3306 && JRUBY_OPTS='--debug' bundle exec rspec"
+    environment:
+      - SOLR_URL=http://solr-sdr-catalog:9033/solr/catalog
+      - redirect_file=/dev/null
+    depends_on:
+      - solr-sdr-catalog
+      - mariadb
 
   solr-sdr-catalog:
     build: solr
     ports:
       - "9033:9033"
+
+  mariadb:
+    image: ghcr.io/hathitrust/db-image:latest
+    ports:
+      - "3306:3306"
 
 volumes:
   gem_cache:

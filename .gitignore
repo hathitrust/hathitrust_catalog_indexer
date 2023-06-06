@@ -4,7 +4,6 @@ solr/catalog/data
 zephir**.json.gz
 
 .bundle
-Gemfile.lock
 bin/bundle
 bin/rake
 bin/solr
@@ -16,3 +15,9 @@ nohup.out
 
 lib/translation_maps/hlb.json.gz
 
+coverage
+
+# Ignore Mac OS X Desktop Services Store files
+.DS_Store
+
+config/env.local
