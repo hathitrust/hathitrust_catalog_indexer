@@ -9,15 +9,7 @@ require_relative "index_command"
 require_relative "solr_command"
 
 module CICTL
-  class Command < Thor
-    include Common
-
-    class_option :verbose, type: :boolean,
-      desc: "Emit 'debug' in addition to 'info' log entries"
-    class_option :log, type: :string,
-      desc: "Log to <logfile> instead of STDOUT/STDERR",
-      banner: "<logfile>"
-
+  class Commands < Thor
     def self.exit_on_failure?
       true
     end

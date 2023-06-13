@@ -6,13 +6,13 @@ require "tempfile"
 RSpec.describe CICTL::SolrCommand, :livesolr do
   describe "ping" do
     it "pings the live solr" do
-      expect { CICTL::Command.start(["solr", "ping"]) }.to output(/SUCCESS/).to_stdout
+      expect { CICTL::Commands.start(["solr", "ping"]) }.to output(/SUCCESS/).to_stdout
     end
 
     it "fails to ping a fake solr url" do
       old_solr_url = HathiTrust::Services[:solr_url]
       HathiTrust::Services.register(:solr_url) { "http://solr-sdr-catalog:1111/solr/catalog" }
-      expect { CICTL::Command.start(["solr", "ping"]) }.to output(/FAILURE/).to_stdout
+      expect { CICTL::Commands.start(["solr", "ping"]) }.to output(/FAILURE/).to_stdout
       HathiTrust::Services.register(:solr_url) { old_solr_url }
     end
   end
@@ -50,7 +50,7 @@ RSpec.describe CICTL::SolrCommand, :livesolr do
         del_docs.each { |doc| tmpfile.puts doc.to_json }
         tmpfile.flush
         tmpfile.close
-        CICTL::Command.start(["solr", "send_jsonl", tmpfile.path])
+        CICTL::Commands.start(["solr", "send_jsonl", tmpfile.path])
 
         File.delete(tmpfile.path)
 
@@ -67,7 +67,7 @@ RSpec.describe CICTL::SolrCommand, :livesolr do
       with_temp_deleted_records do
         deleted_count = client.count_deleted
         tmpfile = Tempfile.create
-        CICTL::Command.start(["solr", "dump_deleted", tmpfile.path])
+        CICTL::Commands.start(["solr", "dump_deleted", tmpfile.path])
         tmpfile.close
 
         expect(File.open(tmpfile.path).count).to eq(deleted_count)

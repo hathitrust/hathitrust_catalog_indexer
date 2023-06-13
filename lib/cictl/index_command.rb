@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
-require "thor"
-
-require_relative "common"
+require_relative "base_command"
 require_relative "zephir_file"
 require_relative "deleted_records"
 
 module CICTL
-  class IndexCommand < Thor
-    include Common
-
+  class IndexCommand < BaseCommand
     class_option :reader, type: :string, desc: "Reader name/path"
     class_option :writer, type: :string, desc: "Writer name/path"
 

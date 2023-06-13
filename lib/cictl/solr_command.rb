@@ -1,14 +1,11 @@
 require "thor"
 
-require_relative "common"
+require_relative "base_command"
 require_relative "solr_client"
 
 module CICTL
-  class SolrCommand < Thor
-    include Common
-
+  class SolrCommand < BaseCommand
     desc "commit", "Send a commit command to solr"
-
     def commit
       solr_client.commit!
     end
