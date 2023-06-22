@@ -37,5 +37,10 @@ RSpec.describe CICTL::DeleteCommand do
       expect(solr_count).to eq (upd_example[:ids] + delete_example[:ids]).uniq.count
       expect(solr_deleted_count).to eq delete_example[:ids].count
     end
+
+    it "handles empty file" do
+      file = File.join(HathiTrust::Services["data_directory"], CICTL::Examples.empty_delete_file)
+      CICTL::Command.start(["delete", "file", file, "--log", test_log])
+    end
   end
 end
