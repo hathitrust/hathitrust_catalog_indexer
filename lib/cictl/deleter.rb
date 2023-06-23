@@ -12,6 +12,7 @@ module CICTL
     def run(deletes_file)
       Zinzout.zin(deletes_file) do |file|
         ids = file.map { |line| line.chomp }
+          .reject { |line| line.length.zero? }
         if ids.size > 0
           solr_client.set_deleted ids
         else

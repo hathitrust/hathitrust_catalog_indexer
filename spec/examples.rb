@@ -64,6 +64,10 @@ module CICTL
       end
     end
 
-    module_function :all_ids, :for_date
+    def empty_delete_file
+      "sample_empty_delete.txt.gz"
+    end
+
+    module_function :all_ids, :for_date, :empty_delete_file
   end
 end
