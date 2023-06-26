@@ -50,7 +50,7 @@ RSpec.describe CICTL::DeleteCommand do
 
     it "errors on noisy file" do
       file = File.join(HathiTrust::Services["data_directory"], CICTL::Examples.noisy_delete_file)
-      expect { CICTL::Commands.start(["delete", "file", file, "--log", test_log])}.to raise_error(RSolr::Error::Http)
+      expect { CICTL::Commands.start(["delete", "file", file, "--log", test_log]) }.to raise_error(RSolr::Error::Http)
     end
   end
 end
