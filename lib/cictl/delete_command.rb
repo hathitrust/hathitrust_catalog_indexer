@@ -1,13 +1,9 @@
 # frozen_string_literal: true
 
-require "thor"
-
-require_relative "common"
+require_relative "base_command"
 
 module CICTL
-  class DeleteCommand < Thor
-    include Common
-
+  class DeleteCommand < BaseCommand
     desc "all", "Delete all records from the Solr index"
     def all
       logger.info "Empty Solr"
