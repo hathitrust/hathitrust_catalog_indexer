@@ -69,11 +69,16 @@ module CICTL
       "sample_empty_delete.txt.gz"
     end
 
+    # Delete file with blank lines
+    def blank_line_delete_file
+      "sample_blank_line_delete_file.txt.gz"
+    end
+
     # delete file with spaces and non-numeric text
     def noisy_delete_file
       "sample_noisy_delete.txt.gz"
     end
 
-    module_function :all_ids, :for_date, :empty_delete_file, :noisy_delete_file
+    module_function :all_ids, :for_date, :empty_delete_file, :noisy_delete_file, :blank_line_delete_file
   end
 end

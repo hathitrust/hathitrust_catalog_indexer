@@ -43,9 +43,14 @@ RSpec.describe CICTL::DeleteCommand do
       CICTL::Commands.start(["delete", "file", file, "--log", test_log])
     end
 
-    it "handles noisy file" do
-      file = File.join(HathiTrust::Services["data_directory"], CICTL::Examples.noisy_delete_file)
+    it "handles file with spaces-only line" do
+      file = File.join(HathiTrust::Services["data_directory"], CICTL::Examples.blank_line_delete_file)
       CICTL::Commands.start(["delete", "file", file, "--log", test_log])
+    end
+
+    it "errors on noisy file" do
+      file = File.join(HathiTrust::Services["data_directory"], CICTL::Examples.noisy_delete_file)
+      expect { CICTL::Commands.start(["delete", "file", file, "--log", test_log])}.to raise_error(RSolr::Error::Http)
     end
   end
 end
