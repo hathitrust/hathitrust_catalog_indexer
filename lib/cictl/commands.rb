@@ -14,19 +14,8 @@ module CICTL
       true
     end
 
-    def initialize(args = [], local_options = {}, config = {})
-      # For creating the default CICTL logger as well as one for calling Traject
-      # an any other subcomponents we want to stick a custom logger into.
-      HathiTrust::Services.register(:logger_factory) do
-        LoggerFactory.new(verbose: options["verbose"], log_file: options["log"])
-      end
-      # Default CICRL logger
-      HathiTrust::Services.register(:logger) do
-        HathiTrust::Services[:logger_factory].logger
-      end
-      super args, local_options, config
-    end
-
+    # Note: the initializer that sets up the logger factory and default logger
+    # has moved to BaseCommand since it owns the --log and --verbose options.
     desc "delete SUBCOMMAND ARGS", "Delete some or all Solr records"
     subcommand "delete", DeleteCommand
 
