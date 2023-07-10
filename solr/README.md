@@ -44,7 +44,7 @@ curl 'http://localhost:9033/solr/catalog/select?q=*:*&wt=json' | json_xs
 Then, do a full catalog index:
 ```shell
 cd /htsolr/catalog/bin/ht_catalog_indexer
-/usr/bin/nohup bin/fullindex "logs/full_$(date +%Y%m%d).txt"
+/usr/bin/nohup bin/cictl index all --log="logs/full_$(date +%Y%m%d).txt" &
 ```
 
 You can follow the logfile listed above for progress; the full index typically takes 
