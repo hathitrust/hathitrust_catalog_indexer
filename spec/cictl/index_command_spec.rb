@@ -12,6 +12,7 @@ RSpec.describe CICTL::IndexCommand do
   after(:each) do
     CICTL::SolrClient.new.empty!.commit!
     ENV.delete "CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"
+    remove_test_log
   end
 
   describe "#index all" do

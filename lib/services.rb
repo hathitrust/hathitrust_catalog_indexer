@@ -2,6 +2,7 @@
 
 require "canister"
 require "dotenv"
+require "pathname"
 
 require_relative "cictl/solr_client"
 require_relative "ht_traject/ht_dbh"
@@ -50,6 +51,11 @@ module HathiTrust
 
   Services.register(:data_directory) do
     ENV["DDIR"] || "/htsolr/catalog/prep"
+  end
+
+  Services.register(:logfile_directory) do
+    default = "#{HOME}/logs"
+    ENV["LOG_DIR"] || default
   end
 
   Services.register(:db) do

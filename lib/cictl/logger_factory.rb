@@ -1,12 +1,21 @@
 # frozen_string_literal: true
 
 require "semantic_logger"
+require_relative "logfile_defaults"
 
 module CICTL
   class LoggerFactory
-    def initialize(verbose: false, log_file: nil)
+    class Formatter < SemanticLogger::Formatters::Default
+      # Return the complete log level name in uppercase instead of one letter
+      def level
+        log.level.upcase
+      end
+    end
+
+    def initialize(verbose: false, log_file: nil, quiet: false)
       @verbose = verbose
       @log_file = log_file
+      @quiet = quiet
     end
 
     def logger(owner: "CICTL")
@@ -14,12 +23,27 @@ module CICTL
       # "Ignoring attempt to add a second console appender: … since it would result in duplicate console output."
       # Lazily apply SemanticLogger config setup here instead of the initializer
       # to make sure no one changes the appenders before the logger is created.
-      SemanticLogger.default_level = min_level
       SemanticLogger.clear_appenders!
-      if @log_file
-        SemanticLogger.add_appender(file_name: @log_file, level: min_level)
+      SemanticLogger.default_level = min_level
+
+      Pathname.new(LogfileDefaults.logdir).mkpath
+
+      logfile_path = case @log_file
+      when "daily", "today"
+        LogfileDefaults.daily
+      when "full"
+        LogfileDefaults.full
+      when String
+        LogfileDefaults.logdir + "/#{@log_file}"
       end
-      SemanticLogger.add_appender(io: $stderr, level: :error)
+
+      if logfile_path
+        SemanticLogger.add_appender(file_name: logfile_path, level: min_level, formatter: Formatter.new)
+      end
+      unless @quiet
+        SemanticLogger.add_appender(io: $stderr, level: :error, formatter: Formatter.new)
+      end
+
       SemanticLogger[owner]
     end
 
