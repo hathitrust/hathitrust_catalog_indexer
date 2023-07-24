@@ -19,8 +19,11 @@ RSpec.describe CICTL::LoggerFactory do
   end
 
   it "sends #fatal to $stderr" do
-    skip "RSpec and captured stderr in the logger don't play well together"
-    expect { testlogger.fatal "fatal shwoozle" }.to output(/shwoozle/).to_stderr_from_any_process
+    # skip "RSpec and captured stderr in the logger don't play well together"
+    expect {
+      testlogger.fatal "fatal shwoozle"
+      testlogger.close
+    }.to output(/shwoozle/).to_stderr_from_any_process
   end
 
   it "sends stuff to the logfile" do
