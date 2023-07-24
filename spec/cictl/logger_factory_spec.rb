@@ -2,6 +2,7 @@
 
 require "spec_helper"
 require_relative "../../lib/cictl/logfile_defaults"
+require_relative "../../lib/services"
 
 RSpec.describe CICTL::LoggerFactory do
   def testlogger(verbose: false, log_file: test_log, quiet: false)
@@ -24,7 +25,7 @@ RSpec.describe CICTL::LoggerFactory do
 
   it "sends stuff to the logfile" do
     testlogger.error "error-in-file"
-    expect(File.read(testlog_path)).to match(/error-in-file/)
+    expect(File.read(HathiTrust::Services[:logfile_directory] + "/" + test_log)).to match(/error-in-file/)
   end
 
   it "does not send anything less than #error to STDERR" do
