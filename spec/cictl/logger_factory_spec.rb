@@ -25,6 +25,7 @@ RSpec.describe CICTL::LoggerFactory do
 
   it "sends stuff to the logfile" do
     testlogger.error "error-in-file"
+    testlogger.close
     expect(File.read(HathiTrust::Services[:logfile_directory] + "/" + test_log)).to match(/error-in-file/)
   end
 
