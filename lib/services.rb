@@ -2,7 +2,6 @@
 
 require "canister"
 require "dotenv"
-require "pathname"
 
 require_relative "cictl/solr_client"
 require_relative "ht_traject/ht_dbh"
