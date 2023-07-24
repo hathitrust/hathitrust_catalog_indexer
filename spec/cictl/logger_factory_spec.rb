@@ -14,12 +14,13 @@ RSpec.describe CICTL::LoggerFactory do
   end
 
   it "sends #error to $stderr" do
-    skip "RSpec and captured stderr in the logger don't play well together"
-    expect { testlogger.error "error shwoozle" }.to output(/shwoozle/).to_stderr_from_any_process
+    expect {
+      testlogger.error "error error-via-error"
+      testlogger.close
+    }.to output(/error-via-error/).to_stderr_from_any_process
   end
 
   it "sends #fatal to $stderr" do
-    # skip "RSpec and captured stderr in the logger don't play well together"
     expect {
       testlogger.fatal "fatal shwoozle"
       testlogger.close
@@ -33,14 +34,18 @@ RSpec.describe CICTL::LoggerFactory do
   end
 
   it "does not send anything less than #error to STDERR" do
-    skip "RSpec and captured stderr in the logger don't play well together"
     %i[debug info warn].each do |level|
-      expect { testlogger.send(level, "#{level} shwoozle") }.not_to output(/shwoozle/).to_stderr_from_any_process
+      expect {
+        testlogger.send(level, "#{level} shwoozle")
+        testlogger.close
+      }.not_to output(/shwoozle/).to_stderr_from_any_process
     end
   end
 
   it "doesn't send output to stderr in quiet mode" do
-    skip "RSpec and captured stderr in the logger don't play well together"
-    expect { testlogger(quiet: true).error("Error") }.not_to output(/Error/).to_stderr_from_any_process
+    expect {
+      testlogger(quiet: true).error("Error")
+      testlogger.close
+    }.not_to output(/Error/).to_stderr_from_any_process
   end
 end
