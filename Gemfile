@@ -12,7 +12,7 @@ end
 
 gem "semantic_logger"
 gem "http", "~>5.0"
-gem "canister"
+gem "canister", "~> 0.9.2"
 gem "date_named_file"
 gem "dotenv"
 gem "httpclient"
