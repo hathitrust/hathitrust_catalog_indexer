@@ -5,7 +5,6 @@ ARG GID=1000
 
 RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
   build-essential \
-  git \
   netbase \
   netcat
 
