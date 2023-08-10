@@ -1,32 +1,17 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require_relative "../../lib/services"
 
-RSpec.describe CICTL::LoggerFactory, skip: true do
-  shared_examples "any logger" do |verbose, log_file|
-    subject { described_class.new(verbose: verbose, log_file: log_file).logger }
-    it "sends #error to STDERR" do
-      expect { subject.error "error shwoozle" }.to output(/shwoozle/).to_stderr
-    end
-
-    it "sends #fatal to STDERR" do
-      expect { subject.fatal "fatal shwoozle" }.to output(/shwoozle/).to_stderr
-    end
-
-    it "does not send anything less than #error to STDERR" do
-      %i[debug info warn].each do |level|
-        expect { subject.send(level, "#{level} shwoozle") }.not_to output(/shwoozle/).to_stderr
-      end
-    end
+RSpec.describe CICTL::LoggerFactory do
+  def testlogger(verbose: false, log_file: test_log, quiet: false)
+    CICTL::LoggerFactory.new(verbose: verbose, log_file: log_file, quiet: quiet).logger
   end
 
-  describe "#logger" do
-    context "with a log file" do
-      it_behaves_like "any logger", false, test_log
-    end
-
-    context "without a log file" do
-      it_behaves_like "any logger", false, nil
-    end
+  it "sends #error to $stderr" do
+    expect {
+      testlogger.error "error error-via-error"
+      testlogger.close
+    }.to output(/error-via-error/).to_stderr_from_any_process
   end
 end
