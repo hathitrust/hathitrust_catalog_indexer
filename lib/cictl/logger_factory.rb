@@ -19,6 +19,8 @@ module CICTL
     end
 
     def logger(owner: "CICTL")
+      # Force SemanticLogger to run in main thread. This is only for testing.
+      # The alternative -- logger.close -- makes the GitHub testing environment very unhappy.
       if ENV["CICTL_SEMANTIC_LOGGER_SYNC"]
         SemanticLogger.sync!
       end
