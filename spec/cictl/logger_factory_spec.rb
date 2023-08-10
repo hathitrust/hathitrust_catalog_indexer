@@ -18,4 +18,11 @@ RSpec.describe CICTL::LoggerFactory do
       testlogger.close
     }.to output(/error-via-error/).to_stderr_from_any_process
   end
+
+  it "sends #fatal to $stderr" do
+    expect {
+      testlogger.fatal "fatal shwoozle"
+      testlogger.close
+    }.to output(/shwoozle/).to_stderr_from_any_process
+  end
 end
