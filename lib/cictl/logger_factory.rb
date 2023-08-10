@@ -4,6 +4,13 @@ require "semantic_logger"
 
 module CICTL
   class LoggerFactory
+    class Formatter < SemanticLogger::Formatters::Default
+      # Return the complete log level name in uppercase instead of one letter
+      def level
+        log.level.upcase
+      end
+    end
+
     def initialize(verbose: false, log_file: nil, quiet: false)
       @verbose = verbose
       @log_file = log_file
@@ -20,7 +27,9 @@ module CICTL
       if @log_file
         SemanticLogger.add_appender(file_name: @log_file, level: min_level)
       end
-      SemanticLogger.add_appender(io: $stderr, level: :error)
+      unless @quiet
+        SemanticLogger.add_appender(io: $stderr, level: :error, formatter: Formatter.new)
+      end
       SemanticLogger[owner]
     end
 
