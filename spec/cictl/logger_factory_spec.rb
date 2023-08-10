@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require_relative "../../lib/cictl/logfile_defaults"
 require_relative "../../lib/services"
 
 RSpec.describe CICTL::LoggerFactory do
@@ -24,5 +25,11 @@ RSpec.describe CICTL::LoggerFactory do
       testlogger.fatal "fatal shwoozle"
       testlogger.close
     }.to output(/shwoozle/).to_stderr_from_any_process
+  end
+
+  it "sends stuff to the logfile" do
+    testlogger.error "error-in-file"
+    testlogger.close
+    expect(File.read(HathiTrust::Services[:logfile_directory] + "/" + test_log)).to match(/error-in-file/)
   end
 end
