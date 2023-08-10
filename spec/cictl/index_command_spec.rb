@@ -7,12 +7,12 @@ RSpec.describe CICTL::IndexCommand do
   before(:each) do
     CICTL::SolrClient.new.empty!.commit!
     ENV["CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"] = "sample"
-    remove_test_log
   end
 
   after(:each) do
     CICTL::SolrClient.new.empty!.commit!
     ENV.delete "CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"
+    remove_test_log
   end
 
   describe "#index all" do
@@ -20,7 +20,7 @@ RSpec.describe CICTL::IndexCommand do
       # Make a fake delete entry for a bogus id
       bogus_delete = "000000000"
       CICTL::SolrClient.new.set_deleted [bogus_delete]
-      CICTL::Commands.start(["index", "all", "--no-wait", "--log", test_log])
+      CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
       expect(solr_count).to eq CICTL::Examples.all_ids.count + 1
       expect(solr_deleted_count).to be > 0
       expect(solr_ids("deleted:true")).to include(bogus_delete)
