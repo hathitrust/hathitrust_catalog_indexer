@@ -4,9 +4,10 @@ require "semantic_logger"
 
 module CICTL
   class LoggerFactory
-    def initialize(verbose: false, log_file: nil)
+    def initialize(verbose: false, log_file: nil, quiet: false)
       @verbose = verbose
       @log_file = log_file
+      @quiet = quiet
     end
 
     def logger(owner: "CICTL")

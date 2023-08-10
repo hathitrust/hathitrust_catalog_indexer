@@ -8,7 +8,8 @@ module CICTL
     include Common
 
     class_option :verbose, type: :boolean,
-      desc: "Emit 'debug' in addition to 'info' log entries"
+      desc: "Emit 'debug' in addition to 'info' log entries",
+      default: false
     class_option :log, type: :string,
       desc: "Log to <logfile> instead of STDOUT/STDERR",
       banner: "<logfile>"
