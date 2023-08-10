@@ -17,20 +17,20 @@ RSpec.describe CICTL::LoggerFactory do
   it "sends #error to $stderr" do
     expect {
       testlogger.error "error error-via-error"
-      #testlogger.close
+      # testlogger.close
     }.to output(/error-via-error/).to_stderr_from_any_process
   end
 
   it "sends #fatal to $stderr" do
     expect {
       testlogger.fatal "fatal shwoozle"
-      #testlogger.close
+      # testlogger.close
     }.to output(/shwoozle/).to_stderr_from_any_process
   end
 
   it "sends stuff to the logfile" do
     testlogger.error "error-in-file"
-    #testlogger.close
+    # testlogger.close
     expect(File.read(HathiTrust::Services[:logfile_directory] + "/" + test_log)).to match(/error-in-file/)
   end
 end
