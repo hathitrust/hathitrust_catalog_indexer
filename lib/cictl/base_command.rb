@@ -13,12 +13,15 @@ module CICTL
     class_option :log, type: :string,
       desc: "Log to <logfile> instead of STDOUT/STDERR",
       banner: "<logfile>"
+    class_option :quiet, type: :boolean,
+      desc: "Suppress normal output to STDERR",
+      default: false
 
     def initialize(args = [], local_options = {}, config = {})
       # For creating the default CICTL logger as well as one for calling Traject
       # an any other subcomponents we want to stick a custom logger into.
       HathiTrust::Services.register(:logger_factory) do
-        LoggerFactory.new(verbose: options[:verbose], log_file: options[:log])
+        LoggerFactory.new(verbose: options[:verbose], log_file: options[:log], quiet: options[:quiet])
       end
       # Default CICTL logger
       HathiTrust::Services.register(:logger) do
