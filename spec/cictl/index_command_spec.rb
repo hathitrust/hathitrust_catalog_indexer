@@ -7,6 +7,7 @@ RSpec.describe CICTL::IndexCommand do
   before(:each) do
     CICTL::SolrClient.new.empty!.commit!
     ENV["CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"] = "sample"
+    remove_test_log
   end
 
   after(:each) do
