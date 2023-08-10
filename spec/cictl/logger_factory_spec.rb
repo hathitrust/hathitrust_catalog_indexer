@@ -8,6 +8,10 @@ RSpec.describe CICTL::LoggerFactory do
     CICTL::LoggerFactory.new(verbose: verbose, log_file: log_file, quiet: quiet).logger
   end
 
+  after(:each) do
+    remove_test_log
+  end
+
   it "sends #error to $stderr" do
     expect {
       testlogger.error "error error-via-error"
