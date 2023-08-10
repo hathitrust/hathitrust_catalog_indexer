@@ -4,7 +4,7 @@ require "spec_helper"
 require_relative "../../lib/cictl/logfile_defaults"
 require_relative "../../lib/services"
 
-ENV['CICTL_SEMANTIC_LOGGER_SYNC'] = '1'
+ENV["CICTL_SEMANTIC_LOGGER_SYNC"] = '1'
 RSpec.describe CICTL::LoggerFactory do
   def testlogger(verbose: false, log_file: test_log, quiet: false)
     CICTL::LoggerFactory.new(verbose: verbose, log_file: log_file, quiet: quiet).logger
