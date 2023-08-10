@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "semantic_logger"
+require_relative "logfile_defaults"
 
 module CICTL
   class LoggerFactory
@@ -27,8 +28,17 @@ module CICTL
 
       Pathname.new(LogfileDefaults.logdir).mkpath
 
-      if @log_file
-        SemanticLogger.add_appender(file_name: @log_file, level: min_level)
+      logfile_path = case @log_file
+      when "daily", "today"
+        LogfileDefaults.daily
+      when "full"
+        LogfileDefaults.full
+      when String
+        LogfileDefaults.logdir + "/#{@log_file}"
+      end
+
+      if logfile_path
+        SemanticLogger.add_appender(file_name: logfile_path.to_s, level: min_level, formatter: Formatter.new)
       end
       unless @quiet
         SemanticLogger.add_appender(io: $stderr, level: :error, formatter: Formatter.new)
