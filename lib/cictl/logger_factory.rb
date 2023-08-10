@@ -19,6 +19,9 @@ module CICTL
     end
 
     def logger(owner: "CICTL")
+      if ENV['CICTL_SEMANTIC_LOGGER_SYNC']
+        SemanticLogger.sync!
+      end
       # If we use more than one factory (as happens in the tests but not yet in the main code) we get warnings
       # "Ignoring attempt to add a second console appender: … since it would result in duplicate console output."
       # Lazily apply SemanticLogger config setup here instead of the initializer
