@@ -19,6 +19,9 @@ module CICTL
     end
 
     def logger(owner: "CICTL")
+      # Force SemanticLogger to run in main thread. This is only for testing.
+      # The alternative -- logger.close -- makes the GitHub testing environment very unhappy.
+      SemanticLogger.sync! if ENV["CICTL_SEMANTIC_LOGGER_SYNC"]
       # If we use more than one factory (as happens in the tests but not yet in the main code) we get warnings
       # "Ignoring attempt to add a second console appender: … since it would result in duplicate console output."
       # Lazily apply SemanticLogger config setup here instead of the initializer
@@ -38,7 +41,7 @@ module CICTL
       end
 
       if logfile_path
-        SemanticLogger.add_appender(file_name: logfile_path, level: min_level, formatter: Formatter.new)
+        SemanticLogger.add_appender(file_name: logfile_path.to_s, level: min_level, formatter: Formatter.new)
       end
       unless @quiet
         SemanticLogger.add_appender(io: $stderr, level: :error, formatter: Formatter.new)
