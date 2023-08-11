@@ -119,6 +119,12 @@ def test_log
   "TEST_LOG.txt"
 end
 
+def remove_test_log
+  FileUtils.rm(CICTL::LogfileDefaults.filepath_of(test_log))
+rescue Errno::ENOENT
+  # file wasn't there, and that's fine
+end
+
 def solr_count
   CICTL::SolrClient.new.count
 end

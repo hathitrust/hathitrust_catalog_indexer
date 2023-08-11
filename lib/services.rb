@@ -52,6 +52,11 @@ module HathiTrust
     ENV["DDIR"] || "/htsolr/catalog/prep"
   end
 
+  Services.register(:logfile_directory) do
+    default = "#{HOME}/logs"
+    ENV["LOG_DIR"] || default
+  end
+
   Services.register(:db) do
     DBH.connect
   end
