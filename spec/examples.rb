@@ -79,6 +79,12 @@ module CICTL
       "sample_noisy_delete.txt.gz"
     end
 
-    module_function :all_ids, :for_date, :empty_delete_file, :noisy_delete_file, :blank_line_delete_file
+    # ten-entry sample redirects file
+    def redirects_file
+      "redirects/sample_redirects.txt.gz"
+    end
+
+    module_function :all_ids, :for_date, :empty_delete_file, :noisy_delete_file,
+      :blank_line_delete_file, :redirects_file
   end
 end

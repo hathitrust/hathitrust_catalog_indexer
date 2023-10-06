@@ -1,33 +1,41 @@
 # frozen_string_literal: true
 
+# Redirect file is .txt.gz file with each line in the format
+# "old_cid\tnew_cid"
+#
+# The example file contains the line "000004165	006215998" (old, new) so
+# redirects["006215998"] -> ["000004165"]
+
 require 'zinzout'
-require 'date'
 
 module HathiTrust
   class Redirects
-
-    yyyymm = DateTime.now.strftime '%Y%m'
-    default_file  = "/htapps/babel/hathifiles/catalog_redirects/redirects/redirects_#{yyyymm}.txt.gz"
-    FILENAME = ENV['redirect_file'] || default_file
-
-    unless File.exist? FILENAME
-      $stderr.puts "Can't find redirets file `#{FILENAME}`. Set manually with ENV['redirect_file']."
-      exit 1
-    end
-    
-    
-    # Now we have old->new
-    # Need new -> [old1, old2]
-
-    REDIRS = Zinzout.zin(FILENAME).each_with_object({}) do |line, h  |
-      old_id, new_id = line.chomp.split(/\t/)
-      h[new_id] ||= Array.new
-      h[new_id] << old_id
+    def initialize(redirect_file = nil)
+      @redirect_file = redirect_file
     end
 
-    def self.old_ids_for(id)
-      REDIRS[id] || []
+    # Raising an exception inside Canister is a bad idea so we leave error handling
+    # to the host.
+    def exist?
+      File.exist? @redirect_file
     end
 
+    def old_ids_for(id)
+      redirects[id] || []
+    end
+    alias_method :[], :old_ids_for
+
+    private
+
+    # Map each old->new into new -> [old1, old2] structure
+    def redirects
+      return {} unless exist?
+
+      @redirects ||= Zinzout.zin(@redirect_file).each_with_object({}) do |line, h |
+        old_id, new_id = line.chomp.split(/\t/)
+        h[new_id] ||= Array.new
+        h[new_id] << old_id
+      end
+    end
   end
 end

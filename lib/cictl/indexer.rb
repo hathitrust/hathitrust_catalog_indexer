@@ -3,6 +3,7 @@
 require "traject"
 
 require_relative "common"
+require_relative "../services"
 
 module CICTL
   class Indexer
@@ -14,6 +15,7 @@ module CICTL
     attr_reader :reader_path, :writer_path
 
     def initialize(reader: nil, writer: nil)
+      check_redirects
       @reader_path = find_reader reader
       @writer_path = find_writer writer
       config_paths = [reader_path, writer_path]
@@ -37,6 +39,14 @@ module CICTL
     end
 
     private
+
+    # Throw an error if redirects are enabled but the file is nowhere to be found
+    def check_redirects
+      return if HathiTrust::Services[:no_redirects?]
+      return if HathiTrust::Services[:redirects].exist?
+
+      fatal "Can't find redirects file `#{@redirect_file}`. Set manually with ENV['REDIRECT_FILE']."
+    end
 
     def call_indexer(marcfile)
       logger.info "Indexing from #{marcfile}, reader #{reader_path} writer #{writer_path} (#{HathiTrust::Services[:solr_url]})"
@@ -78,7 +88,8 @@ module CICTL
     end
 
     def update_collection_map
-      return if ENV["NO_DB"]
+      return if HathiTrust::Services[:no_db?]
+
       logger.info "updating collection map"
       File.open(File.join(collection_map_directory, COLLECTION_MAP_FILE), "w:utf-8") do |f|
         f.puts CollectionMap.new.to_yaml

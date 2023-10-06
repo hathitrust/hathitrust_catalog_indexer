@@ -11,6 +11,10 @@ module HathiTrust
 
     # I use a db driver per thread to avoid any conflicts
     def self.get_print_holdings_hash(htids)
+      if HathiTrust::Services[:no_db?]
+        return htids.each_with_object({}) { |id, h| h[id] = ['UM'] }
+      end
+
       htids = Array(htids)
       htid_map = Hash.new { |h, k| h[k] = [] }
 

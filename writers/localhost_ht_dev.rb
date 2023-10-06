@@ -1,9 +1,11 @@
+
 require 'traject'
 require 'traject/solrj_writer'
+require_relative "../lib/services"
 require 'socket'
 
 settings do
-  provide 'solr.url', ENV['SOLR_URL']
+  provide 'solr.url', HathiTrust::Services[:solr_url]
   # store   "solr.url", "http://buzz:9033/catalog"
   provide 'solrj_writer.parser_class_name', 'XMLResponseParser'
   provide 'solrj_writer.commit_on_close', 'true'

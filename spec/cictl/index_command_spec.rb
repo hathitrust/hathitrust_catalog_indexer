@@ -25,6 +25,23 @@ RSpec.describe CICTL::IndexCommand do
       expect(solr_deleted_count).to be > 0
       expect(solr_ids("deleted:true")).to include(bogus_delete)
     end
+
+    it "bails out if redirects file can't be found" do
+      @save_redirect_file = HathiTrust::Services[:redirect_file]
+      @save_no_redirects = HathiTrust::Services[:no_redirects?]
+      @save_no_external_data = HathiTrust::Services[:no_external_data?]
+      @save_redirects = HathiTrust::Services[:redirects]
+      HathiTrust::Services.register(:redirect_file) { "no_such_redirects_file.gz.txt" }
+      HathiTrust::Services.register(:no_redirects?) { false }
+      HathiTrust::Services.register(:no_external_data?) { false }
+      expect {
+        CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
+      }.to raise_error(CICTL::CICTLError)
+      HathiTrust::Services.register(:redirect_file) { @save_redirect_file }
+      HathiTrust::Services.register(:no_redirects?) { @save_no_redirects }
+      HathiTrust::Services.register(:no_external_data?) { @save_no_external_data }
+      HathiTrust::Services.register(:redirects) { @save_redirects }
+    end
   end
 
   describe "#index date" do
@@ -106,6 +123,10 @@ RSpec.describe CICTL::IndexCommand do
     it "indexes 'today' and produces deletes file" do
       zyesterday = CICTL::ZephirFile.update_files.yesterday
       delyesterday = CICTL::ZephirFile.delete_files.yesterday
+
+      # Remove these files if they got left behind by a test run amok
+      FileUtils.rm(zyesterday) if zyesterday.exist?
+      FileUtils.rm(delyesterday) if delyesterday.exist?
 
       # Get some data into those files
       FileUtils.cp(CICTL::ZephirFile.update_files.last, zyesterday)

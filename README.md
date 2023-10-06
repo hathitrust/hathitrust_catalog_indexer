@@ -278,21 +278,29 @@ of us having to split out the namespace...
 
 ## Database access
 
-Controlled by [`lib/ht_traject/ht_dbh.rb`](lib/ht_traject/ht_dbh.rb)
-with default passwords/etc. in `docker-compose` and `.env`, and -- eventually -- k8s secrets.
+Connection string is exposed by the `Services` object based on environment variables
+and `config/env`. The defaults in the repository suffice for testing under Docker only.
 
 ## Environment variables
 
-  * `SOLR_URL` with the solr _core_ URL (i.e, ending in `/catalog`)
-  * `REDIRECT_FILE` (optional) if you don't want to use the default 
-    redirect file
-  * `NO_DB` if you want to skip all the database stuff. Useful for testing.
+  * `DDIR` data directory, defaults to `/htsolr/catalog/prep`
+  * `LOG_DIR` where to store logs, defaults to `/htsolr/catalog/prep`.
+  * `MYSQL_HOST`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD` *required* unless run with `NO_DB`.
+  * `NO_DB` if you want to skip all the database stuff. Useful for testing. Implied by `NO_EXTERNAL_DATA`.
+  * `NO_EXTERNAL_DATA` combines `NO_DB`, `NO_REDIRECTS`
+  * `NO_REDIRECTS` do not read catalog redirects file. Implied by `NO_EXTERNAL_DATA`.
+  * `REDIRECT_FILE` (and the now-*deprecated* `redirect_file`) path to the redirect file.
+    Default is `/htapps/babel/hathifiles/catalog_redirects/redirects/redirects_YYYYMM.txt.gz`
+  * `SOLR_URL` *(required)* with the solr _core_ URL (i.e, ending in `/catalog`)
 
-TODO: Add an env variable to skip using the redirect file as well.
+### Internal-use Environment Variables
 
-~~TODO: Change to use `dotenv`?~~
+  These are used internally, mainly for testing. They are not exposed by the `Services` object.
 
-TODO: Add environment variables for file locations
+  * `CICTL_SEMANTIC_LOGGER_SYNC` forces SemanticLogger to run on the main thread
+    in order to mitigate testing headaches.
+  * `CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX` for test fixtures, overrides default "zephir".
+
 
 ## A quick, high-level overview of how traject works
 

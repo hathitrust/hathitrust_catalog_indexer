@@ -3,9 +3,11 @@
 #####################################
 #
 
+require 'services'
+
 # Skip calling out to the print holdings database if I'm
 # on a machine that doesn't have access
-unless ENV['NO_DB'] or ENV["HT_NO_EXTERNAL_DATA"]
+unless HathiTrust::Services[:no_db?]
   each_record do |_r, context|
     context.clipboard[:ht][:items].fill_print_holdings! if context.clipboard[:ht][:has_items]
   end

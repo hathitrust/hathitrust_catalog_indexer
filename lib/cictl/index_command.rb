@@ -16,6 +16,10 @@ module CICTL
         puts "5 second delay if you need it..."
         sleep 5
       end
+      # Make sure there is a full MARC file to work on
+      if last_full_marc_file.nil? || !last_full_marc_file.readable?
+        fatal "Unable to find or read full marcfile '#{last_full_marc_file}'"
+      end
       logger.info "Empty full Solr records"
       solr_client.empty_records!
       logger.info "Load most recent set of deleted records into solr"

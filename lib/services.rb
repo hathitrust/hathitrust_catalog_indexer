@@ -2,9 +2,10 @@
 
 require "canister"
 require "dotenv"
+require "sequel"
 
 require_relative "cictl/solr_client"
-require_relative "ht_traject/ht_dbh"
+require_relative "ht_traject/redirects"
 
 # Load order to honor dependencies:
 #  Home so we know where to look for everything else.
@@ -57,7 +58,36 @@ module HathiTrust
     ENV["LOG_DIR"] || default
   end
 
+  Services.register(:redirect_file) do
+    yyyymm = DateTime.now.strftime "%Y%m"
+    default_file = "/htapps/babel/hathifiles/catalog_redirects/redirects/redirects_#{yyyymm}.txt.gz"
+    # Start migrating from redirect_file to REDIRECT_FILE on principle of least surprise
+    ENV["redirect_file"] || ENV["REDIRECT_FILE"] || default_file
+  end
+
+  Services.register(:redirects) do
+    Redirects.new(Services[:redirect_file])
+  end
+
   Services.register(:db) do
-    DBH.connect
+    Sequel.connect(Services[:db_connection_string], login_timeout: 2, pool_timeout: 10, max_connections: 6)
+  end
+
+  Services.register(:db_connection_string) do
+    "jdbc:mysql://#{ENV["MYSQL_HOST"]}/#{ENV["MYSQL_DATABASE"]}? \
+    user=#{ENV["MYSQL_USER"]}&password=#{ENV["MYSQL_PASSWORD"]}& \
+    useTimezone=true&serverTimezone=UTC"
+  end
+
+  Services.register(:no_db?) do
+    ENV["NO_DB"] == "1" or Services[:no_external_data?]
+  end
+
+  Services.register(:no_external_data?) do
+    ENV["HT_NO_EXTERNAL_DATA"] == "1"
+  end
+
+  Services.register(:no_redirects?) do
+    ENV["NO_REDIRECTS"] == "1" or Services[:no_external_data?]
   end
 end
