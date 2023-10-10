@@ -119,18 +119,18 @@ RSpec.describe CICTL::IndexCommand do
 
   describe "#index today" do
     # Note that "today" means "index today, using the file dated yesterday"
-
     it "indexes 'today' and produces deletes file" do
+      update_source = CICTL::ZephirFile.update_files.last
+      del_source = CICTL::ZephirFile.delete_files.last
+      # Create new update and delete files in a temp directory based on fixtures.
+      save_dd = HathiTrust::Services[:data_directory]
+      HathiTrust::Services.register(:data_directory) { Dir.mktmpdir }
       zyesterday = CICTL::ZephirFile.update_files.yesterday
       delyesterday = CICTL::ZephirFile.delete_files.yesterday
 
-      # Remove these files if they got left behind by a test run amok
-      FileUtils.rm(zyesterday) if zyesterday.exist?
-      FileUtils.rm(delyesterday) if delyesterday.exist?
-
       # Get some data into those files
-      FileUtils.cp(CICTL::ZephirFile.update_files.last, zyesterday)
-      FileUtils.cp(CICTL::ZephirFile.delete_files.last, delyesterday)
+      FileUtils.cp(update_source, zyesterday)
+      FileUtils.cp(del_source, delyesterday)
 
       # How many records/deletes do we have?
       zcount = Zinzout.zin(zyesterday).count
@@ -142,7 +142,7 @@ RSpec.describe CICTL::IndexCommand do
       expect(CICTL::DeletedRecords.daily_file.readable?)
       expect(Zinzout.zin(CICTL::DeletedRecords.daily_file).count).to eq(delcount)
 
-      FileUtils.rm([zyesterday, delyesterday])
+      HathiTrust::Services.register(:data_directory) { save_dd }
     end
   end
 end
