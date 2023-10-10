@@ -1,9 +1,8 @@
 require 'traject'
 require 'match_map'
 require 'ht_traject/ht_constants'
-
 require 'ht_traject/ht_macros'
-require_relative "ht_print_holdings"
+require "services"
 
 require 'json'
 
@@ -92,7 +91,7 @@ module HathiTrust
 
       def fill_print_holdings!
         ids = ht_ids.flatten
-        @ph = HathiTrust::PrintHoldings.get_print_holdings_hash(ids)
+        @ph = HathiTrust::Services[:print_holdings].get_print_holdings_hash(ids)
         each do |item|
           item.print_holdings = @ph[item.htid]
         end

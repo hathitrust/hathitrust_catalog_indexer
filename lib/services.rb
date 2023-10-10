@@ -6,6 +6,8 @@ require "sequel"
 
 require_relative "cictl/solr_client"
 require_relative "ht_traject/redirects"
+require_relative "ht_traject/ht_mock_print_holdings"
+require_relative "ht_traject/ht_print_holdings"
 
 # Load order to honor dependencies:
 #  Home so we know where to look for everything else.
@@ -89,5 +91,9 @@ module HathiTrust
 
   Services.register(:no_redirects?) do
     ENV["NO_REDIRECTS"] == "1" or Services[:no_external_data?]
+  end
+
+  Services.register(:print_holdings) do
+    HathiTrust.const_get(Services[:no_db?] ? :MockPrintHoldings : :PrintHoldings)
   end
 end
