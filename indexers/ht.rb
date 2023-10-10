@@ -3,14 +3,9 @@
 #####################################
 #
 
-require 'services'
-
-# Skip calling out to the print holdings database if I'm
-# on a machine that doesn't have access
-unless HathiTrust::Services[:no_db?]
-  each_record do |_r, context|
-    context.clipboard[:ht][:items].fill_print_holdings! if context.clipboard[:ht][:has_items]
-  end
+# #fill_print_holdings! calls a mock object if NO_DB or the like is set.
+each_record do |_r, context|
+  context.clipboard[:ht][:items].fill_print_holdings! if context.clipboard[:ht][:has_items]
 end
 
 ## OK, so one weird thing we need to do is have different ht_json docs for mirlyn vs hathitrust, since they have differently-formatted 974s. Pass in the :ht symbol only for HT and the to_json will do the Right Thing.
