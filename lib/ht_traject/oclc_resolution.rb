@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "services"
-
 module HathiTrust
   class OCLCResolution
     def self.query
@@ -15,10 +13,6 @@ module HathiTrust
     end
 
     def self.all_resolved_oclcs(oclcs)
-      if HathiTrust::Services[:no_db?]
-        return []
-      end
-
       oclcs = Array(oclcs).compact
       return [] if oclcs.empty?
       resolved = oclcs.flat_map{|o| self.query.call(oclc: o)}.flat_map{|x| [x[:oclc], x[:canonical]]}

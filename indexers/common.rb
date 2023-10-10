@@ -40,8 +40,7 @@ extend Traject::UMichFormat::Macros
 require 'ht_traject/basic_macros'
 extend HathiTrust::BasicMacros
 
-require "ht_traject/oclc_resolution"
-require 'ht_traject/redirects'
+require "services"
 require 'marc/fastxmlwriter'
 require 'marc_record_speed_monkeypatch'
 
@@ -101,7 +100,7 @@ to_field 'oclc_search' do |rec, acc, context|
   oclc_extractor.call(rec, acc) # side-effects the acc
   original_count = acc.size
   acc.map! { |x| x.sub(/\A0+/, '') } # drop leading zeros
-  acc.replace HathiTrust::OCLCResolution.all_resolved_oclcs(acc)
+  acc.replace HathiTrust::Services[:oclc_resolution].all_resolved_oclcs(acc)
   if acc.size != original_count
     id = context.output_hash['id'].first
   end

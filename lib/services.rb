@@ -8,6 +8,8 @@ require_relative "cictl/solr_client"
 require_relative "ht_traject/redirects"
 require_relative "ht_traject/ht_mock_print_holdings"
 require_relative "ht_traject/ht_print_holdings"
+require_relative "ht_traject/mock_oclc_resolution"
+require_relative "ht_traject/oclc_resolution"
 
 # Load order to honor dependencies:
 #  Home so we know where to look for everything else.
@@ -95,5 +97,9 @@ module HathiTrust
 
   Services.register(:print_holdings) do
     HathiTrust.const_get(Services[:no_db?] ? :MockPrintHoldings : :PrintHoldings)
+  end
+
+  Services.register(:oclc_resolution) do
+    HathiTrust.const_get(Services[:no_db?] ? :MockOCLCResolution : :OCLCResolution)
   end
 end
