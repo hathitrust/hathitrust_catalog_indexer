@@ -1,4 +1,3 @@
-
 require 'traject'
 require 'traject/solrj_writer'
 require_relative "../lib/services"
