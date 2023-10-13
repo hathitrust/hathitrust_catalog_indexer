@@ -27,6 +27,8 @@ RSpec.describe CICTL::IndexCommand do
     end
 
     it "bails out if redirects file can't be found" do
+      # Would be nice if we could class_double Services, but alas that would require
+      # patching various parameters to :[] and there are plenty of them.
       @save_redirect_file = HathiTrust::Services[:redirect_file]
       @save_no_redirects = HathiTrust::Services[:no_redirects?]
       @save_no_external_data = HathiTrust::Services[:no_external_data?]

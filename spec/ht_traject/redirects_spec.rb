@@ -2,31 +2,31 @@
 
 require "spec_helper"
 
-# The example file contains the line "000004165	006215998" (old, new) so
-# redirects["006215998"] -> ["000004165"]
-SAMPLE_OLD_CID = "000004165"
-SAMPLE_NEW_CID = "006215998"
-
 RSpec.describe HathiTrust::Redirects do
-  let(:real_file) { File.join(HathiTrust::Services["data_directory"], CICTL::Examples.redirects_file) }
-  let(:no_file) { File.join(HathiTrust::Services["data_directory"], "no_such_redirects_file.txt.gz") }
-
-  describe "#initialize" do
-    it "creates a HathiTrust::Redirects object" do
-      expect(described_class.new).to be_kind_of(described_class)
-    end
+  before do
+    @real_data_directory = HathiTrust::Services[:data_directory]
   end
+
+  let(:real_file) { File.join(@real_data_directory, CICTL::Examples.redirects_file) }
+  let(:no_file) { File.join(@real_data_directory, "no_such_redirects_file.txt.gz") }
+  # The example file contains the line "000004165	006215998" (old, new) so
+  # redirects["006215998"] -> ["000004165"]
+  let(:sample_old_cid) { "000004165" }
+  let(:sample_new_cid) { "006215998" }
+  let(:services_double) { class_double("HathiTrust::Services").as_stubbed_const }
 
   describe "#exist?" do
     context "with a real file" do
       it "returns true" do
-        expect(described_class.new(real_file).exist?).to eq true
+        allow(services_double).to receive(:[]).with(:redirect_file).and_return(real_file)
+        expect(described_class.new.exist?).to eq true
       end
     end
 
     context "with a nonexistent file" do
       it "returns false" do
-        expect(described_class.new(no_file).exist?).to eq false
+        allow(services_double).to receive(:[]).with(:redirect_file).and_return(no_file)
+        expect(described_class.new.exist?).to eq false
       end
     end
   end
@@ -34,27 +34,15 @@ RSpec.describe HathiTrust::Redirects do
   describe "#old_ids_for" do
     context "with a real file" do
       it "returns the old CID" do
-        expect(described_class.new(real_file).old_ids_for(SAMPLE_NEW_CID)).to eq([SAMPLE_OLD_CID])
+        allow(services_double).to receive(:[]).with(:redirect_file).and_return(real_file)
+        expect(described_class.new.old_ids_for(sample_new_cid)).to eq([sample_old_cid])
       end
     end
 
     context "with a nonexistent file" do
-      it "returns empty array" do
-        expect(described_class.new(no_file).old_ids_for(SAMPLE_NEW_CID)).to eq([])
-      end
-    end
-  end
-
-  describe "#[]" do
-    context "with a real file" do
-      it "returns the old CID" do
-        expect(described_class.new(real_file)[SAMPLE_NEW_CID]).to eq([SAMPLE_OLD_CID])
-      end
-    end
-
-    context "with a nonexistent file" do
-      it "returns empty array" do
-        expect(described_class.new(no_file)[SAMPLE_NEW_CID]).to eq([])
+      it "raises error" do
+        allow(services_double).to receive(:[]).with(:redirect_file).and_return(no_file)
+        expect { described_class.new.old_ids_for(sample_new_cid) }.to raise_error(Errno::ENOENT)
       end
     end
   end

@@ -69,10 +69,6 @@ module HathiTrust
     ENV["redirect_file"] || ENV["REDIRECT_FILE"] || default_file
   end
 
-  Services.register(:redirects) do
-    Redirects.new(Services[:redirect_file])
-  end
-
   Services.register(:db) do
     Sequel.connect(Services[:db_connection_string], login_timeout: 2, pool_timeout: 10, max_connections: 6)
   end
@@ -101,5 +97,9 @@ module HathiTrust
 
   Services.register(:oclc_resolution) do
     HathiTrust.const_get(Services[:no_db?] ? :MockOCLCResolution : :OCLCResolution)
+  end
+
+  Services.register(:redirects) do
+    HathiTrust.const_get(Services[:no_redirects?] ? :MockRedirects : :Redirects).new
   end
 end
