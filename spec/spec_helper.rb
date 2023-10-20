@@ -139,3 +139,12 @@ def solr_ids(q = "*:*")
   response = CICTL::SolrClient.new.get("select", params: solr_params)
   response["response"]["docs"].map { |doc| doc["id"] }
 end
+
+def override_service(key, &block)
+  around(:each) do |example|
+    old_val = HathiTrust::Services[key]
+    HathiTrust::Services.register(key, &block)
+    example.run
+    HathiTrust::Services.register(key) { old_val }
+  end
+end

@@ -12,7 +12,6 @@ module CICTL
     desc "all", "Empty the catalog and index the most recent monthly followed by subsequent daily updates"
     option :wait, type: :boolean, desc: "Wait 5 seconds for Control-C", default: true
     def all
-      preflight
       if options[:wait]
         puts "5 second delay if you need it..."
         sleep 5
@@ -45,7 +44,6 @@ module CICTL
     option :commit, type: :boolean, desc: "Commit changes to Solr", default: true
     desc "file FILE", "Index a single MARC file"
     def file(marcfile)
-      preflight
       Indexer.new(reader: options[:reader], writer: options[:writer]).run marcfile
       solr_client.commit! if options[:commit]
     end
@@ -60,7 +58,6 @@ module CICTL
 
     desc "since YYYYMMDD", "Run all deletes/marcfiles in order since the given date"
     def since(date)
-      preflight
       with_date(date) do |date|
         yesterday = Date.today - 1
         begin
@@ -78,7 +75,6 @@ module CICTL
 
     desc "today", "Run the catchup (delete and index) for last night's files"
     def today
-      preflight
       # HT's "today" file is dated yesterday
       yesterday = (Date.today - 1).strftime("%Y%m%d")
       # We'll use the actual date in the logfile, though
@@ -99,14 +95,6 @@ module CICTL
     end
 
     private
-
-    # Any checks that need to be done before we start doing major surgery on the index.
-    def preflight
-      unless HathiTrust::Services[:redirects].exist?
-        redirect_file = HathiTrust::Services[:redirect_file]
-        fatal "Can't find redirects file `#{redirect_file}`. Set manually with ENV['REDIRECT_FILE']."
-      end
-    end
 
     def last_full_marc_file
       @last_full_marc_file ||= ZephirFile.full_files.last

@@ -15,10 +15,6 @@ module HathiTrust
       redirects[id] || []
     end
 
-    def exist?
-      File.readable? Services[:redirect_file]
-    end
-
     private
 
     def redirects
