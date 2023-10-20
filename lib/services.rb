@@ -6,6 +6,7 @@ require "sequel"
 
 require_relative "cictl/solr_client"
 require_relative "ht_traject/redirects"
+require_relative "ht_traject/mock_redirects"
 require_relative "ht_traject/ht_mock_print_holdings"
 require_relative "ht_traject/ht_print_holdings"
 require_relative "ht_traject/mock_oclc_resolution"

@@ -17,9 +17,7 @@ module CICTL
         sleep 5
       end
       # Make sure there is a full MARC file to work on
-      if last_full_marc_file.nil? || !last_full_marc_file.readable?
-        fatal "Unable to find or read full marcfile '#{last_full_marc_file}'"
-      end
+      preflight(last_full_marc_file)
       logger.info "Empty full Solr records"
       solr_client.empty_records!
       logger.info "Load most recent set of deleted records into solr"
@@ -44,12 +42,14 @@ module CICTL
     option :commit, type: :boolean, desc: "Commit changes to Solr", default: true
     desc "file FILE", "Index a single MARC file"
     def file(marcfile)
+      preflight(marcfile)
       Indexer.new(reader: options[:reader], writer: options[:writer]).run marcfile
       solr_client.commit! if options[:commit]
     end
 
     desc "date YYYYMMDD", "Process the delete and index files timestamped YYYYMMDD"
     def date(date)
+      preflight
       with_date(date) do |date|
         index_deletes_for_date date
         index_records_for_date date
@@ -95,6 +95,21 @@ module CICTL
     end
 
     private
+
+    def preflight(*files)
+      files.each do |file|
+        fatal "Missing expected filename for this operation" unless file
+        fatal "Can't find #{file}" unless File.exist?(file)
+        fatal "Can't read #{file}" unless File.readable?(file)
+      end
+      load_redirects
+    end
+
+    def load_redirects
+      HathiTrust::Services[:redirects].load
+    rescue SystemCallError, RuntimeError => e
+      fatal e.message
+    end
 
     def last_full_marc_file
       @last_full_marc_file ||= ZephirFile.full_files.last

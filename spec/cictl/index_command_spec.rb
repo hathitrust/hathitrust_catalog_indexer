@@ -33,7 +33,29 @@ RSpec.describe CICTL::IndexCommand do
       it "bails out" do
         expect {
           CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
-        }.to raise_error(Errno::ENOENT)
+        }.to raise_error(CICTL::CICTLError)
+      end
+
+      it "does not touch the index" do
+        pre_run_solr_count = solr_count
+
+        begin
+          CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
+        rescue CICTL::CICTLError
+        end
+
+        expect(solr_count).to eq pre_run_solr_count
+      end
+    end
+
+    context "without using redirect file" do
+      override_service(:redirect_file) { "no_such_redirects_file.gz.txt" }
+      override_service(:no_redirects?) { true }
+
+      it "runs to completion" do
+        expect {
+          CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
+        }.not_to raise_error
       end
     end
   end

@@ -15,6 +15,13 @@ module HathiTrust
       redirects[id] || []
     end
 
+    def load
+      if !@redirects
+        Services[:logger].info("Loading redirects from #{Services[:redirect_file]}")
+        redirects
+      end
+    end
+
     private
 
     def redirects
