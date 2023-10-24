@@ -4,12 +4,7 @@ require "spec_helper"
 require "zinzout"
 
 RSpec.describe CICTL::DeletedRecords do
-  around(:each) do |ex|
-    @original_data_dir = HathiTrust::Services[:data_directory]
-    HathiTrust::Services.register(:data_directory) { Dir.mktmpdir }
-    ex.run
-    HathiTrust::Services.register(:data_directory) { @original_data_dir }
-  end
+  override_service(:data_directory) { Dir.mktmpdir }
 
   it "gets something for today's file" do
     expect(described_class.daily_file.to_s).to match(/deleted_records/)

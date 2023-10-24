@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../services"
-
 module HathiTrust
   class OCLCResolution
     def self.query

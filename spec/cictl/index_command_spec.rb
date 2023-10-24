@@ -25,6 +25,39 @@ RSpec.describe CICTL::IndexCommand do
       expect(solr_deleted_count).to be > 0
       expect(solr_ids("deleted:true")).to include(bogus_delete)
     end
+
+    context "using nonexistent redirect file" do
+      override_service(:redirect_file) { "no_such_redirects_file.gz.txt" }
+      override_service(:no_redirects?) { false }
+
+      it "bails out" do
+        expect {
+          CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
+        }.to raise_error(CICTL::CICTLError)
+      end
+
+      it "does not touch the index" do
+        pre_run_solr_count = solr_count
+
+        begin
+          CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
+        rescue CICTL::CICTLError
+        end
+
+        expect(solr_count).to eq pre_run_solr_count
+      end
+    end
+
+    context "without using redirect file" do
+      override_service(:redirect_file) { "no_such_redirects_file.gz.txt" }
+      override_service(:no_redirects?) { true }
+
+      it "runs to completion" do
+        expect {
+          CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
+        }.not_to raise_error
+      end
+    end
   end
 
   describe "#index date" do
@@ -101,15 +134,23 @@ RSpec.describe CICTL::IndexCommand do
   end
 
   describe "#index today" do
-    # Note that "today" means "index today, using the file dated yesterday"
+    # Create new update and delete files in a temp directory based on fixtures.
+    after(:each) { HathiTrust::Services.register(:data_directory) { @save_dd } }
 
+    # Note that "today" means "index today, using the file dated yesterday"
     it "indexes 'today' and produces deletes file" do
+      update_source = CICTL::ZephirFile.update_files.last
+      del_source = CICTL::ZephirFile.delete_files.last
+
+      @save_dd = HathiTrust::Services[:data_directory]
+      HathiTrust::Services.register(:data_directory) { Dir.mktmpdir }
+
       zyesterday = CICTL::ZephirFile.update_files.yesterday
       delyesterday = CICTL::ZephirFile.delete_files.yesterday
 
       # Get some data into those files
-      FileUtils.cp(CICTL::ZephirFile.update_files.last, zyesterday)
-      FileUtils.cp(CICTL::ZephirFile.delete_files.last, delyesterday)
+      FileUtils.cp(update_source, zyesterday)
+      FileUtils.cp(del_source, delyesterday)
 
       # How many records/deletes do we have?
       zcount = Zinzout.zin(zyesterday).count
@@ -120,8 +161,6 @@ RSpec.describe CICTL::IndexCommand do
       expect(solr_count).to eq(zcount + delcount)
       expect(CICTL::DeletedRecords.daily_file.readable?)
       expect(Zinzout.zin(CICTL::DeletedRecords.daily_file).count).to eq(delcount)
-
-      FileUtils.rm([zyesterday, delyesterday])
     end
   end
 end

@@ -9,11 +9,12 @@ RSpec.describe CICTL::SolrCommand, :livesolr do
       expect { CICTL::Commands.start(["solr", "ping"]) }.to output(/SUCCESS/).to_stdout
     end
 
-    it "fails to ping a fake solr url" do
-      old_solr_url = HathiTrust::Services[:solr_url]
-      HathiTrust::Services.register(:solr_url) { "http://solr-sdr-catalog:1111/solr/catalog" }
-      expect { CICTL::Commands.start(["solr", "ping"]) }.to output(/FAILURE/).to_stdout
-      HathiTrust::Services.register(:solr_url) { old_solr_url }
+    context "with fake solr url" do
+      override_service(:solr_url) { "http://solr-sdr-catalog:1111/solr/catalog" }
+
+      it "fails to ping" do
+        expect { CICTL::Commands.start(["solr", "ping"]) }.to output(/FAILURE/).to_stdout
+      end
     end
   end
 

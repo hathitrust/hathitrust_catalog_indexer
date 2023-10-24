@@ -1,5 +1,5 @@
 module HathiTrust
-  class OCLCResolution
+  class MockOCLCResolution
     def self.all_resolved_oclcs(oclcs)
       []
     end

@@ -3,6 +3,7 @@
 require "traject"
 
 require_relative "common"
+require_relative "../services"
 
 module CICTL
   class Indexer
@@ -78,7 +79,8 @@ module CICTL
     end
 
     def update_collection_map
-      return if ENV["NO_DB"]
+      return if HathiTrust::Services[:no_db?]
+
       logger.info "updating collection map"
       File.open(File.join(collection_map_directory, COLLECTION_MAP_FILE), "w:utf-8") do |f|
         f.puts CollectionMap.new.to_yaml

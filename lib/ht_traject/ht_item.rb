@@ -1,8 +1,9 @@
 require 'traject'
 require 'match_map'
 require 'ht_traject/ht_constants'
-
 require 'ht_traject/ht_macros'
+require "services"
+
 require 'json'
 
 module HathiTrust
@@ -88,17 +89,9 @@ module HathiTrust
         @intl
       end
 
-      PH = if ENV['NO_DB'] or ENV["HT_NO_EXTERNAL_DATA"]
-             require_relative 'ht_mock_print_holdings'
-             HathiTrust::MockPrintHoldings
-           else
-             require_relative 'ht_print_holdings'
-             HathiTrust::PrintHoldings
-           end
-
       def fill_print_holdings!
         ids = ht_ids.flatten
-        @ph = PH.get_print_holdings_hash(ids)
+        @ph = HathiTrust::Services[:print_holdings].get_print_holdings_hash(ids)
         each do |item|
           item.print_holdings = @ph[item.htid]
         end
