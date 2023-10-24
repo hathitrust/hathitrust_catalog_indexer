@@ -6,6 +6,7 @@ require "sequel"
 
 require_relative "cictl/solr_client"
 require_relative "ht_traject/redirects"
+require_relative "ht_traject/mock_redirects"
 require_relative "ht_traject/ht_mock_print_holdings"
 require_relative "ht_traject/ht_print_holdings"
 require_relative "ht_traject/mock_oclc_resolution"
@@ -79,27 +80,18 @@ module HathiTrust
     useTimezone=true&serverTimezone=UTC"
   end
 
-  Services.register(:no_db?) do
-    ENV["NO_DB"] == "1" or Services[:no_external_data?]
-  end
-
-  Services.register(:no_external_data?) do
-    ENV["HT_NO_EXTERNAL_DATA"] == "1"
-  end
-
-  Services.register(:no_redirects?) do
-    ENV["NO_REDIRECTS"] == "1" or Services[:no_external_data?]
-  end
+  Services.register(:no_db?) { ENV["NO_DB"] || ENV["NO_EXTERNAL_DATA"] }
+  Services.register(:no_redirects?) { ENV["NO_REDIRECTS"] || ENV["NO_EXTERNAL_DATA"] }
 
   Services.register(:print_holdings) do
-    HathiTrust.const_get(Services[:no_db?] ? :MockPrintHoldings : :PrintHoldings)
+    Services[:no_db?] ? MockPrintHoldings : PrintHoldings
   end
 
   Services.register(:oclc_resolution) do
-    HathiTrust.const_get(Services[:no_db?] ? :MockOCLCResolution : :OCLCResolution)
+    Services[:no_db?] ? MockOCLCResolution : OCLCResolution
   end
 
   Services.register(:redirects) do
-    HathiTrust.const_get(Services[:no_redirects?] ? :MockRedirects : :Redirects).new
+    Services[:no_redirects?] ? MockRedirects.new : Redirects.new
   end
 end

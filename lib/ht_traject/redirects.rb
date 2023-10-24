@@ -15,8 +15,11 @@ module HathiTrust
       redirects[id] || []
     end
 
-    def exist?
-      File.readable? Services[:redirect_file]
+    def load
+      if !@redirects
+        Services[:logger].info("Loading redirects from #{Services[:redirect_file]}")
+        redirects
+      end
     end
 
     private

@@ -26,23 +26,37 @@ RSpec.describe CICTL::IndexCommand do
       expect(solr_ids("deleted:true")).to include(bogus_delete)
     end
 
-    it "bails out if redirects file can't be found" do
-      # Would be nice if we could class_double Services, but alas that would require
-      # patching various parameters to :[] and there are plenty of them.
-      @save_redirect_file = HathiTrust::Services[:redirect_file]
-      @save_no_redirects = HathiTrust::Services[:no_redirects?]
-      @save_no_external_data = HathiTrust::Services[:no_external_data?]
-      @save_redirects = HathiTrust::Services[:redirects]
-      HathiTrust::Services.register(:redirect_file) { "no_such_redirects_file.gz.txt" }
-      HathiTrust::Services.register(:no_redirects?) { false }
-      HathiTrust::Services.register(:no_external_data?) { false }
-      expect {
-        CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
-      }.to raise_error(CICTL::CICTLError)
-      HathiTrust::Services.register(:redirect_file) { @save_redirect_file }
-      HathiTrust::Services.register(:no_redirects?) { @save_no_redirects }
-      HathiTrust::Services.register(:no_external_data?) { @save_no_external_data }
-      HathiTrust::Services.register(:redirects) { @save_redirects }
+    context "using nonexistent redirect file" do
+      override_service(:redirect_file) { "no_such_redirects_file.gz.txt" }
+      override_service(:no_redirects?) { false }
+
+      it "bails out" do
+        expect {
+          CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
+        }.to raise_error(CICTL::CICTLError)
+      end
+
+      it "does not touch the index" do
+        pre_run_solr_count = solr_count
+
+        begin
+          CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
+        rescue CICTL::CICTLError
+        end
+
+        expect(solr_count).to eq pre_run_solr_count
+      end
+    end
+
+    context "without using redirect file" do
+      override_service(:redirect_file) { "no_such_redirects_file.gz.txt" }
+      override_service(:no_redirects?) { true }
+
+      it "runs to completion" do
+        expect {
+          CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
+        }.not_to raise_error
+      end
     end
   end
 
@@ -120,13 +134,17 @@ RSpec.describe CICTL::IndexCommand do
   end
 
   describe "#index today" do
+    # Create new update and delete files in a temp directory based on fixtures.
+    after(:each) { HathiTrust::Services.register(:data_directory) { @save_dd } }
+
     # Note that "today" means "index today, using the file dated yesterday"
     it "indexes 'today' and produces deletes file" do
       update_source = CICTL::ZephirFile.update_files.last
       del_source = CICTL::ZephirFile.delete_files.last
-      # Create new update and delete files in a temp directory based on fixtures.
-      save_dd = HathiTrust::Services[:data_directory]
+
+      @save_dd = HathiTrust::Services[:data_directory]
       HathiTrust::Services.register(:data_directory) { Dir.mktmpdir }
+
       zyesterday = CICTL::ZephirFile.update_files.yesterday
       delyesterday = CICTL::ZephirFile.delete_files.yesterday
 
@@ -143,8 +161,6 @@ RSpec.describe CICTL::IndexCommand do
       expect(solr_count).to eq(zcount + delcount)
       expect(CICTL::DeletedRecords.daily_file.readable?)
       expect(Zinzout.zin(CICTL::DeletedRecords.daily_file).count).to eq(delcount)
-
-      HathiTrust::Services.register(:data_directory) { save_dd }
     end
   end
 end

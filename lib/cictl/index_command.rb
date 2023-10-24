@@ -12,15 +12,12 @@ module CICTL
     desc "all", "Empty the catalog and index the most recent monthly followed by subsequent daily updates"
     option :wait, type: :boolean, desc: "Wait 5 seconds for Control-C", default: true
     def all
-      preflight
       if options[:wait]
         puts "5 second delay if you need it..."
         sleep 5
       end
       # Make sure there is a full MARC file to work on
-      if last_full_marc_file.nil? || !last_full_marc_file.readable?
-        fatal "Unable to find or read full marcfile '#{last_full_marc_file}'"
-      end
+      preflight(last_full_marc_file)
       logger.info "Empty full Solr records"
       solr_client.empty_records!
       logger.info "Load most recent set of deleted records into solr"
@@ -45,13 +42,14 @@ module CICTL
     option :commit, type: :boolean, desc: "Commit changes to Solr", default: true
     desc "file FILE", "Index a single MARC file"
     def file(marcfile)
-      preflight
+      preflight(marcfile)
       Indexer.new(reader: options[:reader], writer: options[:writer]).run marcfile
       solr_client.commit! if options[:commit]
     end
 
     desc "date YYYYMMDD", "Process the delete and index files timestamped YYYYMMDD"
     def date(date)
+      preflight
       with_date(date) do |date|
         index_deletes_for_date date
         index_records_for_date date
@@ -60,7 +58,6 @@ module CICTL
 
     desc "since YYYYMMDD", "Run all deletes/marcfiles in order since the given date"
     def since(date)
-      preflight
       with_date(date) do |date|
         yesterday = Date.today - 1
         begin
@@ -78,7 +75,6 @@ module CICTL
 
     desc "today", "Run the catchup (delete and index) for last night's files"
     def today
-      preflight
       # HT's "today" file is dated yesterday
       yesterday = (Date.today - 1).strftime("%Y%m%d")
       # We'll use the actual date in the logfile, though
@@ -100,12 +96,19 @@ module CICTL
 
     private
 
-    # Any checks that need to be done before we start doing major surgery on the index.
-    def preflight
-      unless HathiTrust::Services[:redirects].exist?
-        redirect_file = HathiTrust::Services[:redirect_file]
-        fatal "Can't find redirects file `#{redirect_file}`. Set manually with ENV['REDIRECT_FILE']."
+    def preflight(*files)
+      files.each do |file|
+        fatal "Missing expected filename for this operation" unless file
+        fatal "Can't find #{file}" unless File.exist?(file)
+        fatal "Can't read #{file}" unless File.readable?(file)
       end
+      load_redirects
+    end
+
+    def load_redirects
+      HathiTrust::Services[:redirects].load
+    rescue SystemCallError, RuntimeError => e
+      fatal e.message
     end
 
     def last_full_marc_file
