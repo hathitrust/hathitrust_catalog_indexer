@@ -47,7 +47,7 @@ module CICTL
       solr_client.commit! if options[:commit]
     end
 
-    desc "date YYYYMMDD", "Process the delete and index files timestamped YYYYMMDD"
+    desc "date YYYYMMDD", "Process the delete and index files with the date YYYYMMDD in its name"
     def date(date)
       preflight
       with_date(date) do |date|
@@ -56,16 +56,11 @@ module CICTL
       end
     end
 
-    desc "since YYYYMMDD", "Run all deletes/marcfiles in order since the given date"
+    desc "since YYYYMMDD", "Processes all deletes/marcfiles with a date on or after YYYYMMDD in its name in order"
     def since(date)
-      with_date(date) do |date|
+      with_date(date) do |start_date|
         yesterday = Date.today - 1
-        begin
-          start_date = date - 1
-        rescue Date::Error => e
-          fatal e.message
-        end
-        logger.debug "index since(#{date}): #{start_date} to #{yesterday}"
+        logger.debug "index since(#{start_date}): #{start_date} to #{yesterday}"
         (start_date..yesterday).each do |index_date|
           logger.info("\n------- #{index_date} -----------\n")
           call_date_command index_date
@@ -73,7 +68,7 @@ module CICTL
       end
     end
 
-    desc "today", "Run the catchup (delete and index) for last night's files"
+    desc "today", "Process the catchup (delete and index) for last night's files"
     def today
       # HT's "today" file is dated yesterday
       yesterday = (Date.today - 1).strftime("%Y%m%d")

@@ -139,13 +139,12 @@ Solr should be reachable via the `solr-sdr-catalog` hostname.
 ### Indexing
 
 Note that "today's file" is "the file that became available today", which 
-will have _yesterday's_ date embedded in it. If you use these scripts you 
-don't have to worry about any off-by-one errors. 
+will have _yesterday's_ date embedded in it.
 
-Re-run today's file: 
+Re-process today's file: 
 * `bin/cictl index today`
 
-Run all the update files since a given date (YYYYMMDD):
+Processes all deletes/marcfiles with a date on or after YYYYMMDD in its name sequentially
 * `bin/cictl index since 20220302`
 
 Re-build the entire index based on the last full file, making sure 
