@@ -71,7 +71,7 @@ module HathiTrust
   end
 
   Services.register(:db) do
-    Sequel.connect(Services[:db_connection_string], login_timeout: 2, pool_timeout: 10, max_connections: 6)
+    Sequel.connect(Services[:db_connection_string], login_timeout: 2, pool_timeout: 100, max_connections: 6)
   end
 
   Services.register(:db_connection_string) do
