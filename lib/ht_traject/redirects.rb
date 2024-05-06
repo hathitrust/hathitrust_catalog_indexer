@@ -11,6 +11,19 @@ require_relative "../services"
 
 module HathiTrust
   class Redirects
+    def self.redirects_file_name(date: Date.today)
+      "redirects_#{date.strftime "%Y%m"}.txt.gz"
+    end
+
+    def self.default_redirects_file(directory: "/htapps/babel/hathifiles/catalog_redirects/redirects")
+      default_file = File.join(directory, redirects_file_name)
+      if !File.exist?(default_file)
+        # Fall back to previous month's (that's what the << method does) file
+        default_file = File.join(directory, redirects_file_name(date: Date.today << 1))
+      end
+      default_file
+    end
+
     def old_ids_for(id)
       redirects[id] || []
     end
