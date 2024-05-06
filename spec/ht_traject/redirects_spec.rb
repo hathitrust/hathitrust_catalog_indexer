@@ -20,7 +20,7 @@ RSpec.describe HathiTrust::Redirects do
       it "uses the existing file" do
         Dir.mktmpdir do |tmpdir|
           current_file = File.join(tmpdir, described_class.redirects_file_name)
-          `touch #{current_file}`
+          FileUtils.touch current_file
           expect(described_class.default_redirects_file(directory: tmpdir))
             .to eq(current_file)
         end
@@ -31,7 +31,7 @@ RSpec.describe HathiTrust::Redirects do
       it "uses last month's file" do
         Dir.mktmpdir do |tmpdir|
           last_file = File.join(tmpdir, described_class.redirects_file_name(date: Date.today << 1))
-          `touch #{last_file}`
+          FileUtils.touch last_file
           expect(described_class.default_redirects_file(directory: tmpdir))
             .to eq(last_file)
         end
