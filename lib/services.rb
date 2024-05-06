@@ -64,10 +64,8 @@ module HathiTrust
   end
 
   Services.register(:redirect_file) do
-    yyyymm = DateTime.now.strftime "%Y%m"
-    default_file = "/htapps/babel/hathifiles/catalog_redirects/redirects/redirects_#{yyyymm}.txt.gz"
     # Start migrating from redirect_file to REDIRECT_FILE on principle of least surprise
-    ENV["redirect_file"] || ENV["REDIRECT_FILE"] || default_file
+    ENV["redirect_file"] || ENV["REDIRECT_FILE"] || Redirects.default_redirects_file
   end
 
   Services.register(:db) do
