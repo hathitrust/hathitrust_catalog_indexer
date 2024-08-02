@@ -38,7 +38,6 @@ GEM
     httpclient (2.8.3)
     httpx (0.23.3)
       http-2-next (>= 0.4.1)
-    jdbc-mysql (8.0.30)
     json (2.6.3)
     json (2.6.3-java)
     language_server-protocol (3.17.0.3)
@@ -53,14 +52,11 @@ GEM
       unf
     marc-fastxmlwriter (1.1.0)
       marc (~> 1.0)
-    marc-marc4j (1.0.0-java)
-      marc (~> 1)
     marc_alephsequential (2.0.0)
       marc (~> 1)
       yell (~> 2)
     match_map (3.0.0)
     method_source (1.0.0)
-    naconormalizer (1.0.1-java)
     nokogiri (1.16.2-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.16.2-java)
@@ -83,7 +79,8 @@ GEM
     rainbow (3.1.1)
     rake (13.0.6)
     regexp_parser (2.8.0)
-    rexml (3.2.5)
+    rexml (3.3.3)
+      strscan
     rsolr (2.5.0)
       builder (>= 2.1.2)
       faraday (>= 0.9, < 3, != 2.0.0)
@@ -142,6 +139,8 @@ GEM
     standard-performance (1.0.1)
       lint_roller (~> 1.0)
       rubocop-performance (~> 1.16.0)
+    strscan (3.1.0)
+    strscan (3.1.0-java)
     thor (1.2.2)
     traject (3.8.2)
       concurrent-ruby (>= 0.8.0)
@@ -154,9 +153,6 @@ GEM
       nokogiri (~> 1.9)
       slop (~> 4.0)
       yell
-    traject-marc4j_reader (1.1.0-java)
-      marc (~> 1.0)
-      marc-marc4j (~> 1.0)
     traject_alephsequential_reader (1.1.2)
       marc (~> 1)
       marc_alephsequential (~> 2)
@@ -183,11 +179,9 @@ DEPENDENCIES
   http (~> 5.0)
   httpclient
   httpx
-  jdbc-mysql
   library_stdnums
   marc-fastxmlwriter (~> 1.1)
   match_map
-  naconormalizer
   pry
   rake (~> 13.0)
   rsolr
@@ -199,7 +193,6 @@ DEPENDENCIES
   standard
   thor
   traject (~> 3.0)
-  traject-marc4j_reader
   traject_alephsequential_reader
   traject_umich_format
   yell
