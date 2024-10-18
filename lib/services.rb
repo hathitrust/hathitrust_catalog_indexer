@@ -63,6 +63,14 @@ module HathiTrust
     ENV["LOG_DIR"] || default
   end
 
+  Services.register(:journal_directory) do
+    (ENV["JOURNAL_DIRECTORY"] || File.join(HOME, "journal")).tap do |dir|
+      if !File.exist?(dir)
+        FileUtils.mkdir dir
+      end
+    end
+  end
+
   Services.register(:redirect_file) do
     # Start migrating from redirect_file to REDIRECT_FILE on principle of least surprise
     ENV["redirect_file"] || ENV["REDIRECT_FILE"] || Redirects.default_redirects_file

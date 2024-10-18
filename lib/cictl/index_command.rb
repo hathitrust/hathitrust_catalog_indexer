@@ -3,11 +3,36 @@
 require_relative "base_command"
 require_relative "zephir_file"
 require_relative "deleted_records"
+require_relative "journal"
 
 module CICTL
   class IndexCommand < BaseCommand
     class_option :reader, type: :string, desc: "Reader name/path"
     class_option :writer, type: :string, desc: "Writer name/path"
+
+    desc "continue", "index all files not represented in the indexer journals"
+    def continue
+      last_full = ZephirFile.full_files.last
+      fatal "unable to find full Zephir file" unless last_full
+      # Index the most recent full file and subsequent ones if the
+      # full file journal is missing.
+      full_journal = Journal.new(date: last_full.to_datetime.to_date, full: true)
+      if full_journal.missing?
+        logger.info "missing full journal #{full_journal}, calling `cictl all`"
+        call_all_command
+      # Otherwise, iterate from the last full file date to yesterday.
+      # If there is a missing journal, start indexing from that point.
+      else
+        (last_full.to_datetime.to_date..(Date.today - 1)).each do |date|
+          journal = Journal.new(date: last_full.to_datetime.to_date, full: false)
+          if journal.missing?
+            logger.info "missing update journal #{journal}, calling `cictl since #{journal.date}`"
+            call_since_command(journal.date)
+            break
+          end
+        end
+      end
+    end
 
     desc "all", "Empty the catalog and index the most recent monthly followed by subsequent daily updates"
     option :wait, type: :boolean, desc: "Wait 5 seconds for Control-C", default: true
@@ -39,6 +64,8 @@ module CICTL
       solr_client.commit!
     end
 
+    # Note: this command does not write a journal since it only processes the MARC file
+    # but not the deletes.
     option :commit, type: :boolean, desc: "Commit changes to Solr", default: true
     desc "file FILE", "Index a single MARC file"
     def file(marcfile)
@@ -52,7 +79,11 @@ module CICTL
       preflight
       with_date(date) do |date|
         index_deletes_for_date date
-        index_records_for_date date
+        if index_records_for_date date
+          journal = Journal.new(date: date)
+          logger.info("write journal file #{journal.path}")
+          journal.write!
+        end
       end
     end
 
@@ -84,6 +115,7 @@ module CICTL
     end
 
     no_commands do
+      alias_method :call_all_command, :all
       alias_method :call_date_command, :date
       alias_method :call_file_command, :file
       alias_method :call_since_command, :since
@@ -118,14 +150,17 @@ module CICTL
       ZephirFile.update_files.at(date)
     end
 
+    # @return [Boolean] true if the marcfile for the given date exists
     def index_records_for_date(date)
       marcfile = marc_file_for_date date
       if File.exist? marcfile
         Indexer.new(reader: options[:reader], writer: options[:writer]).run marcfile
         solr_client.commit!
         logger.debug "index date(#{date}): Solr count now #{solr_client.count}"
+        true
       else
         logger.warn "could not find marcfile '#{marcfile}'"
+        false
       end
     end
 
