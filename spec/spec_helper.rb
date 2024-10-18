@@ -126,6 +126,13 @@ rescue Errno::ENOENT
   # file wasn't there, and that's fine
 end
 
+# Combined setup and teardown for journal directory and files.
+# Services handles creating the journal directory if it doesn't exist,
+# so we just need to empty it.
+def init_journals
+  FileUtils.rm_rf Dir.glob("#{HathiTrust::Services[:journal_directory]}/*")
+end
+
 def solr_count
   CICTL::SolrClient.new.count
 end
