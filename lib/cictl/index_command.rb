@@ -10,7 +10,7 @@ module CICTL
     class_option :reader, type: :string, desc: "Reader name/path"
     class_option :writer, type: :string, desc: "Writer name/path"
 
-    desc "continue", "index all files not represented in the indexer journals"
+    desc "continue", "Index all files not represented in the indexer journals"
     def continue
       last_full = ZephirFile.full_files.last
       fatal "unable to find full Zephir file" unless last_full
