@@ -37,7 +37,8 @@ module AvailabilitynMapHTINTL
   RSpec.describe AvailabilitynMapHTINTL do
     let(:map) {
       rb_file = File.expand_path("../../lib/translation_maps/ht/availability_map_ht_intl.rb", __dir__)
-      eval(File.read(rb_file), binding, rb_file)
+      # Traject uses `eval` on these files, and alas so must we (apparently).
+      eval(File.read(rb_file), binding, rb_file) # standard:disable Security/Eval
     }
 
     it "is non-nil" do
