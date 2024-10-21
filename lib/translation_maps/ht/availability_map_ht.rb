@@ -1,5 +1,5 @@
-require 'ht_traject/ht_constants'
-require 'match_map'
+require "ht_traject/ht_constants"
+require "match_map"
 
 mm = MatchMap.new
 
@@ -9,7 +9,6 @@ mm = MatchMap.new
 mm[/^pd(?:us)?$/] = HathiTrust::Constants::FT  # [1 pd, 9 pdus] (uses noncapturing parens)
 mm[/.+world$/] = HathiTrust::Constants::FT     # [7 ic-world, 18 und-world]
 mm[/^cc.*/] = HathiTrust::Constants::FT        # [10-15, 17, 20-25]
-
 
 mm[/^ic(?:us)?$/] = HathiTrust::Constants::SO  # [2 ic, 19 icus] (uses noncapturing parens)
 mm["op"] = HathiTrust::Constants::SO           # [3 op]
