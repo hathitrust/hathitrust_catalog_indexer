@@ -117,7 +117,16 @@ network (i.e. the one started with `docker-compose up` from this repository).
 Solr should be reachable via the `solr-sdr-catalog` hostname.
 
 ## How to do the basics
+### Date-independent Indexing
 
+For use in production environments where daily and monthly indexing are ongoing activities,
+we enable the indexer to maintain state by writing "journal" files: empty datestamped
+files in a known location (`JOURNAL_DIRECTORY`). The command `cictl index continue` does whatever
+full or daily indexing is appropriate given the state of the journals.
+
+Note that all of the `cictl index *` commands write journal files, with the exception of
+`cictl index file` which takes only an `upd` MARC file rather than a MARC-deletes pair, and is not
+expected to be used in an environment where date independence is in force.
 
 ### Putting a new solr configuration into place
 
