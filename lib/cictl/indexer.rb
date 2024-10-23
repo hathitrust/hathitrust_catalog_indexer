@@ -24,6 +24,9 @@ module CICTL
       traject_logger = HathiTrust::Services[:logger_factory].logger(owner: "Traject")
       @indexer = Traject::Indexer::MarcIndexer.new(logger: traject_logger) do |ind|
         config_paths.each { |config_path| load_config_file(config_path) }
+        ind.after_processing do
+          HathiTrust::Services[:push_metrics].log_final_line
+        end
       end
     end
 

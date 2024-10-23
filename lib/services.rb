@@ -2,6 +2,7 @@
 
 require "canister"
 require "dotenv"
+require "push_metrics"
 require "sequel"
 
 require_relative "cictl/solr_client"
@@ -99,5 +100,11 @@ module HathiTrust
 
   Services.register(:redirects) do
     Services[:no_redirects?] ? MockRedirects.new : Redirects.new
+  end
+
+  Services.register(:push_metrics) do
+    # PushMetrics will extract JOB_SUCCESS_INTERVAL from ENV
+    job_name = ENV.fetch("JOB_NAME", "CatalogIndexer")
+    PushMetrics.new(job_name: job_name, batch_size: 1_000, logger: Services[:logger]).threadsafify!
   end
 end

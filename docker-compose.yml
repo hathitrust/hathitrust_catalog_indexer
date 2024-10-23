@@ -1,4 +1,11 @@
----
+x-condition-healthy: &healthy
+  condition: service_healthy
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 5s
+  timeout: 10s
+  start_period: 10s
+  retries: 5
 
 services:
   traject:
@@ -16,23 +23,39 @@ services:
     volumes:
       - .:/app
       - gem_cache:/gems
-    command: bash -c "wait-for solr-sdr-catalog:9033 mariadb:3306 && JRUBY_OPTS='--debug' bundle exec rspec"
+    command: bash -c "JRUBY_OPTS='--debug' bundle exec rspec"
     environment:
       - SOLR_URL=http://solr-sdr-catalog:9033/solr/catalog
+      - PUSHGATEWAY=http://pushgateway:9091
       - redirect_file=/dev/null
     depends_on:
-      - solr-sdr-catalog
-      - mariadb
+      solr-sdr-catalog: *healthy
+      mariadb: *healthy
+      pushgateway: *healthy
 
   solr-sdr-catalog:
     build: solr
     ports:
       - "9033:9033"
+    healthcheck:
+      test: [ "CMD", "/usr/bin/curl", "-s", "-f", "http://localhost:9033/solr/catalog/admin/ping" ]
+      interval: 5s
 
   mariadb:
     image: ghcr.io/hathitrust/db-image:latest
     ports:
       - "3306:3306"
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: [ "CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
+
+  pushgateway:
+    image: prom/pushgateway
+    ports:
+      - 9092:9091
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "-O", "/dev/null", "pushgateway:9091/-/healthy" ]
 
 volumes:
   gem_cache:
