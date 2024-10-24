@@ -117,7 +117,16 @@ network (i.e. the one started with `docker-compose up` from this repository).
 Solr should be reachable via the `solr-sdr-catalog` hostname.
 
 ## How to do the basics
+### Date-Independent Indexing
 
+For use in production environments where daily and monthly indexing are ongoing activities,
+we enable the indexer to maintain state by writing "journal" files: empty datestamped
+files in a known location (`JOURNAL_DIRECTORY`). The command `cictl index continue` does whatever
+full or daily indexing is appropriate given the state of the journals.
+
+Note that all of the `cictl index *` commands write journal files, with the exception of
+`cictl index file` which takes only an `upd` MARC file rather than a MARC-deletes pair, and is not
+expected to be used in an environment where date independence is in force.
 
 ### Putting a new solr configuration into place
 
@@ -133,7 +142,7 @@ Solr should be reachable via the `solr-sdr-catalog` hostname.
 * (Optional) If your new solr config requires a full reindex, go ahead and 
   get rid of the data with `rm -rf data`
 * Fire solr back up: `systemctl start solr-current-catalog`
-* Give it a minute and then go to http://beeftea-2.umdl.umich.edu:9033/solr` to make sure the core came back up.
+* Give it a minute and then go to `http://beeftea-2.umdl.umich.edu:9033/solr` to make sure the core came back up.
 * Do whatever indexing needs doing.
 
 ### Indexing
@@ -193,6 +202,7 @@ The `index` command has a number of possibilities:
 > bundle exec bin/cictl help index
 Commands:
   cictl index all             # Empty the catalog and index the most recent m...
+  cictl index continue        # index all files not represented in the indexe...
   cictl index date YYYYMMDD   # Run the catchup (delete and index) for a part...
   cictl index file FILE       # Index a single file
   cictl index help [COMMAND]  # Describe subcommands or one specific subcommand
@@ -283,6 +293,8 @@ and `config/env`. The defaults in the repository suffice for testing under Docke
 ## Environment variables
 
   * `DDIR` data directory, defaults to `/htsolr/catalog/prep`
+  * `JOURNAL_DIRECTORY` location of journal files (see Date-Independent Indexing above) defaulting
+    to `journal/` inside the repo directory.
   * `LOG_DIR` where to store logs, defaults to `/htsolr/catalog/prep`.
   * `MYSQL_HOST`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD` *required* unless run with `NO_DB`.
   * `NO_DB` if you want to skip all the database stuff. Useful for testing. Implied by `NO_EXTERNAL_DATA`.
