@@ -14,7 +14,7 @@ RSpec.describe CICTL::IndexCommand do
   describe "#index continue" do
     context "with no journal" do
       it "indexes all example records" do
-        update_file_count = CICTL::Examples::EXAMPLES.count { |ex| ex[:type] == :upd }
+        update_file_count = CICTL::Examples.of_type(:upd).count
         CICTL::Commands.start(["index", "continue", "--quiet", "--log", test_log])
         expect(solr_count).to eq CICTL::Examples.all_ids.count
         expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to eq(update_file_count)
@@ -23,15 +23,12 @@ RSpec.describe CICTL::IndexCommand do
 
     context "with only the full file" do
       it "indexes only the update files and writes a journal for each" do
-        CICTL::Examples::EXAMPLES.select { |ex| ex[:type] == :full }
-          .each do |ex|
-            CICTL::Journal.new(date: Date.parse(ex[:date]), full: ex[:type] == :full).write!
-          end
-        update_file_count = CICTL::Examples::EXAMPLES.count { |ex| ex[:type] == :upd }
-        update_ids = CICTL::Examples::EXAMPLES.each_with_object([]) do |ex, ids|
-          if [:upd, :delete].include? ex[:type]
-            ex[:ids].each { |id| ids << id }
-          end
+        CICTL::Examples.of_type(:full).each do |ex|
+          CICTL::Examples.journal_for(example: ex).write!
+        end
+        update_file_count = CICTL::Examples.of_type(:upd).count
+        update_ids = CICTL::Examples.of_type(:upd, :delete).each_with_object([]) do |ex, ids|
+          ex[:ids].each { |id| ids << id }
         end.uniq
         old_journal_count = Dir.children(HathiTrust::Services[:journal_directory]).count
         CICTL::Commands.start(["index", "continue", "--quiet", "--log", test_log])
@@ -42,10 +39,9 @@ RSpec.describe CICTL::IndexCommand do
 
     context "with a full journal" do
       it "indexes nothing and writes no journals" do
-        CICTL::Examples::EXAMPLES.select { |ex| [:full, :upd].include? ex[:type] }
-          .each do |ex|
-            CICTL::Journal.new(date: Date.parse(ex[:date]), full: ex[:type] == :full).write!
-          end
+        CICTL::Examples.of_type(:full, :upd).each do |ex|
+          CICTL::Examples.journal_for(example: ex).write!
+        end
         old_journal_count = Dir.children(HathiTrust::Services[:journal_directory]).count
         CICTL::Commands.start(["index", "continue", "--quiet", "--log", test_log])
         expect(solr_count).to eq 0

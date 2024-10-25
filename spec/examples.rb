@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "cictl/journal"
+
 # These are the examples used as fixtures in the cictl specs.
 # There is a single monthly file with 16 items.
 # There is an update file with the same date as the monthly, having 32 items.
@@ -64,6 +66,10 @@ module CICTL
       end
     end
 
+    def of_type(*types)
+      EXAMPLES.select { |ex| types.include? ex[:type] }
+    end
+
     # delete file with single newline
     def empty_delete_file
       "sample_empty_delete.txt.gz"
@@ -84,7 +90,13 @@ module CICTL
       "redirects/sample_redirects.txt.gz"
     end
 
-    module_function :all_ids, :for_date, :empty_delete_file, :noisy_delete_file,
-      :blank_line_delete_file, :redirects_file
+    def journal_for(example:)
+      if [:full, :upd].include? example[:type]
+        CICTL::Journal.new(date: Date.parse(example[:date]), full: example[:type] == :full)
+      end
+    end
+
+    module_function :all_ids, :for_date, :of_type, :empty_delete_file, :noisy_delete_file,
+      :blank_line_delete_file, :redirects_file, :journal_for
   end
 end
