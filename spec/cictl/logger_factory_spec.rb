@@ -48,4 +48,14 @@ RSpec.describe CICTL::LoggerFactory do
       testlogger(quiet: true).error("Error")
     }.not_to output(/Error/).to_stderr_from_any_process
   end
+
+  it "maps --log=daily into today's date" do
+    testlogger(log_file: "daily").info "info-in-file"
+    expect(Dir.children(HathiTrust::Services[:logfile_directory]).first).to match(/daily_\d{8}\.log/)
+  end
+
+  it "maps --log=full into today's date" do
+    testlogger(log_file: "full").info "info-in-file"
+    expect(Dir.children(HathiTrust::Services[:logfile_directory]).first).to match(/full_\d{8}\.log/)
+  end
 end
