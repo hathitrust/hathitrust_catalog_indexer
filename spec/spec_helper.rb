@@ -33,12 +33,9 @@ def with_test_environment
       FileUtils.mkdir(new_journal_directory) unless File.exist?(new_journal_directory)
       HathiTrust::Services.register(:logfile_directory) { new_logfile_directory }
       HathiTrust::Services.register(:journal_directory) { new_journal_directory }
-      #begin
-        yield tmpdir
-      #ensure
-        HathiTrust::Services.register(:logfile_directory) { old_logfile_directory }
-        HathiTrust::Services.register(:journal_directory) { old_journal_directory }
-      #end
+      yield tmpdir
+      HathiTrust::Services.register(:logfile_directory) { old_logfile_directory }
+      HathiTrust::Services.register(:journal_directory) { old_journal_directory }
     end
   end
 end
