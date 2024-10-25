@@ -3,15 +3,10 @@
 require "spec_helper"
 
 RSpec.describe CICTL::DeleteCommand do
-  before(:each) do
-    CICTL::SolrClient.new.empty!.commit!
-    ENV["CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"] = "sample"
-  end
-
-  after(:each) do
-    CICTL::SolrClient.new.empty!.commit!
-    ENV.delete "CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"
-    remove_test_log
+  around(:each) do |example|
+    with_test_environment do |tmpdir|
+      example.run
+    end
   end
 
   describe "#delete all" do

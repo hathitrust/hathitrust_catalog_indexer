@@ -2,6 +2,7 @@ source "https://rubygems.org"
 
 group :development, :test do
   gem "bundler", "~>2.0"
+  gem "climate_control"
   gem "rake", "~> 13.0"
   gem "standard"
   gem "rspec"

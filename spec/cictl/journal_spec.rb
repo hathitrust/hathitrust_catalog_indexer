@@ -4,9 +4,9 @@ require "spec_helper"
 
 RSpec.describe CICTL::Journal do
   around(:each) do |example|
-    init_journals
-    example.run
-    init_journals
+    with_test_environment do |tmpdir|
+      example.run
+    end
   end
 
   describe "#initialize" do

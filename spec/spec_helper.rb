@@ -1,7 +1,9 @@
 ENV["JRUBY_OPTS"] = "--debug #{ENV["JRUBY_OPTS"]}"
 
+require "climate_control"
 require "simplecov"
 require "simplecov-lcov"
+require "tmpdir"
 
 SimpleCov::Formatter::LcovFormatter.config do |c|
   c.report_with_single_file = true
@@ -19,21 +21,31 @@ require_relative "../lib/cictl"
 require_relative "../lib/ht_traject"
 require_relative "examples"
 
+def with_test_environment
+  CICTL::SolrClient.new.empty!.commit!
+  Dir.mktmpdir do |tmpdir|
+    ClimateControl.modify(CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX: "sample") do
+      old_logfile_directory = HathiTrust::Services[:logfile_directory]
+      old_journal_directory = HathiTrust::Services[:journal_directory]
+      new_logfile_directory = File.join(tmpdir, "logs")
+      new_journal_directory = File.join(tmpdir, "journal")
+      FileUtils.mkdir(new_logfile_directory) unless File.exist?(new_logfile_directory)
+      FileUtils.mkdir(new_journal_directory) unless File.exist?(new_journal_directory)
+      HathiTrust::Services.register(:logfile_directory) { new_logfile_directory }
+      HathiTrust::Services.register(:journal_directory) { new_journal_directory }
+      #begin
+        yield tmpdir
+      #ensure
+        HathiTrust::Services.register(:logfile_directory) { old_logfile_directory }
+        HathiTrust::Services.register(:journal_directory) { old_journal_directory }
+      #end
+    end
+  end
+end
+
+# Typically created in a temp directory
 def test_log
   "TEST_LOG.txt"
-end
-
-def remove_test_log
-  FileUtils.rm(CICTL::LogfileDefaults.filepath_of(test_log))
-rescue Errno::ENOENT
-  # file wasn't there, and that's fine
-end
-
-# Combined setup and teardown for journal directory and files.
-# Services handles creating the journal directory if it doesn't exist,
-# so we just need to empty it.
-def init_journals
-  FileUtils.rm_rf Dir.glob("#{HathiTrust::Services[:journal_directory]}/*")
 end
 
 def solr_count

@@ -5,17 +5,10 @@ require "cictl/deleted_records"
 require "cictl/journal"
 
 RSpec.describe CICTL::IndexCommand do
-  before(:each) do
-    CICTL::SolrClient.new.empty!.commit!
-    ENV["CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"] = "sample"
-    init_journals
-  end
-
-  after(:each) do
-    CICTL::SolrClient.new.empty!.commit!
-    ENV.delete "CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"
-    remove_test_log
-    init_journals
+  around(:each) do |example|
+    with_test_environment do |tmpdir|
+      example.run
+    end
   end
 
   describe "#index continue" do
