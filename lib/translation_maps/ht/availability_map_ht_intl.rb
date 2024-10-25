@@ -4,20 +4,23 @@ mm = MatchMap.new
 
 # Note: orph, orphcand, and umall are unattested in rights_current as of Oct 2024
 
-# Within the FT vs SO groups, sort by numeric rights attribute
-mm["pd"] = HathiTrust::Constants::FT           # [1 pd]
-mm[/.+world$/] = HathiTrust::Constants::FT     # [7 ic-world, 18 und-world]
-mm[/^cc.*/] = HathiTrust::Constants::FT        # [10-15, 17, 20-25]
-mm["icus"] = HathiTrust::Constants::FT         # [19 icus]
+# Full Text
+mm["pd"] = HathiTrust::Constants::FT           # [1]
+mm["ic-world"] = HathiTrust::Constants::FT     # [7]
+mm[/^cc-/] = HathiTrust::Constants::FT         # [10-15, 17, 20-25]
+mm["und-world"] = HathiTrust::Constants::FT    # [18]
+mm["icus"] = HathiTrust::Constants::FT         # [19]
 
-mm["ic"] = HathiTrust::Constants::SO           # [2 ic]
-mm["op"] = HathiTrust::Constants::SO           # [3 op]
-mm[/^orph/] = HathiTrust::Constants::SO        # [4 orph, 16 orphcand]
-mm["und"] = HathiTrust::Constants::SO          # [5 und]
-mm["umall"] = HathiTrust::Constants::SO        # [6 umall]
-mm["nobody"] = HathiTrust::Constants::SO       # [8 nobody]
-mm["pdus"] = HathiTrust::Constants::SO         # [9 pdus]
-mm["pd-pvt"] = HathiTrust::Constants::SO       # [26 pd-pvt]
-mm["supp"] = HathiTrust::Constants::SO         # [27 supp]
+# Search Only
+mm["ic"] = HathiTrust::Constants::SO           # [2]
+mm["op"] = HathiTrust::Constants::SO           # [3]
+mm["orph"] = HathiTrust::Constants::SO         # [4]
+mm["und"] = HathiTrust::Constants::SO          # [5]
+mm["umall"] = HathiTrust::Constants::SO        # [6]
+mm["nobody"] = HathiTrust::Constants::SO       # [8]
+mm["pdus"] = HathiTrust::Constants::SO         # [9]
+mm["orphcand"] = HathiTrust::Constants::SO     # [16]
+mm["pd-pvt"] = HathiTrust::Constants::SO       # [26]
+mm["supp"] = HathiTrust::Constants::SO         # [27]
 
 mm
