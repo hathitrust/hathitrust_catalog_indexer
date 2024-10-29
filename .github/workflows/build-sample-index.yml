@@ -1,4 +1,5 @@
-name: Build
+---
+name: Build Catalog Sample Index
 
 on:
     workflow_run:
@@ -42,8 +43,8 @@ jobs:
             - name: Build Image
               uses: hathitrust/github_actions/build@v1.4.0
               with:
-                image: ghcr.io/catalog-indexer
-                dockerfile: Dockerfile
+                image: ghcr.io/hathitrust/catalog-solr-sample
+                dockerfile: example-index/Dockerfile
                 img_tag: ${{ inputs.img_tag }}
                 tag: ${{ inputs.ref }}
                 push_latest: ${{ inputs.push_latest}}
