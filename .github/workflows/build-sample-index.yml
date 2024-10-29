@@ -2,11 +2,6 @@
 name: Build Catalog Sample Index
 
 on:
-    workflow_run:
-        workflows: ['Run Tests']
-        branches: ['main']
-        types: [completed]
-
     workflow_dispatch:
         inputs:
             img_tag:

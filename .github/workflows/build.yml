@@ -42,7 +42,7 @@ jobs:
             - name: Build Image
               uses: hathitrust/github_actions/build@v1.4.0
               with:
-                image: ghcr.io/catalog-indexer
+                image: ghcr.io/${{ github.repository }}
                 dockerfile: Dockerfile
                 img_tag: ${{ inputs.img_tag }}
                 tag: ${{ inputs.ref }}
