@@ -5,7 +5,6 @@ ignore:
   - 'lib/ht_traject/**/*'
   - 'lib/ht_traject.rb'
   - 'lib/traject/**/*'
-  - 'lib/translation_maps/**/*'
   - 'lib/umich_traject/**/*'
   - 'lib/umich_traject.rb'
   - 'readers/**/*'

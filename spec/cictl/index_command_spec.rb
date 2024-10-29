@@ -2,17 +2,52 @@
 
 require "spec_helper"
 require "cictl/deleted_records"
+require "cictl/journal"
 
 RSpec.describe CICTL::IndexCommand do
-  before(:each) do
-    CICTL::SolrClient.new.empty!.commit!
-    ENV["CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"] = "sample"
+  around(:each) do |example|
+    with_test_environment do |tmpdir|
+      example.run
+    end
   end
 
-  after(:each) do
-    CICTL::SolrClient.new.empty!.commit!
-    ENV.delete "CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX"
-    remove_test_log
+  describe "#index continue" do
+    context "with no journal" do
+      it "indexes all example records" do
+        update_file_count = CICTL::Examples.of_type(:upd).count
+        CICTL::Commands.start(["index", "continue", "--quiet", "--log", test_log])
+        expect(solr_count).to eq CICTL::Examples.all_ids.count
+        expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to eq(update_file_count)
+      end
+    end
+
+    context "with only the full file" do
+      it "indexes only the update files and writes a journal for each" do
+        CICTL::Examples.of_type(:full).each do |ex|
+          CICTL::Examples.journal_for(example: ex).write!
+        end
+        update_file_count = CICTL::Examples.of_type(:upd).count
+        update_ids = CICTL::Examples.of_type(:upd, :delete).each_with_object([]) do |ex, ids|
+          ex[:ids].each { |id| ids << id }
+        end.uniq
+        old_journal_count = Dir.children(HathiTrust::Services[:journal_directory]).count
+        CICTL::Commands.start(["index", "continue", "--quiet", "--log", test_log])
+        expect(solr_count).to eq update_ids.count
+        expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to eq(old_journal_count + update_file_count)
+      end
+    end
+
+    context "with a full journal" do
+      it "indexes nothing and writes no journals" do
+        CICTL::Examples.of_type(:full, :upd).each do |ex|
+          CICTL::Examples.journal_for(example: ex).write!
+        end
+        old_journal_count = Dir.children(HathiTrust::Services[:journal_directory]).count
+        CICTL::Commands.start(["index", "continue", "--quiet", "--log", test_log])
+        expect(solr_count).to eq 0
+        expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to eq(old_journal_count)
+      end
+    end
   end
 
   describe "#index all" do
@@ -24,6 +59,7 @@ RSpec.describe CICTL::IndexCommand do
       expect(solr_count).to eq CICTL::Examples.all_ids.count + 1
       expect(solr_deleted_count).to be > 0
       expect(solr_ids("deleted:true")).to include(bogus_delete)
+      expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to be > 0
     end
 
     context "using nonexistent redirect file" do
@@ -65,6 +101,7 @@ RSpec.describe CICTL::IndexCommand do
       examples = CICTL::Examples.for_date("20230103")
       CICTL::Commands.start(["index", "date", "20230103", "--log", test_log])
       expect(solr_count).to eq examples.map { |ex| ex[:ids] }.flatten.uniq.count
+      expect(File.exist?(CICTL::Journal.new(date: Date.new(2023, 1, 3)).path)).to eq(true)
     end
 
     it "raises on bogus date" do
@@ -138,7 +175,7 @@ RSpec.describe CICTL::IndexCommand do
     after(:each) { HathiTrust::Services.register(:data_directory) { @save_dd } }
 
     # Note that "today" means "index today, using the file dated yesterday"
-    it "indexes 'today' and produces deletes file" do
+    it "indexes 'today' and produces deletes file and journal file" do
       update_source = CICTL::ZephirFile.update_files.last
       del_source = CICTL::ZephirFile.delete_files.last
 
@@ -161,6 +198,7 @@ RSpec.describe CICTL::IndexCommand do
       expect(solr_count).to eq(zcount + delcount)
       expect(CICTL::DeletedRecords.daily_file.readable?)
       expect(Zinzout.zin(CICTL::DeletedRecords.daily_file).count).to eq(delcount)
+      expect(File.exist?(CICTL::Journal.new(date: Date.today - 1).path)).to eq(true)
     end
   end
 end

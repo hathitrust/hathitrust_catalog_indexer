@@ -21,7 +21,6 @@ module HathiTrust
         attr_accessor :ht_ns, :ht_avail_us, :ht_avail_intl
       end
 
-      self.ht_ns         = ::Traject::TranslationMap.new('ht/ht_namespace_map')
       self.ht_avail_us   = ::Traject::TranslationMap.new('ht/availability_map_ht')
       self.ht_avail_intl = ::Traject::TranslationMap.new('ht/availability_map_ht_intl')
 
@@ -254,10 +253,6 @@ module HathiTrust
           @enum_pubdate       = nil
           @enum_pubdate_range = nil
         end
-      end
-
-      def source
-        ItemSet.ht_ns[namespace]
       end
 
       def us_availability
