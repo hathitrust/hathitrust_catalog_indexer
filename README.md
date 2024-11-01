@@ -25,6 +25,18 @@ docker-compose up -d solr-sdr-catalog
 docker-compose run --rm traject bundle install
 ```
 
+The contents of `lib/translation_maps/ht/collection_code_to_original_from.yaml` will change
+depending on the contents of the sample database you are running locally. To keep `git` from
+bugging you about this constantly-drifting-from-upstream file, run
+```
+git update-index --skip-worktree lib/translation_maps/ht/collection_code_to_original_from.yaml
+```
+and to undo this (like if you update the file based on the production database and want the
+repo up-to-date) run
+```
+git update-index --no-skip-worktree lib/translation_maps/ht/collection_code_to_original_from.yaml
+```
+
 ### Generate Solr documents
 
 Generate Solr documents given an input file of MARC records in JSON format, one per line:
