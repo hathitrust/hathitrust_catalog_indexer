@@ -316,6 +316,13 @@ and `config/env`. The defaults in the repository suffice for testing under Docke
     Default is `/htapps/babel/hathifiles/catalog_redirects/redirects/redirects_YYYYMM.txt.gz`
   * `SOLR_URL` *(required)* with the solr _core_ URL (i.e, ending in `/catalog`)
 
+### Prometheus Pushgateway Environment Variables
+
+  * `JOB_NAME` defaults to "index_catalog"
+  * `JOB_SUCCESS_INTERVAL` handled by `PushMetrics`, no defaults set by this repository
+  * `PUSHGATEWAY` set to `http://pushgateway:9091` in the `docker-compose` file, otherwise no default.
+  
+
 ### Internal-use Environment Variables
 
   These are used internally, mainly for testing. They are not exposed by the `Services` object.

@@ -5,7 +5,17 @@ require "cictl/deleted_records"
 require "cictl/journal"
 
 RSpec.describe CICTL::IndexCommand do
+  # Do we have metrics for this job?
+  # Metrics are cleared before each `with_test_environment`
+  def metrics?
+    metrics = Faraday.get("#{ENV["PUSHGATEWAY"]}/metrics").body
+    metrics.match?(/^job_last_success\S*job="index_catalog"\S* \S+/m) &&
+      metrics.match?(/^job_duration_seconds\S*job="index_catalog"\S* \S+/m) &&
+      metrics.match?(/^job_records_processed\S*job="index_catalog"\S* \S+/m)
+  end
+
   around(:each) do |example|
+    Faraday.delete("#{ENV["PUSHGATEWAY"]}/metrics/job/index_catalog")
     with_test_environment do |tmpdir|
       example.run
     end
@@ -18,6 +28,7 @@ RSpec.describe CICTL::IndexCommand do
         CICTL::Commands.start(["index", "continue", "--quiet", "--log", test_log])
         expect(solr_count).to eq CICTL::Examples.all_ids.count
         expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to eq(update_file_count)
+        expect(metrics?).to eq true
       end
     end
 
@@ -34,6 +45,7 @@ RSpec.describe CICTL::IndexCommand do
         CICTL::Commands.start(["index", "continue", "--quiet", "--log", test_log])
         expect(solr_count).to eq update_ids.count
         expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to eq(old_journal_count + update_file_count)
+        expect(metrics?).to eq true
       end
     end
 
@@ -46,6 +58,7 @@ RSpec.describe CICTL::IndexCommand do
         CICTL::Commands.start(["index", "continue", "--quiet", "--log", test_log])
         expect(solr_count).to eq 0
         expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to eq(old_journal_count)
+        expect(metrics?).to eq true
       end
     end
   end
@@ -60,6 +73,7 @@ RSpec.describe CICTL::IndexCommand do
       expect(solr_deleted_count).to be > 0
       expect(solr_ids("deleted:true")).to include(bogus_delete)
       expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to be > 0
+      expect(metrics?).to eq true
     end
 
     context "using nonexistent redirect file" do
@@ -70,6 +84,7 @@ RSpec.describe CICTL::IndexCommand do
         expect {
           CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
         }.to raise_error(CICTL::CICTLError)
+        expect(metrics?).to eq false
       end
 
       it "does not touch the index" do
@@ -81,6 +96,7 @@ RSpec.describe CICTL::IndexCommand do
         end
 
         expect(solr_count).to eq pre_run_solr_count
+        expect(metrics?).to eq false
       end
     end
 
@@ -92,6 +108,7 @@ RSpec.describe CICTL::IndexCommand do
         expect {
           CICTL::Commands.start(["index", "all", "--no-wait", "--quiet", "--log", test_log])
         }.not_to raise_error
+        expect(metrics?).to eq true
       end
     end
   end
@@ -102,11 +119,13 @@ RSpec.describe CICTL::IndexCommand do
       CICTL::Commands.start(["index", "date", "20230103", "--log", test_log])
       expect(solr_count).to eq examples.map { |ex| ex[:ids] }.flatten.uniq.count
       expect(File.exist?(CICTL::Journal.new(date: Date.new(2023, 1, 3)).path)).to eq(true)
+      expect(metrics?).to eq true
     end
 
     it "raises on bogus date" do
       expect { CICTL::Commands.start(["index", "date", "this is not even remotely datelike", "--log", test_log]) }
         .to raise_error(CICTL::CICTLError)
+      expect(metrics?).to eq false
     end
   end
 
@@ -117,6 +136,7 @@ RSpec.describe CICTL::IndexCommand do
         file = File.join(HathiTrust::Services[:data_directory], example[:file])
         CICTL::Commands.start(["index", "file", file, "--log", test_log])
         expect(solr_count).to eq example[:ids].count
+        expect(metrics?).to eq true
       end
     end
 
@@ -126,6 +146,7 @@ RSpec.describe CICTL::IndexCommand do
         expect {
           CICTL::Commands.start(["index", "file", file, "--log", test_log])
         }.to raise_error(CICTL::CICTLError)
+        expect(metrics?).to eq false
       end
     end
 
@@ -136,6 +157,7 @@ RSpec.describe CICTL::IndexCommand do
           file = File.join(HathiTrust::Services[:data_directory], example[:file])
           CICTL::Commands.start(["index", "file", file, "--reader", "readers/jsonl", "--log", test_log])
           expect(solr_count).to eq example[:ids].count
+          expect(metrics?).to eq true
         end
       end
 
@@ -145,6 +167,7 @@ RSpec.describe CICTL::IndexCommand do
           expect {
             CICTL::Commands.start(["index", "file", file, "--reader", "no_such_reader", "--log", test_log])
           }.to raise_error(CICTL::CICTLError)
+          expect(metrics?).to eq false
         end
       end
     end
@@ -156,6 +179,7 @@ RSpec.describe CICTL::IndexCommand do
           file = File.join(HathiTrust::Services[:data_directory], example[:file])
           CICTL::Commands.start(["index", "file", file, "--writer", "writers/localhost", "--log", test_log])
           expect(solr_count).to eq example[:ids].count
+          expect(metrics?).to eq true
         end
       end
 
@@ -165,6 +189,7 @@ RSpec.describe CICTL::IndexCommand do
           expect {
             CICTL::Commands.start(["index", "file", file, "--writer", "no_such_writer", "--log", test_log])
           }.to raise_error(CICTL::CICTLError)
+          expect(metrics?).to eq false
         end
       end
     end
@@ -199,6 +224,7 @@ RSpec.describe CICTL::IndexCommand do
       expect(CICTL::DeletedRecords.daily_file.readable?)
       expect(Zinzout.zin(CICTL::DeletedRecords.daily_file).count).to eq(delcount)
       expect(File.exist?(CICTL::Journal.new(date: Date.today - 1).path)).to eq(true)
+      expect(metrics?).to eq true
     end
   end
 end

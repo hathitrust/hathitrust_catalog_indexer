@@ -34,11 +34,13 @@ services:
     command: bundle exec rspec
     environment:
       - JRUBY_OPTS=--debug
+      - PUSHGATEWAY=http://pushgateway:9091
+      - REDIRECT_FILE=/dev/null
       - SOLR_URL=http://solr-sdr-catalog:9033/solr/catalog
-      - redirect_file=/dev/null
     depends_on:
-      solr-sdr-catalog: *healthy
+      pushgateway: *healthy
       mariadb: *healthy
+      solr-sdr-catalog: *healthy
 
   solr-sdr-catalog:
     build: solr
@@ -55,6 +57,14 @@ services:
     healthcheck:
       <<: *healthcheck-defaults
       test: [ "CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
+
+  pushgateway:
+    image: prom/pushgateway
+    ports:
+      - 9092:9091
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "-O", "/dev/null", "pushgateway:9091/-/healthy" ]
 
 volumes:
   gem_cache:

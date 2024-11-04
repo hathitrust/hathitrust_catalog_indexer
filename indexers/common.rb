@@ -369,3 +369,7 @@ to_field 'language008', extract_marc('008[35-37]', first: true) do |_r, acc|
   acc.reject! { |x| x !~ /\S/ } # ditch only spaces
   acc.uniq!
 end
+
+each_record do |r, context|
+  HathiTrust::Services[:push_metrics].increment_and_log_batch_line
+end
