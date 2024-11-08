@@ -32,6 +32,7 @@ module CICTL
           end
         end
       end
+      postflight
     end
 
     desc "all", "Empty the catalog and index the most recent monthly followed by subsequent daily updates"
@@ -62,6 +63,7 @@ module CICTL
       call_since_command last_full_marc_file.to_datetime
       logger.info "Commit"
       solr_client.commit!
+      postflight
     end
 
     # Note: this command does not write a journal since it only processes the MARC file
@@ -72,6 +74,7 @@ module CICTL
       preflight(marcfile)
       Indexer.new(reader: options[:reader], writer: options[:writer]).run marcfile
       solr_client.commit! if options[:commit]
+      postflight
     end
 
     desc "date YYYYMMDD", "Process the delete and index files with the date YYYYMMDD in its name"
@@ -85,6 +88,7 @@ module CICTL
           journal.write!
         end
       end
+      postflight
     end
 
     desc "since YYYYMMDD", "Processes all deletes/marcfiles with a date on or after YYYYMMDD in its name in order"
@@ -97,6 +101,7 @@ module CICTL
           call_date_command index_date
         end
       end
+      postflight
     end
 
     desc "today", "Process the catchup (delete and index) for last night's files"
@@ -112,6 +117,7 @@ module CICTL
 
       logger.info "Dump deleted_records to #{DeletedRecords.daily_file}"
       solr_client.dump_deletes_as_jsonl(DeletedRecords.daily_file)
+      postflight
     end
 
     no_commands do
@@ -130,6 +136,11 @@ module CICTL
         fatal "Can't read #{file}" unless File.readable?(file)
       end
       load_redirects
+    end
+
+    # Wrap up metrics on a potentially multi-file and multi-indexer command.
+    def postflight
+      HathiTrust::Services[:push_metrics].log_final_line
     end
 
     def load_redirects
