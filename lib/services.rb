@@ -2,7 +2,6 @@
 
 require "canister"
 require "dotenv"
-require "push_metrics"
 require "sequel"
 
 require_relative "cictl/solr_client"
@@ -89,12 +88,6 @@ module HathiTrust
 
   Services.register(:no_db?) { ENV["NO_DB"] || ENV["NO_EXTERNAL_DATA"] }
   Services.register(:no_redirects?) { ENV["NO_REDIRECTS"] || ENV["NO_EXTERNAL_DATA"] }
-
-  Services.register(:push_metrics) do
-    # PushMetrics will extract JOB_SUCCESS_INTERVAL from ENV
-    job_name = ENV.fetch("JOB_NAME", "index_catalog")
-    PushMetrics.new(job_name: job_name, batch_size: 1_000, logger: Services[:logger]).threadsafify!
-  end
 
   Services.register(:print_holdings) do
     Services[:no_db?] ? MockPrintHoldings : PrintHoldings

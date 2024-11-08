@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "push_metrics"
 require "thor"
 require_relative "common"
 require_relative "../services"
@@ -36,6 +37,20 @@ module CICTL
       # Default CICTL logger
       HathiTrust::Services.register(:logger) do
         HathiTrust::Services[:logger_factory].logger
+      end
+
+      # Used by push_metrics below (and in tests)
+      HathiTrust::Services.register(:job_name) do
+        ENV.fetch("JOB_NAME", current_command_chain.join("_"))
+      end
+
+      # PushMetrics will extract JOB_SUCCESS_INTERVAL from ENV
+      HathiTrust::Services.register(:push_metrics) do
+        PushMetrics.new(
+          job_name: HathiTrust::Services[:job_name],
+          batch_size: 1_000,
+          logger: HathiTrust::Services[:logger]
+        ).threadsafify!
       end
     end
   end

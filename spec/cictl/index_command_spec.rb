@@ -8,14 +8,16 @@ RSpec.describe CICTL::IndexCommand do
   # Do we have metrics for this job?
   # Metrics are cleared before each `with_test_environment`
   def metrics?
+    job_name = HathiTrust::Services[:job_name]
     metrics = Faraday.get("#{ENV["PUSHGATEWAY"]}/metrics").body
-    metrics.match?(/^job_last_success\S*job="index_catalog"\S* \S+/m) &&
-      metrics.match?(/^job_duration_seconds\S*job="index_catalog"\S* \S+/m) &&
-      metrics.match?(/^job_records_processed\S*job="index_catalog"\S* \S+/m)
+    metrics.match?(/^job_last_success\S*job="#{job_name}"\S* \S+/m) &&
+      metrics.match?(/^job_duration_seconds\S*job="#{job_name}"\S* \S+/m) &&
+      metrics.match?(/^job_records_processed\S*job="#{job_name}"\S* \S+/m)
   end
 
   around(:each) do |example|
-    Faraday.delete("#{ENV["PUSHGATEWAY"]}/metrics/job/index_catalog")
+    job_name = HathiTrust::Services[:job_name]
+    Faraday.delete("#{ENV["PUSHGATEWAY"]}/metrics/job/#{job_name}")
     with_test_environment do |tmpdir|
       example.run
     end

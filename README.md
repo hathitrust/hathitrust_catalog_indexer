@@ -318,8 +318,8 @@ and `config/env`. The defaults in the repository suffice for testing under Docke
 
 ### Prometheus Pushgateway Environment Variables
 
-  * `JOB_NAME` defaults to "index_catalog"
-  * `JOB_SUCCESS_INTERVAL` handled by `PushMetrics`, no defaults set by this repository
+  * `JOB_NAME` if not set defaults to the `cictl` command, e.g., `index_continue` from `cictl index continue`.
+  * `JOB_SUCCESS_INTERVAL` handled by `PushMetrics`, no defaults set by this repository.
   * `PUSHGATEWAY` set to `http://pushgateway:9091` in the `docker-compose` file, otherwise no default.
   
 
