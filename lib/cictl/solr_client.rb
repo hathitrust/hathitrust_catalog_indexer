@@ -67,6 +67,7 @@ module CICTL
           builder.request :url_encoded
           builder.response :json
           builder.adapter :httpx
+          builder.headers = connection.headers
           builder.headers["Content-Type"] = "application/json"
         end
     end
