@@ -5,6 +5,7 @@ This describes how to set up a locally-running SolrCloud setup with [minikube](h
 This roughly follows [the Solr operator tutorial](https://apache.github.io/solr-operator/docs/local_tutorial) but uses minikube instead of Docker for Mac with K8s. YMMV if you try with other desktop k8s options.
 
 ## Build a Docker image with custom jars
+- TODO: Revisit and update the build instructions and process.
 
 Before we begin, we'll need a solr image with our custom jars baked in. This is typically what's in the `lib` directory for the core in (alongside `data` and `conf`) in our current setup.
 This already exists for the HathiTrust catalog indexer.
@@ -31,7 +32,7 @@ FROM solr:8.11.1
 COPY --chown=solr:solr lib /var/solr/lib
 ```
 
-Build it and push to GHCR with: 
+Build it and push to GHCR with:
 
 ```bash
 # Set this to whatever organization/package you want to use
@@ -137,7 +138,7 @@ This will create a collection using the config you uploaded. A collection in Sol
 curl -u admin:$SOLR_PASS "http://localhost:8983/solr/admin/collections?action=CREATE&name=catalog&numShards=1&replicationFactor=3&maxShardsPerNode=2&collection.configName=$CONFIGSET"
 ```
 
-This may take some time to return; once it completes you should be able to do e.g. 
+This may take some time to return; once it completes you should be able to do e.g.
 
 ```bash
 curl -u admin:$SOLR_PASS "http://localhost:8983/solr/catalog/admin/ping"
@@ -166,7 +167,7 @@ While this should be sufficient for getting started with solr cloud and trying i
 
 ## Next Steps
 
-We will need to understand the following for configuring something in our production k8s clusters: 
+We will need to understand the following for configuring something in our production k8s clusters:
 
 * Storage via persistent volume claims
 * Configuring an ingress
