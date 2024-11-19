@@ -1,0 +1,167 @@
+!--    ............................
+        :     Text types           :
+        ............................
+
+-->
+
+<!-- text
+      A straight-up basic text type, good for all your normal text needs -->
+
+<fieldType name="text" class="solr.TextField" positionIncrementGap="&tpig;">
+  <analyzer type="index">
+      &basic_text_chain_with_synonyms;
+      &stemmer;
+      <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+  </analyzer>
+  <analyzer type="query">
+    &basic_text_chain;
+    &stemmer;
+    <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+  </analyzer>
+</fieldType>
+
+<!-- text_nostem
+     Same as text, but without stemming -->
+
+<fieldType name="text_nostem" class="solr.TextField" positionIncrementGap="&tpig;">
+  <analyzer type="index">
+      &basic_text_chain_with_synonyms;
+      <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+  </analyzer>
+  <analyzer type="query">
+    &basic_text_chain;
+    <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+  </analyzer>
+</fieldType>
+
+
+<!-- text_l- A left-anchored text type, that only matches if it the query matches
+     the indexed value starting at the left hand side.
+
+     For this one, we have to use the whitespace tokenizer because ICU tokenizer will
+     split on character codepoint changes, and there isn't a character we can use for
+     the prefix (here, 'aaaaa') that wouldn't result in a codepoint change and thus mess
+     up mm settings in (e)dismax request handlers.
+
+     Note that this means that fields of type text_l will potentially have a different
+     number of tokens than those of type text, so you should probably (once again) only
+     use this with phrase searches.
+
+-->
+
+<fieldType name="text_leftjustified" class="solr.TextField" positionIncrementGap="&tpig;">
+  <analyzer>
+    <charFilter class="solr.ICUNormalizer2CharFilterFactory"/>
+    <charFilter class="solr.MappingCharFilterFactory" mapping="&char_expansion_file;"/>
+    <tokenizer class="solr.ICUTokenizerFactory"/>
+    <filter class="solr.ICUFoldingFilterFactory"/>
+    <filter class="solr.CJKWidthFilterFactory"/>
+    <filter class="solr.CJKBigramFilterFactory"/>
+    <filter class="solr.DecimalDigitFilterFactory"/>
+    <filter class="solr.KeywordRepeatFilterFactory"/>
+      &stemmer;
+    <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+    <filter class="edu.umich.lib.solr_filters.LeftAnchoredSearchFilterFactory"/>
+    <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+  </analyzer>
+</fieldType>
+
+<fieldType name="exactish" class="solr.TextField" positionIncrementGap="&tpig;">
+<analyzer>
+  <charFilter class="solr.ICUNormalizer2CharFilterFactory"/>
+  <charFilter class="solr.MappingCharFilterFactory" mapping="&char_expansion_file;"/>
+  <tokenizer class="solr.ICUTokenizerFactory"/>
+  <filter class="solr.ICUFoldingFilterFactory"/>
+  <filter class="solr.CJKWidthFilterFactory"/>
+  <filter class="solr.CJKBigramFilterFactory"/>
+  <filter class="solr.DecimalDigitFilterFactory"/>
+  <filter class="solr.KeywordRepeatFilterFactory"/>
+  &stemmer;
+  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+  <filter class="edu.umich.lib.solr_filters.AnchoredSearchFilterFactory"/>
+  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+</analyzer>
+</fieldType>
+
+
+<!-- For sort keys, just want to downcase/normalize everything we can. Mostly copied from the
+ umich config. -->
+<fieldType name="exactishSort" class="solr.TextField" positionIncrementGap="&tpig;">
+<analyzer>
+  <charFilter class="solr.MappingCharFilterFactory" mapping="schema/exactish_char_substitution.txt"/>
+  <tokenizer class="solr.KeywordTokenizerFactory"/>
+  <filter class="solr.PatternReplaceFilterFactory" pattern="([:\-])" replacement=" " replace="all"/>
+  <filter class="solr.PatternReplaceFilterFactory" pattern="[\p{P}\p{Sm}\p{Sc}\p{So}]" replacement="" replace="all"/>
+  <filter class="solr.ICUFoldingFilterFactory"/>
+  <filter class="solr.CJKWidthFilterFactory"/>
+  <filter class="solr.DecimalDigitFilterFactory"/>
+  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+
+  <!-- Left-pad numbers with zeroes -->
+  <filter class="solr.PatternReplaceFilterFactory" pattern="(\d+)" replacement="00000$1" replace="all"/>
+  <!-- Left-trim zeroes to produce 6 digit numbers -->
+  <filter class="solr.PatternReplaceFilterFactory" pattern="0*([0-9]{6,})" replacement="$1" replace="all"/>
+  <!-- squeeze multiple spaces to 1 -->
+  <filter class="solr.PatternReplaceFilterFactory" pattern="\s\s+" replacement=" " replace="all"/>
+</analyzer>
+</fieldType>
+
+
+<!-- a simple text type that only strips trailing punctuation, currently used for the author facet -->
+<fieldType name="textFacet" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+  <analyzer>
+    <tokenizer class="solr.KeywordTokenizerFactory"/>
+    <filter class="solr.PatternReplaceFilterFactory" pattern="([.,])\s*$" replacement="" replace="first"/>
+  </analyzer>
+</fieldType>
+
+<!--
+    squashed_prefix is a poor-man's prefix serach, optimized here
+    for callnumbers, so people can search on an LC callnumber
+    prefix and find something useful.
+ -->
+
+
+
+<fieldType name="squashed_prefix" class="solr.TextField" positionIncrementGap="&tpig;">
+  <analyzer type="index">
+    <charFilter class="solr.ICUNormalizer2CharFilterFactory"/>
+    <tokenizer class="solr.KeywordTokenizerFactory"/>
+    <filter class="solr.ICUFoldingFilterFactory"/>
+    <filter class="solr.DecimalDigitFilterFactory"/>
+    <!-- Take out all non-alphanumeric except .-->
+    <filter class="solr.PatternReplaceFilterFactory"
+	    pattern="([^\p{Alnum}.])" replacement="" replace="all"
+	    />
+    <!-- Take out all the dots except those surrounded by digits -->
+    <filter class="solr.PatternReplaceFilterFactory"
+	    pattern="(\p{Digit})\.(\p{Digit})" replacement="$1‡$2" replace="all" />
+    <filter class="solr.PatternReplaceFilterFactory"
+	    pattern="\." replacement="" replace="all" />
+    <filter class="solr.PatternReplaceFilterFactory"
+	    pattern="‡" replacement="." replace="all" />
+
+    <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="40"/>
+  </analyzer>
+  <!-- For query, don't do the edgengrams -->
+  <analyzer type="query">
+    <charFilter class="solr.ICUNormalizer2CharFilterFactory"/>
+    <tokenizer class="solr.KeywordTokenizerFactory"/>
+    <filter class="solr.ICUFoldingFilterFactory"/>
+    <filter class="solr.DecimalDigitFilterFactory"/>
+    <!-- Take out all non-alphanumeric except .-->
+    <filter class="solr.PatternReplaceFilterFactory"
+	    pattern="([^\p{Alnum}.])" replacement="" replace="all"
+	    />
+    <!-- Take out all the dots except those surrounded by digits -->
+    <filter class="solr.PatternReplaceFilterFactory"
+	    pattern="(\p{Digit})\.(\p{Digit})" replacement="$1‡$2" replace="all" />
+    <filter class="solr.PatternReplaceFilterFactory"
+	    pattern="\." replacement="" replace="all" />
+    <filter class="solr.PatternReplaceFilterFactory"
+	    pattern="‡" replacement="." replace="all" />
+  </analyzer>
+
+</fieldType>
+
+
