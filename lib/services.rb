@@ -100,4 +100,8 @@ module HathiTrust
   Services.register(:redirects) do
     Services[:no_redirects?] ? MockRedirects.new : Redirects.new
   end
+
+  Services.register(:collection_map) do
+    CICTL::CollectionMap.new.to_translation_map
+  end
 end
