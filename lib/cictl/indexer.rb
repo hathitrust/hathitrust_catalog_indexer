@@ -33,7 +33,6 @@ module CICTL
       fatal "Can't find reader #{reader_path}" unless File.exist?(reader_path)
       fatal "Can't find writer #{writer_path}" unless File.exist?(writer_path)
       logger.debug "reader: #{reader_path}; writer: #{writer_path}"
-      update_collection_map
       call_indexer marcfile
     end
 
@@ -76,15 +75,6 @@ module CICTL
         File.join(home, default_dir, custom_file),
         File.join(home, default_dir, custom_file + ".rb")
       ].find { |path| File.exist? path } || fatal("Unable to find requested config file #{custom_file}")
-    end
-
-    def update_collection_map
-      return if HathiTrust::Services[:no_db?]
-
-      logger.info "updating collection map"
-      File.open(File.join(collection_map_directory, COLLECTION_MAP_FILE), "w:utf-8") do |f|
-        f.puts CollectionMap.new.to_yaml
-      end
     end
 
     def collection_map_directory
