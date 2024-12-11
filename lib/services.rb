@@ -104,4 +104,6 @@ module HathiTrust
   Services.register(:collection_map) do
     CICTL::CollectionMap.new.to_translation_map
   end
+
+  Services.register(:job_name) { ENV.fetch("JOB_NAME", $PROGRAM_NAME) }
 end

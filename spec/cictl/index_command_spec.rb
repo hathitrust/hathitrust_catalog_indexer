@@ -26,10 +26,10 @@ RSpec.describe CICTL::IndexCommand do
   describe "#index continue" do
     context "with no journal" do
       it "indexes all example records" do
-        update_file_count = CICTL::Examples.of_type(:upd).count
+        file_count = CICTL::Examples.of_type(:full, :upd).count
         CICTL::Commands.start(["index", "continue", "--quiet", "--log", test_log])
         expect(solr_count).to eq CICTL::Examples.all_ids.count
-        expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to eq(update_file_count)
+        expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to eq(file_count)
         expect(metrics?).to eq true
       end
     end

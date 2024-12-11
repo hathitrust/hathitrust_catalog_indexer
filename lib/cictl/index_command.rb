@@ -42,27 +42,20 @@ module CICTL
         puts "5 second delay if you need it..."
         sleep 5
       end
+
       # Make sure there is a full MARC file to work on
       preflight(last_full_marc_file)
+
       logger.info "Empty full Solr records"
       solr_client.empty_records!
-      logger.info "Load most recent set of deleted records into solr"
-      if DeletedRecords.most_recent_non_empty_file
-        logger.info "Found #{DeletedRecords.most_recent_non_empty_file}"
-        solr_client.send_jsonl(DeletedRecords.most_recent_non_empty_file)
-      else
-        logger.error "Can't find any non_empty deleted_record files in #{DeletedRecords.save_directory}"
-      end
-      logger.info "Commit"
-      solr_client.commit!
-      logger.info "Using full marcfile #{last_full_marc_file}"
-      # Calling the Thor "file" command.
-      call_file_command last_full_marc_file
+
+      load_deleted_records
+
+      index_full_file(last_full_marc_file)
+
       # "since" command for a month starts on the last day of last month
       # because there will generally be both an "upd" and a "full" file.
       call_since_command last_full_marc_file.to_datetime
-      logger.info "Commit"
-      solr_client.commit!
       postflight
     end
 
@@ -184,6 +177,31 @@ module CICTL
       else
         logger.warn "could not find delfile '#{delfile}'"
       end
+    end
+
+    def load_deleted_records
+      logger.info "Load most recent set of deleted records into solr"
+      if DeletedRecords.most_recent_non_empty_file
+        logger.info "Found #{DeletedRecords.most_recent_non_empty_file}"
+        solr_client.send_jsonl(DeletedRecords.most_recent_non_empty_file)
+      else
+        logger.error "Can't find any non_empty deleted_record files in #{DeletedRecords.save_directory}"
+      end
+    end
+
+    # Loads a full file and (assuming no exceptions were thrown)
+    # records that to the journal
+    def index_full_file(file)
+      logger.info "Using full marcfile #{file}"
+      # Calling the Thor "file" command.
+      call_file_command file
+
+      logger.info "Commit"
+      solr_client.commit!
+
+      journal = Journal.new(date: file.to_datetime.to_date, full: true)
+      logger.info("write journal file #{journal.path}")
+      journal.write!
     end
   end
 end
