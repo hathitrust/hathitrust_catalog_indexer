@@ -15,6 +15,15 @@ RSpec.describe CICTL::IndexCommand do
       metrics.match?(/^job_records_processed\S*job="#{job_name}"\S* \S+/m)
   end
 
+  # records may be updated multiple times, so we need to dedupe those
+  def unique_id_count(examples)
+    examples
+      .map { |ex| ex[:ids] }
+      .flatten
+      .uniq
+      .count
+  end
+
   around(:each) do |example|
     job_name = HathiTrust::Services[:job_name]
     Faraday.delete("#{ENV["PUSHGATEWAY"]}/metrics/job/#{job_name}")
@@ -40,12 +49,10 @@ RSpec.describe CICTL::IndexCommand do
           CICTL::Examples.journal_for(example: ex).write!
         end
         update_file_count = CICTL::Examples.of_type(:upd).count
-        update_ids = CICTL::Examples.of_type(:upd, :delete).each_with_object([]) do |ex, ids|
-          ex[:ids].each { |id| ids << id }
-        end.uniq
+        update_id_count = unique_id_count(CICTL::Examples.of_type(:upd, :delete))
         old_journal_count = Dir.children(HathiTrust::Services[:journal_directory]).count
         CICTL::Commands.start(["index", "continue", "--quiet", "--log", test_log])
-        expect(solr_count).to eq update_ids.count
+        expect(solr_count).to eq update_id_count
         expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to eq(old_journal_count + update_file_count)
         expect(metrics?).to eq true
       end
@@ -61,6 +68,22 @@ RSpec.describe CICTL::IndexCommand do
         expect(solr_count).to eq 0
         expect(Dir.children(HathiTrust::Services[:journal_directory]).count).to eq(old_journal_count)
         expect(metrics?).to eq true
+      end
+    end
+
+    context "with one day to process" do
+      it "indexes it and writes the journal" do
+        latest_examples = CICTL::Examples.of_type(:upd, :delete).select { |e| e[:date] == "20230103" }
+
+        CICTL::Examples.of_type(:full, :upd)
+          .reject { |e| e[:date] == "20230103" }
+          .each do |ex|
+          CICTL::Examples.journal_for(example: ex).write!
+        end
+
+        CICTL::Commands.start(["index", "continue", "--quiet", "--log", test_log])
+        expect(solr_count).to eq unique_id_count(latest_examples)
+        expect(File.exist?(File.join(HathiTrust::Services[:journal_directory], "hathitrust_catalog_indexer_journal_upd_20230103.txt"))).to be(true)
       end
     end
   end
