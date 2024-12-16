@@ -17,13 +17,13 @@ COPY --chown=${UID}:${GID} ./Gemfile* /app/
 USER $UNAME
 
 ENV BUNDLE_PATH /gems
-RUN mkdir -p /gems 
+RUN mkdir -p /gems
 
 
 WORKDIR /app
 
 COPY ./Gemfile /app
-RUN bundle install
+RUN bundle install --version "~> 2.5.23"
 COPY . /app
 
 ENV redirect_file /dev/null
@@ -43,9 +43,9 @@ COPY ./example-index/load_into_solr.sh /tmp
 
 # The solr:8 Dockerfile includes
 #
-# VOLUME /var/solr 
+# VOLUME /var/solr
 # https://github.com/docker-solr/docker-solr/blob/master/8.11/Dockerfile#L118
-# 
+#
 #
 # Among other things, this means that anything we write to /var/solr/data
 # during a RUN command will be lost:
@@ -57,10 +57,10 @@ COPY ./example-index/load_into_solr.sh /tmp
 # image, in a way somewhat reminiscent of our current build/release process.
 
 RUN mkdir /tmp/catalog-data && \
-    ln -s /tmp/catalog-data /var/solr/data/catalog/data && \
-    start-local-solr && \
-    bash /tmp/load_into_solr.sh && \
-    stop-local-solr
+  ln -s /tmp/catalog-data /var/solr/data/catalog/data && \
+  start-local-solr && \
+  bash /tmp/load_into_solr.sh && \
+  stop-local-solr
 
 FROM solr:8.11
 
