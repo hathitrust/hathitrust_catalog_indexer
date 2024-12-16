@@ -12,7 +12,7 @@ WORKDIR /app
 
 # USER $UNAME
 ENV BUNDLE_PATH /gems
-RUN gem install bundler
+RUN gem install bundler --version "~> 2.5.23"
 
 FROM base AS development
 
