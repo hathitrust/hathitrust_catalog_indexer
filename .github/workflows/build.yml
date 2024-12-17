@@ -1,11 +1,6 @@
 name: Build
 
 on:
-    workflow_run:
-        workflows: ['Run Tests']
-        branches: ['main']
-        types: [completed]
-
     workflow_dispatch:
         inputs:
             img_tag:
@@ -40,7 +35,7 @@ jobs:
 
         steps:
             - name: Build Image
-              uses: hathitrust/github_actions/build@v1.4.0
+              uses: hathitrust/github_actions/build@v1
               with:
                 image: ghcr.io/${{ github.repository }}
                 dockerfile: Dockerfile
