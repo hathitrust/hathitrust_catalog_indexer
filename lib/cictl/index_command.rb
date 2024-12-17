@@ -24,7 +24,7 @@ module CICTL
       # If there is a missing journal, start indexing from that point.
       else
         (last_full.to_datetime.to_date..(Date.today - 1)).each do |date|
-          journal = Journal.new(date: last_full.to_datetime.to_date, full: false)
+          journal = Journal.new(date: date, full: false)
           if journal.missing?
             logger.info "missing update journal #{journal}, calling `cictl since #{journal.date}`"
             call_since_command(journal.date)
