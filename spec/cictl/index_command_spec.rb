@@ -142,7 +142,7 @@ RSpec.describe CICTL::IndexCommand do
     it "indexes full records and deleted record from example date" do
       examples = CICTL::Examples.for_date("20230103")
       CICTL::Commands.start(["index", "date", "20230103", "--log", test_log])
-      expect(solr_count).to eq examples.map { |ex| ex[:ids] }.flatten.uniq.count
+      expect(solr_count).to eq unique_id_count(examples)
       expect(File.exist?(CICTL::Journal.new(date: Date.new(2023, 1, 3)).path)).to eq(true)
       expect(metrics?).to eq true
     end
