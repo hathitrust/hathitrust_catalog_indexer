@@ -26,7 +26,7 @@ module CICTL
     def initialize(args = [], local_options = {}, config = {})
       # For creating the default CICTL logger as well as one for calling Traject
       # an any other subcomponents we want to stick a custom logger into.
-      super args, local_options, config
+      super
       # if @options[:logdir]
       #   LogfileDefaults.logdir = @options[:logdir]
       # end
