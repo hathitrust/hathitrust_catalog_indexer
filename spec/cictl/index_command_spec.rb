@@ -86,6 +86,14 @@ RSpec.describe CICTL::IndexCommand do
         expect(File.exist?(File.join(HathiTrust::Services[:journal_directory], "hathitrust_catalog_indexer_journal_upd_20230103.txt"))).to be(true)
       end
     end
+
+    it "sets a default log file" do
+      logfile = File.join(HathiTrust::Services[:logfile_directory], "daily_#{Date.today.strftime("%Y%m%d")}.log")
+      File.unlink(logfile) if File.exist?(logfile)
+      CICTL::Commands.start(["index", "continue"])
+      expect(File).to exist(logfile)
+      expect(File.size(logfile)).to be > 0
+    end
   end
 
   describe "#index all" do

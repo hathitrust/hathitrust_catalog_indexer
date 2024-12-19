@@ -11,6 +11,10 @@ module CICTL
     class_option :writer, type: :string, desc: "Writer name/path"
 
     desc "continue", "Index all files not represented in the indexer journals"
+    option :log, type: :string,
+      desc: "Log to <logfile> in <logdir>. Use 'daily' or 'full' for reasonable defaults.",
+      banner: "<logfile>",
+      default: "daily"
     def continue
       last_full = ZephirFile.full_files.last
       fatal "unable to find full Zephir file" unless last_full
