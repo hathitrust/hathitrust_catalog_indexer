@@ -13,7 +13,7 @@ module CICTL
       desc: "Emit 'debug' in addition to 'info' log entries",
       default: false
     class_option :log, type: :string,
-      desc: "Log to <logfile> in <logdir>. Use 'daily' or 'full' for sane defaults.",
+      desc: "Log to <logfile> in <logdir>. Use 'daily' or 'full' for reasonable defaults.",
       banner: "<logfile>"
     class_option :logdir, type: :string,
       desc: "Location for default logs",
