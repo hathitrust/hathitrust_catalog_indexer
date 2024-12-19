@@ -13,8 +13,9 @@ module CICTL
       desc: "Emit 'debug' in addition to 'info' log entries",
       default: false
     class_option :log, type: :string,
-      desc: "Log to <logfile> in <logdir>. Use 'daily' or 'full' for sane defaults.",
-      banner: "<logfile>"
+      desc: "Log to <logfile> in <logdir>. Use '-' for stdout (the default); or 'daily' or 'full' for reasonable defaults.",
+      banner: "<logfile>",
+      default: "-"
     class_option :logdir, type: :string,
       desc: "Location for default logs",
       default: HathiTrust::Services[:logfile_directory]

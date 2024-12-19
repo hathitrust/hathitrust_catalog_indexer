@@ -18,6 +18,33 @@ module CICTL
       @quiet = quiet
     end
 
+    def add_file_appender
+      logfile_path = case @log_file
+      when "daily", "today"
+        LogfileDefaults.daily
+      when "full"
+        LogfileDefaults.full
+      when String
+        LogfileDefaults.logdir + "/#{@log_file}"
+      end
+
+      if logfile_path
+        SemanticLogger.add_appender(file_name: logfile_path.to_s, level: min_level, formatter: Formatter.new)
+      end
+    end
+
+    def add_stderr_appender
+      unless @quiet
+        SemanticLogger.add_appender(io: $stderr, level: :error, formatter: Formatter.new)
+      end
+    end
+
+    def add_stdout_appender
+      unless @quiet
+        SemanticLogger.add_appender(io: $stdout, level: min_level, formatter: Formatter.new)
+      end
+    end
+
     def logger(owner: "CICTL")
       # Force SemanticLogger to run in main thread. This is only for testing.
       # The alternative -- logger.close -- makes the GitHub testing environment very unhappy.
@@ -31,20 +58,11 @@ module CICTL
 
       Pathname.new(LogfileDefaults.logdir).mkpath
 
-      logfile_path = case @log_file
-      when "daily", "today"
-        LogfileDefaults.daily
-      when "full"
-        LogfileDefaults.full
-      when String
-        LogfileDefaults.logdir + "/#{@log_file}"
-      end
-
-      if logfile_path
-        SemanticLogger.add_appender(file_name: logfile_path.to_s, level: min_level, formatter: Formatter.new)
-      end
-      unless @quiet
-        SemanticLogger.add_appender(io: $stderr, level: :error, formatter: Formatter.new)
+      if @log_file == "-"
+        add_stdout_appender
+      else
+        add_file_appender
+        add_stderr_appender
       end
 
       SemanticLogger[owner]
