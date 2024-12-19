@@ -40,11 +40,6 @@ def with_test_environment
   end
 end
 
-# Typically created in a temp directory
-def test_log
-  "TEST_LOG.txt"
-end
-
 def solr_count
   CICTL::SolrClient.new.count
 end

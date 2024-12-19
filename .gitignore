@@ -21,3 +21,6 @@ coverage
 .DS_Store
 
 config/env.local
+
+*.sw?
+*~

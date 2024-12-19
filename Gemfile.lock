@@ -156,6 +156,7 @@ GEM
       lint_roller (~> 1.0)
       rubocop-performance (~> 1.16.0)
     thor (1.2.2)
+    timecop (0.9.10)
     traject (3.8.2)
       concurrent-ruby (>= 0.8.0)
       dot-properties (>= 0.1.1)
@@ -214,6 +215,7 @@ DEPENDENCIES
   simplecov-lcov
   standard
   thor
+  timecop
   traject (~> 3.0)
   traject-marc4j_reader
   traject_alephsequential_reader

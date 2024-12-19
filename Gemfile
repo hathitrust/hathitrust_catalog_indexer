@@ -9,6 +9,7 @@ group :development, :test do
   gem "simplecov"
   gem "simplecov-lcov"
   gem "standard"
+  gem "timecop"
 end
 
 gem "canister", "~> 0.9.2"
