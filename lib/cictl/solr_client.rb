@@ -12,7 +12,7 @@ module CICTL
     # @param [Fixnum] timeout Timeout, in seconds
     def initialize(rsolr = nil, timeout: 15)
       rsolr ||= RSolr.connect url: solr_url, timeout: timeout, open_timeout: 2
-      super rsolr
+      super(rsolr)
     end
 
     def to_s
