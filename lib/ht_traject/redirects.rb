@@ -15,7 +15,7 @@ module HathiTrust
       "redirects_#{date.strftime "%Y%m"}.txt.gz"
     end
 
-    def self.default_redirects_file(directory: "/htapps/babel/hathifiles/catalog_redirects/redirects")
+    def self.default_redirects_file(directory: ENV["REDIRECTS_DIR"])
       default_file = File.join(directory, redirects_file_name)
       if !File.exist?(default_file)
         # Fall back to previous month's (that's what the << method does) file
