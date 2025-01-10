@@ -277,9 +277,7 @@ data from a number of external sources:
     locally in `lib/translation_maps/ht`. *(FIXME: should `cictl` expose this functionality?)*
   * The `holdings_htitem_htmember` database table for print holdings
   * The `oclc_concordance` table for adding in canonical OCLC numbers
-  * The file for the current month in 
-    `/htapps/babel/hathifiles/catalog_redirects/redirects` for setting up 
-    redirects.
+  * The file for the current month in `/htapps/archive/redirects` for setting up redirects.
 
 TODO: Get the rights info from `rights_current` so it's up-to-date. It 
 would be nice if `rights_current` had an index on the whole HTID instead 
@@ -295,13 +293,15 @@ and `config/env`. The defaults in the repository suffice for testing under Docke
   * `DDIR` data directory, defaults to `/htsolr/catalog/prep`
   * `JOURNAL_DIRECTORY` location of journal files (see Date-Independent Indexing above) defaulting
     to `journal/` inside the repo directory.
-  * `LOG_DIR` where to store logs, defaults to `/htsolr/catalog/prep`.
+  * `LOG_DIR` where to store logs, defaults to `logs/` inside the repo directory.
   * `MYSQL_HOST`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD` *required* unless run with `NO_DB`.
   * `NO_DB` if you want to skip all the database stuff. Useful for testing. Implied by `NO_EXTERNAL_DATA`.
   * `NO_EXTERNAL_DATA` combines `NO_DB`, `NO_REDIRECTS`
   * `NO_REDIRECTS` do not read catalog redirects file. Implied by `NO_EXTERNAL_DATA`.
   * `REDIRECT_FILE` (and the now-*deprecated* `redirect_file`) path to the redirect file.
-    Default is `/htapps/babel/hathifiles/catalog_redirects/redirects/redirects_YYYYMM.txt.gz`
+    Default is `REDIRECTS_DIR/redirects_YYYYMM.txt.gz`.
+  * `REDIRECTS_DIR` (no default) should be set to `/htapps/archive/redirects` or wherever hathifiles
+    writes its catalog redirects output.
   * `SOLR_URL` *(required)* with the solr _core_ URL (i.e, ending in `/catalog`)
 
 ### Prometheus Pushgateway Environment Variables
