@@ -20,9 +20,9 @@ In addition to this overview, more detailed explanations can be found in:
 ```bash
 git clone https://github.com/hathitrust/hathitrust_catalog_indexer
 cd hathitrust_catalog_indexer
-docker-compose build
-docker-compose up -d solr-sdr-catalog
-docker-compose run --rm traject bundle install
+docker compose build
+docker compose up -d solr-sdr-catalog
+docker compose run --rm traject bundle install
 ```
 
 ### Generate Solr documents
@@ -30,7 +30,7 @@ docker-compose run --rm traject bundle install
 Generate Solr documents given an input file of MARC records in JSON format, one per line:
 
 ```
-docker-compose run --rm traject bundle exec bin/cictl index file --no-commit --writer=json input-marc-records.jsonl
+docker compose run --rm traject bundle exec bin/cictl index file --no-commit --writer=json input-marc-records.jsonl
 ```
 
 Output will be in `debug.json`.
@@ -78,7 +78,7 @@ docker-compose run --rm traject bundle exec bin/cictl index file examples/sample
 Zephir records for the last monthly up to the current date should be in `examples`:
 
 ```bash
-docker-compose run --rm traject bundle exec bin/cictl index all
+docker compose run --rm traject bundle exec bin/cictl index all
 ```
 
 ### Query Solr
@@ -113,7 +113,7 @@ If you checked out into another directory than `hathitrust_catalog_indexer`,
 adjust the name of the network above to match.
 
 This will ensure the application uses the solr running from this docker network
-network (i.e. the one started with `docker-compose up` from this repository).
+network (i.e. the one started with `docker compose up` from this repository).
 Solr should be reachable via the `solr-sdr-catalog` hostname.
 
 ## How to do the basics
@@ -308,7 +308,7 @@ and `config/env`. The defaults in the repository suffice for testing under Docke
 
   * `JOB_NAME` if not set defaults to the `cictl` command, e.g., `index_continue` from `cictl index continue`.
   * `JOB_SUCCESS_INTERVAL` handled by `PushMetrics`, no defaults set by this repository.
-  * `PUSHGATEWAY` set to `http://pushgateway:9091` in the `docker-compose` file, otherwise no default.
+  * `PUSHGATEWAY` set to `http://pushgateway:9091` in the `docker compose` file, otherwise no default.
   
 
 ### Internal-use Environment Variables
