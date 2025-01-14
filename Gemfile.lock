@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/hathitrust/push_metrics
-  revision: cc7ca6b6c65130335e933f5686f60a82ba1c97c7
+  revision: 3cba728a95eb936fed5f06da028c88d06bb23996
   specs:
-    push_metrics (0.9.1)
+    push_metrics (0.10.0)
       milemarker (~> 1.0)
       prometheus-client (~> 4.0)
 

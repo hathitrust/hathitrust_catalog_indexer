@@ -27,7 +27,8 @@ RSpec.describe CICTL::IndexCommand do
 
   around(:each) do |example|
     job_name = HathiTrust::Services[:job_name]
-    Faraday.delete("#{ENV["PUSHGATEWAY"]}/metrics/job/#{job_name}")
+    # Trailing slash on URL is needed because we are matching instance with blank name
+    Faraday.delete("#{ENV["PUSHGATEWAY"]}/metrics/job/#{job_name}/instance/")
     with_test_environment do |tmpdir|
       example.run
     end
