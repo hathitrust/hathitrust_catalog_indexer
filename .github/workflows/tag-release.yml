@@ -11,6 +11,6 @@ jobs:
       - uses: hathitrust/github_actions/tag-release@v1
         with:
           registry_token: ${{ github.token }}
-          existing_tag: ghcr.io/hathitrust/catalog:${{ github.sha }}
-          image: ghcr.io/hathitrust/catalog
+          existing_tag: ghcr.io/hathitrust/hathitrust_catalog_indexer:${{ github.sha }}
+          image: ghcr.io/hathitrust/hathitrust_catalog_indexer
           new_tag: ${{ github.event.release.tag_name }}
