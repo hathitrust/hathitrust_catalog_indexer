@@ -25,6 +25,18 @@ docker compose up -d solr-sdr-catalog
 docker compose run --rm traject bundle install
 ```
 
+### Testing
+
+To run all the Ruby tests (rspec) do:
+
+```
+git clone https://github.com/hathitrust/hathitrust_catalog_indexer
+cd hathitrust_catalog_indexer
+docker compose build
+docker compose run --rm test bundle install
+docker compose run --rm test
+```
+
 ### Generate Solr documents
 
 Generate Solr documents given an input file of MARC records in JSON format, one per line:
