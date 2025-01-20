@@ -19,8 +19,8 @@ services:
       - gem_cache:/gems
     environment:
       - SOLR_URL=http://solr-sdr-catalog:9033/solr/catalog
-      - redirect_file=/dev/null
-      - NO_DB=1
+      - REDIRECT_FILE=/dev/null
+      #- NO_DB=1
     network_mode: host
     command: sleep infinity
 
@@ -37,6 +37,10 @@ services:
       - PUSHGATEWAY=http://pushgateway:9091
       - REDIRECT_FILE=/dev/null
       - SOLR_URL=http://solr-sdr-catalog:9033/solr/catalog
+      - MARIADB_HT_RO_USERNAME=ht_rights
+      - MARIADB_HT_RO_PASSWORD=ht_rights
+      - MARIADB_HT_RO_HOST=mariadb
+      - MARIADB_HT_RO_DATABASE=ht
     depends_on:
       pushgateway: *healthy
       mariadb: *healthy
@@ -54,6 +58,14 @@ services:
     image: ghcr.io/hathitrust/db-image:latest
     ports:
       - "3306:3306"
+    environment:
+      # setting via MYSQL_ROOT_PASSWORD didn't work; this at least
+      # makes it clear that we have to dig out its generated root password
+      # from its startup
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: ht
+      MYSQL_USER: ht_rights
+      MYSQL_PASSWORD: ht_rights
     healthcheck:
       <<: *healthcheck-defaults
       test: [ "CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
