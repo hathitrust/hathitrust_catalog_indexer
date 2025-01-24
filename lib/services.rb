@@ -80,9 +80,12 @@ module HathiTrust
     Sequel.connect(Services[:db_connection_string], login_timeout: 2, pool_timeout: 100, max_connections: 6)
   end
 
+  # From the Sequel Docs (https://sequel.jeremyevans.net/rdoc/files/doc/opening_databases_rdoc.html):
+  # Note that when using a JDBC adapter, the best way to use Sequel is via Sequel.connect
+  # using a connection string, NOT Sequel.jdbc
   Services.register(:db_connection_string) do
-    "jdbc:mysql://#{ENV["MYSQL_HOST"]}/#{ENV["MYSQL_DATABASE"]}? \
-    user=#{ENV["MYSQL_USER"]}&password=#{ENV["MYSQL_PASSWORD"]}& \
+    "jdbc:mysql://#{ENV["MARIADB_HT_RO_HOST"]}/#{ENV["MARIADB_HT_RO_DATABASE"]}? \
+    user=#{ENV["MARIADB_HT_RO_USERNAME"]}&password=#{ENV["MARIADB_HT_RO_PASSWORD"]}& \
     useTimezone=true&serverTimezone=UTC"
   end
 
