@@ -192,7 +192,17 @@
        <maxTime>${solr.autoSoftCommit.maxTime:-1}</maxTime> 
      </autoSoftCommit>
 
-      
+     <!-- As solr.ulog.dir is not defined, it will use the default tlog location
+     /var/solr/logs
+     parameter and default values
+     numRecordsToKeep=500 => number of records to keep per log
+     maxNumLogsToKeep=20 => the maximum number of logs to keep
+     numVersionBuckets=65536 => the number of version buckets, used to track the document updates
+     avoiding conflicts and overwrites
+     -->
+     <updateLog>
+         <str name="dir">${solr.ulog.dir:}</str>
+     </updateLog>
 
   </updateHandler>
   
