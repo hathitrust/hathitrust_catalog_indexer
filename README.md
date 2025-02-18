@@ -306,7 +306,8 @@ and `config/env`. The defaults in the repository suffice for testing under Docke
   * `JOURNAL_DIRECTORY` location of journal files (see Date-Independent Indexing above) defaulting
     to `journal/` inside the repo directory.
   * `LOG_DIR` where to store logs, defaults to `logs/` inside the repo directory.
-  * `MYSQL_HOST`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD` *required* unless run with `NO_DB`.
+  * `MARIADB_HT_RO_USERNAME`, `MARIADB_HT_RO_PASSWORD`, `MARIADB_HT_RO_HOST`, `MARIADB_HT_RO_DATABASE`
+    *required* unless run with `NO_DB`.
   * `NO_DB` if you want to skip all the database stuff. Useful for testing. Implied by `NO_EXTERNAL_DATA`.
   * `NO_EXTERNAL_DATA` combines `NO_DB`, `NO_REDIRECTS`
   * `NO_REDIRECTS` do not read catalog redirects file. Implied by `NO_EXTERNAL_DATA`.
