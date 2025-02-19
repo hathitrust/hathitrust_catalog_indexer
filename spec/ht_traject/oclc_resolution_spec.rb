@@ -31,7 +31,7 @@ RSpec.describe HathiTrust::OCLCResolution do
       expect(described_class.query).not_to be_nil
     end
   end
-  
+
   describe ".all_resolved_oclcs" do
     it "returns empty Array for empty OCLC list" do
       expect(described_class.all_resolved_oclcs([])).to eq([])
@@ -44,7 +44,7 @@ RSpec.describe HathiTrust::OCLCResolution do
     it "returns all OCLCs for canonical OCLCs" do
       expect(described_class.all_resolved_oclcs([1431896995]).sort).to eq(["1429614234", "1431896995"].sort)
     end
-    
+
     it "preserves OCLCs not found in table" do
       expect(described_class.all_resolved_oclcs([1])).to eq(["1"])
     end
