@@ -24,7 +24,8 @@ require_relative "examples"
 def with_test_environment
   CICTL::SolrClient.new.empty!.commit!
   Dir.mktmpdir do |tmpdir|
-    ClimateControl.modify(CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX: "sample") do
+    flags_directory = File.join(tmpdir, "flags")
+    ClimateControl.modify(CICTL_ZEPHIR_FILE_TEMPLATE_PREFIX: "sample", FLAGS_DIRECTORY: flags_directory) do
       old_logfile_directory = HathiTrust::Services[:logfile_directory]
       old_journal_directory = HathiTrust::Services[:journal_directory]
       new_logfile_directory = File.join(tmpdir, "logs")

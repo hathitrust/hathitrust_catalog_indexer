@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 require_relative "base_command"
-require_relative "zephir_file"
 require_relative "deleted_records"
 require_relative "journal"
+require_relative "stop_release"
+require_relative "zephir_file"
 
 module CICTL
   class IndexCommand < BaseCommand
@@ -122,7 +123,13 @@ module CICTL
 
     private
 
+    def stop_release
+      @stop_release ||= StopRelease.new
+    end
+
     def preflight(*files)
+      logger.info "write stop release at #{stop_release.path}"
+      stop_release.write
       files.each do |file|
         fatal "Missing expected filename for this operation" unless file
         fatal "Can't find #{file}" unless File.exist?(file)
@@ -134,6 +141,8 @@ module CICTL
     # Wrap up metrics on a potentially multi-file and multi-indexer command.
     def postflight
       HathiTrust::Services[:push_metrics].log_final_line
+      logger.info "remove stop release at #{stop_release.path}"
+      stop_release.remove
     end
 
     def load_redirects
