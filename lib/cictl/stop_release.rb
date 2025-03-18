@@ -7,9 +7,8 @@ module CICTL
 
   # File location is controlled by the FLAGS_DIRECTORY environment variable
   # and defaults to DDIR + "flags", mainly for running under Docker.
-  # This class will create FLAGS_DIRECTORY if necessary but it is recommended
-  # that the directory be created beforehand with the desired permissions.
-  # This feature is more about ease of testing than anything else.
+  # For ease of testing this class will create FLAGS_DIRECTORY if necessary; however,
+  # it is recommended that the directory be created beforehand with the desired permissions.
   class StopRelease
     FILE_NAME = "STOPCATALOGRELEASE"
 
