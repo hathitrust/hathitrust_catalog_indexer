@@ -303,6 +303,7 @@ and `config/env`. The defaults in the repository suffice for testing under Docke
 ## Environment variables
 
   * `DDIR` data directory, defaults to `/htsolr/catalog/prep`
+  * `FLAGS_DIRECTORY` location for temporary `STOPCATALOGRELEASE` file, defaults to `DDIR/flags`
   * `JOURNAL_DIRECTORY` location of journal files (see Date-Independent Indexing above) defaulting
     to `journal/` inside the repo directory.
   * `LOG_DIR` where to store logs, defaults to `logs/` inside the repo directory.
