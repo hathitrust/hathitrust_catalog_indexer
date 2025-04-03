@@ -10,7 +10,7 @@ module CICTL
   class SolrClient < SimpleDelegator
     # @param [RSolr] rsolr An existing rsolr instance
     # @param [Fixnum] timeout Timeout, in seconds
-    def initialize(rsolr = nil, timeout: 15)
+    def initialize(rsolr = nil, timeout: 120)
       rsolr ||= RSolr.connect url: solr_url, timeout: timeout, open_timeout: 2
       super(rsolr)
     end
