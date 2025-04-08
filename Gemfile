@@ -3,7 +3,7 @@ source "https://rubygems.org"
 group :development, :test do
   gem "bundler", "~>2.0"
   gem "climate_control"
-  gem "rake", "~> 13.0"
+  gem "rake"
   gem "pry"
   gem "rspec"
   gem "simplecov"
@@ -12,7 +12,7 @@ group :development, :test do
   gem "timecop"
 end
 
-gem "canister", "~> 0.9.2"
+gem "canister"
 gem "date_named_file"
 gem "dotenv"
 gem "faraday"
