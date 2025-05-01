@@ -5,7 +5,10 @@ require "traject"
 RSpec.describe "indexers/ht" do
 
   before(:each) do
-    HathiTrust::Services.register(:push_metrics) { double(:push_metrics, increment_and_log_batch_line: nil) }
+    # don't use the pushgateway in tests
+    HathiTrust::Services.register(:push_metrics) do
+      double(:push_metrics, increment_and_log_batch_line: nil)
+    end
   end
 
   let(:indexer) do
@@ -67,6 +70,32 @@ RSpec.describe "indexers/ht" do
     solr_record.each do |k,v|
       expect(output[k]).to match_solr_field(k,v)
     end
+  end
+    
+  it "puts holdings in the item records" do
+
+    # mock the call to Services.print_holdings
+    htid1 = 'hvd.32044083377234'
+    htid2 = 'coo1.ark:/13960/t6tx3x11f'
+    holdings1 = ['inst1','inst2','inst3']
+    holdings2 = ['inst1','inst2']
+
+    old_ph = HathiTrust::Services.print_holdings
+    ph_double = double(:print_holdings)
+    expect(ph_double).to receive(:get_print_holdings_hash)
+      .with([htid1, htid2])
+      .and_return( { htid1 => holdings1, htid2 => holdings2 } )
+
+    HathiTrust::Services.register(:print_holdings) { ph_double }
+
+    output = output_for(record("sample_record.json"))
+    ht_json = JSON.parse(output["ht_json"][0])
+    expect(ht_json[0]["htid"]).to eq(htid1)
+    expect(ht_json[0]["heldby"]).to eq(holdings1)
+    expect(ht_json[1]["htid"]).to eq(htid2)
+    expect(ht_json[1]["heldby"]).to eq(holdings2)
+  ensure
+    HathiTrust::Services.register(:print_holdings) { old_ph }
   end
 end
 
