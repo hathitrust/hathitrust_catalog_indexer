@@ -21,6 +21,10 @@ require_relative "../lib/cictl"
 require_relative "../lib/ht_traject"
 require_relative "examples"
 
+def fixture(filename)
+  File.join(__dir__, "fixtures", filename)
+end
+
 def with_test_environment
   CICTL::SolrClient.new.empty!.commit!
   Dir.mktmpdir do |tmpdir|

@@ -1,0 +1,104 @@
+{
+  "id": "011611640",
+  "format": [
+    "Book"
+  ],
+  "oclc": [
+    "18917935"
+  ],
+  "sdrnum": [
+    "sdr-hvd.990032698170203941",
+    "sdr-coo.5354348"
+  ],
+  "mainauthor": [
+    "Lee, Sophia, 1750-1824."
+  ],
+  "mainauthor_just_name": [
+    "Lee, Sophia,"
+  ],
+  "author": [
+    "Lee, Sophia, 1750-1824."
+  ],
+  "author_top": [
+    "Lee, Sophia, 1750-1824.",
+    "By Sophia Lee. In one volume."
+  ],
+  "author_sortkey": "lee, sophia 1750 1824",
+  "title": [
+    "Canterbury tales"
+  ],
+  "title_a": [
+    "Canterbury tales"
+  ],
+  "title_ab": [
+    "Canterbury tales"
+  ],
+  "title_c": [
+    "By Sophia Lee. In one volume"
+  ],
+  "title_top": [
+    "Canterbury tales."
+  ],
+  "title_rest": [
+    "Masons' standard library",
+    "Canterbury tales."
+  ],
+  "series2": [
+    "Masons' standard library"
+  ],
+  "title_display": "Canterbury tales. By Sophia Lee. In one volume",
+  "titleSort": "Canterbury tales",
+  "title_sortkey": "canterbury tales",
+  "place_of_publication": [
+    "United States",
+    "United States -- New York (State)"
+  ],
+  "publishDate": [
+    "1857"
+  ],
+  "publishDateRange": [
+    "1850-1859"
+  ],
+  "display_date": "1857",
+  "publisher": [
+    "Mason Bros.,"
+  ],
+  "language": [
+    "English"
+  ],
+  "language008": "eng",
+  "ht_availability": [
+    "Full text"
+  ],
+  "ht_availability_intl": [
+    "Full text"
+  ],
+  "ht_count": 2,
+  "ht_id": [
+    "hvd.32044083377234",
+    "coo1.ark:/13960/t6tx3x11f"
+  ],
+  "ht_id_display": [
+    "hvd.32044083377234|20241103||1857|1850-1859|||Canterbury tales. By Sophia Lee. In one volume",
+    "coo1.ark:/13960/t6tx3x11f|20240403||1857|1850-1859|||Canterbury tales. By Sophia Lee. In one volume"
+  ],
+  "ht_id_update": [
+    "20241103",
+    "20240403"
+  ],
+  "ht_rightscode": [
+    "pd"
+  ],
+  "htsource": [
+    "Harvard University",
+    "Cornell University"
+  ],
+  "ht_json": "[{\"htid\":\"hvd.32044083377234\",\"newly_open\":null,\"ingest\":\"20241103\",\"rights\":[\"pd\",null],\"collection_code\":\"hvd\",\"enum_pubdate\":\"1857\",\"enum_pubdate_range\":\"1850-1859\",\"heldby\":[],\"dig_source\":\"google\"},{\"htid\":\"coo1.ark:/13960/t6tx3x11f\",\"newly_open\":null,\"ingest\":\"20240403\",\"rights\":[\"pd\",null],\"collection_code\":\"coo\",\"enum_pubdate\":\"1857\",\"enum_pubdate_range\":\"1850-1859\",\"heldby\":[],\"dig_source\":\"cornell-ms\"}]",
+  "callnumber": [
+    "PR4879.L5 C3"
+  ],
+  "ht_searchonly": false,
+  "ht_searchonly_intl": false,
+  "language008_full": "English",
+  "fullrecord": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><collection xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.loc.gov/MARC21/slim\" xsi:schemaLocation=\"http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd\"><record><leader>00882nam a2200241K  4500</leader><controlfield tag=\"001\">011611640</controlfield><controlfield tag=\"003\">MiAaHDL</controlfield><controlfield tag=\"005\">20240726000000.0</controlfield><controlfield tag=\"006\">m        d        </controlfield><controlfield tag=\"007\">cr bn ---auaua</controlfield><controlfield tag=\"008\">881217s1857    nyu           000 1 eng d</controlfield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">sdr-hvd.990032698170203941</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">sdr-coo.5354348</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">(MH)003269817HVD01-Aleph</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"z\">(MH)Aleph003269817</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">(OCoLC)18917935</subfield></datafield><datafield tag=\"040\" ind1=\" \" ind2=\" \"><subfield code=\"a\">MUM</subfield><subfield code=\"c\">MUM</subfield><subfield code=\"d\">HLS</subfield></datafield><datafield tag=\"050\" ind1=\" \" ind2=\"4\"><subfield code=\"a\">PR4879.L5</subfield><subfield code=\"b\">C3</subfield></datafield><datafield tag=\"090\" ind1=\" \" ind2=\" \"><subfield code=\"a\">PR4879.L5</subfield><subfield code=\"b\">C3</subfield></datafield><datafield tag=\"100\" ind1=\"1\" ind2=\" \"><subfield code=\"a\">Lee, Sophia,</subfield><subfield code=\"d\">1750-1824.</subfield></datafield><datafield tag=\"245\" ind1=\"1\" ind2=\"0\"><subfield code=\"a\">Canterbury tales.</subfield><subfield code=\"c\">By Sophia Lee. In one volume.</subfield></datafield><datafield tag=\"260\" ind1=\" \" ind2=\" \"><subfield code=\"a\">New York,</subfield><subfield code=\"b\">Mason Bros.,</subfield><subfield code=\"c\">1857.</subfield></datafield><datafield tag=\"300\" ind1=\" \" ind2=\" \"><subfield code=\"a\">xi p., 431 p.</subfield><subfield code=\"c\">20 cm.</subfield></datafield><datafield tag=\"490\" ind1=\"0\" ind2=\" \"><subfield code=\"a\">Masons' standard library</subfield></datafield><datafield tag=\"505\" ind1=\"0\" ind2=\" \"><subfield code=\"a\">1. Canterbury Tales-Introduction.--2. The Clergyman's Tale-Pembroke.--3. The Young Lady's Tale-The Two Emilys.</subfield></datafield><datafield tag=\"538\" ind1=\" \" ind2=\" \"><subfield code=\"a\">Mode of access: Internet.</subfield></datafield><datafield tag=\"776\" ind1=\"0\" ind2=\"8\"><subfield code=\"i\">Online version:</subfield><subfield code=\"a\">Lee, Sophia, 1750-1824.</subfield><subfield code=\"t\">Canterbury tales.</subfield><subfield code=\"d\">New York, Mason Bros., 1857</subfield><subfield code=\"w\">(OCoLC)867814661</subfield></datafield><datafield tag=\"CID\" ind1=\" \" ind2=\" \"><subfield code=\"a\">011611640</subfield></datafield><datafield tag=\"DAT\" ind1=\"0\" ind2=\" \"><subfield code=\"a\">20020606093309.7</subfield><subfield code=\"b\">20240726000000.0</subfield></datafield><datafield tag=\"DAT\" ind1=\"1\" ind2=\" \"><subfield code=\"a\">20240727060509.0</subfield><subfield code=\"b\">2024-11-03T18:40:57Z</subfield></datafield><datafield tag=\"CAT\" ind1=\" \" ind2=\" \"><subfield code=\"a\">SDR-HVD</subfield><subfield code=\"c\">hvd</subfield><subfield code=\"d\">ALMA</subfield><subfield code=\"l\">prepare.pl-004-008</subfield></datafield><datafield tag=\"FMT\" ind1=\" \" ind2=\" \"><subfield code=\"a\">BK</subfield></datafield><datafield tag=\"HOL\" ind1=\" \" ind2=\" \"><subfield code=\"0\">sdr-hvd.990032698170203941</subfield><subfield code=\"a\">hvd</subfield><subfield code=\"b\">SDR</subfield><subfield code=\"c\">HVD</subfield><subfield code=\"f\">003269817</subfield><subfield code=\"p\">hvd.32044083377234</subfield><subfield code=\"s\">HVD</subfield><subfield code=\"1\">990032698170203941</subfield></datafield><datafield tag=\"974\" ind1=\" \" ind2=\" \"><subfield code=\"b\">HVD</subfield><subfield code=\"c\">HVD</subfield><subfield code=\"d\">20241103</subfield><subfield code=\"s\">google</subfield><subfield code=\"u\">hvd.32044083377234</subfield><subfield code=\"y\">1857</subfield><subfield code=\"r\">pd</subfield><subfield code=\"q\">bib</subfield><subfield code=\"t\">US bib date1 &lt; 1930</subfield></datafield><datafield tag=\"974\" ind1=\" \" ind2=\" \"><subfield code=\"8\">ia.cu31924031196714</subfield><subfield code=\"b\">COO</subfield><subfield code=\"c\">COO</subfield><subfield code=\"d\">20240403</subfield><subfield code=\"s\">cornell-ms</subfield><subfield code=\"u\">coo1.ark:/13960/t6tx3x11f</subfield><subfield code=\"y\">1857</subfield><subfield code=\"r\">pd</subfield><subfield code=\"q\">bib</subfield><subfield code=\"t\">US bib date1 &lt; 1930</subfield></datafield></record></collection>"
+}
