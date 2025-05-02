@@ -3,7 +3,6 @@ require "services"
 require "traject"
 
 RSpec.describe "indexers/ht" do
-
   before(:each) do
     # don't use the pushgateway in tests
     HathiTrust::Services.register(:push_metrics) do
@@ -22,7 +21,7 @@ RSpec.describe "indexers/ht" do
     end
   end
 
-  RSpec::Matchers.define :match_solr_field do |field,expected|
+  RSpec::Matchers.define :match_solr_field do |field, expected|
     match do |actual|
       actual == expected || actual == [expected]
     end
@@ -41,21 +40,15 @@ RSpec.describe "indexers/ht" do
   end
 
   it "creates an ht_json field with the expected structure" do
-  end
-
-  it "can index a thing and have ht_items" do
     output = output_for(record("sample_record.json"))
     expect(output).to have_key("ht_json")
 
-    ht_json = JSON.parse(output["ht_json"][0])
-
-
+    output_ht_json = JSON.parse(output["ht_json"][0])
     solr_record = JSON.parse(File.read(fixture("sample_record_output.json")))
+    solr_record_ht_json = JSON.parse(solr_record["ht_json"])
 
-    # compare structure rather than string for ht_json
-    expect(JSON.parse(solr_record["ht_json"]))
-      .to eq(JSON.parse(output["ht_json"][0]))
-
+    expect(solr_record_ht_json)
+      .to eq(output_ht_json)
   end
 
   it "has the expected fields in the output" do
@@ -67,24 +60,23 @@ RSpec.describe "indexers/ht" do
     # compare the rest of the fields
     # output from traject/solr may not match in terms of arrayness; all fields
     # in solr output may not be in traject output
-    solr_record.each do |k,v|
-      expect(output[k]).to match_solr_field(k,v)
+    solr_record.each do |k, v|
+      expect(output[k]).to match_solr_field(k, v)
     end
   end
-    
-  it "puts holdings in the item records" do
 
+  it "puts holdings in the item records" do
     # mock the call to Services.print_holdings
-    htid1 = 'hvd.32044083377234'
-    htid2 = 'coo1.ark:/13960/t6tx3x11f'
-    holdings1 = ['inst1','inst2','inst3']
-    holdings2 = ['inst1','inst2']
+    htid1 = "hvd.32044083377234"
+    htid2 = "coo1.ark:/13960/t6tx3x11f"
+    holdings1 = ["inst1", "inst2", "inst3"]
+    holdings2 = ["inst1", "inst2"]
 
     old_ph = HathiTrust::Services.print_holdings
     ph_double = double(:print_holdings)
     expect(ph_double).to receive(:get_print_holdings_hash)
       .with([htid1, htid2])
-      .and_return( { htid1 => holdings1, htid2 => holdings2 } )
+      .and_return({htid1 => holdings1, htid2 => holdings2})
 
     HathiTrust::Services.register(:print_holdings) { ph_double }
 
@@ -98,4 +90,3 @@ RSpec.describe "indexers/ht" do
     HathiTrust::Services.register(:print_holdings) { old_ph }
   end
 end
-

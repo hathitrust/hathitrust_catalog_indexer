@@ -4,6 +4,7 @@ require "climate_control"
 require "simplecov"
 require "simplecov-lcov"
 require "tmpdir"
+require "webmock/rspec"
 
 SimpleCov::Formatter::LcovFormatter.config do |c|
   c.report_with_single_file = true
@@ -16,6 +17,12 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
 SimpleCov.start do
   add_filter "/spec/"
 end
+
+WebMock.disable_net_connect!(allow: [
+  "http://solr-sdr-catalog:9033",
+  "http://solr-sdr-catalog:1111",
+  "http://pushgateway:9091"
+])
 
 require_relative "../lib/cictl"
 require_relative "../lib/ht_traject"

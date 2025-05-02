@@ -10,6 +10,7 @@ group :development, :test do
   gem "simplecov-lcov"
   gem "standard"
   gem "timecop"
+  gem "webmock"
 end
 
 gem "canister"
