@@ -93,7 +93,7 @@
     "Harvard University",
     "Cornell University"
   ],
-  "ht_json": "[{\"htid\":\"hvd.32044083377234\",\"newly_open\":null,\"ingest\":\"20241103\",\"rights\":[\"pd\",null],\"collection_code\":\"hvd\",\"enum_pubdate\":\"1857\",\"enum_pubdate_range\":\"1850-1859\",\"heldby\":[],\"dig_source\":\"google\"},{\"htid\":\"coo1.ark:/13960/t6tx3x11f\",\"newly_open\":null,\"ingest\":\"20240403\",\"rights\":[\"pd\",null],\"collection_code\":\"coo\",\"enum_pubdate\":\"1857\",\"enum_pubdate_range\":\"1850-1859\",\"heldby\":[],\"dig_source\":\"cornell-ms\"}]",
+  "ht_json": "[{\"htid\":\"hvd.32044083377234\",\"newly_open\":null,\"ingest\":\"20241103\",\"rights\":[\"pd\",null],\"collection_code\":\"hvd\",\"enum_pubdate\":\"1857\",\"enum_pubdate_range\":\"1850-1859\",\"heldby\":[\"umich\"],\"dig_source\":\"google\"},{\"htid\":\"coo1.ark:/13960/t6tx3x11f\",\"newly_open\":null,\"ingest\":\"20240403\",\"rights\":[\"pd\",null],\"collection_code\":\"coo\",\"enum_pubdate\":\"1857\",\"enum_pubdate_range\":\"1850-1859\",\"heldby\":[\"umich\"],\"dig_source\":\"cornell-ms\"}]",
   "callnumber": [
     "PR4879.L5 C3"
   ],

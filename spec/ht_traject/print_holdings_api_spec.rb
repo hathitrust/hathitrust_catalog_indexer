@@ -28,7 +28,7 @@ RSpec.describe HathiTrust::PrintHoldingsAPI do
 
   let(:params) do
     {
-      ht_items: item_set,
+      ht_json: item_set.to_json(:ht),
       id: id,
       format: format,
       oclc: oclc,
@@ -62,7 +62,7 @@ RSpec.describe HathiTrust::PrintHoldingsAPI do
       expect(print_holdings).to eq({"mdp.39015066356547" => ["umich", "someinst"]})
     end
 
-    it "returns output from holdings API endpoint" do
+    it "uses the expected parameters for the holdings API endpoint" do
       expected_ht_json = [
         {
           htid: "mdp.39015066356547",

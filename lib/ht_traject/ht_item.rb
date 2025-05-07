@@ -88,9 +88,12 @@ module HathiTrust
         @intl
       end
 
-      def fill_print_holdings!
+      # We need these fields from the output record in order
+      # to provide them to the API
+      def fill_print_holdings!(id:, format:, oclc:, oclc_search:)
         ids = ht_ids.flatten
-        @ph = HathiTrust::Services[:print_holdings].get_print_holdings_hash(ids)
+        @ph = HathiTrust::Services[:print_holdings].get_print_holdings_hash(
+          id: id, format: format, oclc: oclc, oclc_search: oclc_search, ht_json: to_json(:ht))
         each do |item|
           item.print_holdings = @ph[item.htid]
         end

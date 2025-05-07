@@ -14,7 +14,7 @@ module HathiTrust
     end
 
     def self.get_print_holdings_hash(
-      ht_items:,
+      ht_json:,
       id:,
       format:,
       oclc:,
@@ -29,7 +29,7 @@ module HathiTrust
           format: format,
           oclc: oclc,
           oclc_search: oclc_search,
-          ht_json: ht_items.to_json(:ht)
+          ht_json: ht_json
         })
 
       # map from an array like
