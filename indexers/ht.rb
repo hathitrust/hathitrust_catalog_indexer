@@ -5,7 +5,14 @@
 
 # #fill_print_holdings! calls a mock object if NO_DB or the like is set.
 each_record do |_r, context|
-  context.clipboard[:ht][:items].fill_print_holdings! if context.clipboard[:ht][:has_items]
+  if context.clipboard[:ht][:has_items]
+    context.clipboard[:ht][:items].fill_print_holdings!(
+      id: context.output_hash["id"].first,
+      format: context.output_hash["format"],
+      oclc: context.output_hash["oclc"],
+      oclc_search: context.output_hash["oclc_search"]
+    )
+  end
 end
 
 ## OK, so one weird thing we need to do is have different ht_json docs for mirlyn vs hathitrust, since they have differently-formatted 974s. Pass in the :ht symbol only for HT and the to_json will do the Right Thing.
