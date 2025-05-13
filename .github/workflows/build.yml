@@ -42,5 +42,6 @@ jobs:
                 img_tag: ${{ inputs.img_tag }}
                 tag: ${{ inputs.ref }}
                 push_latest: ${{ inputs.push_latest}}
+                platforms: ${{ inputs.platforms }}
                 registry_token: ${{ github.token }}
                 rebuild: ${{ inputs.rebuild }}
