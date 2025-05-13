@@ -93,7 +93,7 @@ module HathiTrust
   Services.register(:no_redirects?) { ENV["NO_REDIRECTS"] || ENV["NO_EXTERNAL_DATA"] }
 
   Services.register(:print_holdings) do
-    Services[:no_db?] ? MockPrintHoldings : PrintHoldings
+    Services[:no_db?] ? MockPrintHoldings : PrintHoldingsAPI
   end
 
   Services.register(:oclc_resolution) do
