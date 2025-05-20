@@ -164,6 +164,184 @@ While this should be sufficient for getting started with solr cloud and trying i
 * Documentation on the [SolrCloud CRDs](https://apache.github.io/solr-operator/docs/solr-cloud/solr-cloud-crd.html) (custom resource definitions)
 * Documentation on the [solr helm chart](https://artifacthub.io/packages/helm/apache-solr/solr)
 
+## Solr Upgrade from 8.11.2 to 8.11.4. 
+
+It is a minor upgrade within the same version family. In the case of the Catalog, re-indexing could be fine.
+
+### Solr upgrade checklist:
+
+* Review Solr 8.11.4 release notes and CHANGES.txt for anything that affects the setup: https://solr.apache.org/docs/8_11_4/changes/Changes.html
+* Check the current Java version (Solr8 supports Java 8-11)
+* Verify that the current Solr operator supports the Solr version you wish to upgrade. 
+* Confirm your Solr Operator supports Solr 8.11.4; we only need to move to upgrade the operator if you are moving to Solr 9.x
+* Update the Solr version on [Solr custom resource](https://github.com/hathitrust/argocd-kubeadmin/tree/main/lib) 
+```
+solrImage: {
+        repository: 'http://ghcr.io/hathitrust/catalog-solr ',
+        tag: 'solrcloud-8.11.2',
+      },
+      .
+      .
+      .
+      .
+image: {
+  repository: 'solr',
+  tag: '8.11.2',
+},
+```
+* Upgrade the Solr Docker image tag: https://github.com/hathitrust/hathitrust_catalog_indexer/blob/main/solr/solrcloud/Dockerfile 
+* Back up the SolrCloud (collection) cluster before upgrading.
+* Back up Zookeeper state
+
+### **Create a Snapshot (Backup)**
+
+We have tried two techniques to back up a Solr collection in SolrCloud:
+
+**Using the Solr Operator**: In the Solr [custom resource](https://github.com/hathitrust/argocd-kubeadmin/blob/main/environments/infrastructure/metadata-processing-testing-solrcloud/main.jsonnet), 
+we have added the `backupRepositories` entry to enable backups of the collections on the Solr cluster.
+Solr operator will include a backup and restore feature that can be used to create backups of Solr collections. 
+Find [here](https://github.com/apache/solr-operator/blob/main/docs/solr-backup/README.md) 
+additional information to back up a collection in SolrCloud. 
+
+For backup in Kubernetes, we have created a shared filesystem path (location) that is accessible from all Solr pods in the cluster.
+Solr will write the backup files to that location.
+
+To access the Solr backups, SSH into any server with access to `htprep`. 
+The complete path for all backups is `/htprep/metadata_workflow_testing/catalog_backups/cloud/metadata-processing-testing/backups/`.
+
+* After that, we can create a backup by defining the following resources in a yaml file. 
+
+```yaml
+apiVersion: solr.apache.org/v1beta1
+kind: SolrBackup
+metadata:
+  name: backup-test-20250520
+  namespace: metadata-processing-testing
+spec:
+  repositoryName: "catalog-backup"
+  SolrCloud: metadata-processing-testing
+  collections:
+    - catalog
+```
+* Use the command below to create the backup. 
+
+```bash
+`kubectl -n metadata-processing-testing apply backup-test-20250520.yml` 
+```
+
+**Solr's Backup API**: This is a built-in API that allows you to create a full backup of a Solr collection. 
+
+The API will back up the collection, but not the configsets.
+
+```bash
+curl "http://localhost:8983/solr/admin/collections?action=BACKUP&name=catalog_snapshot_2025_05_19&collection=catalog&location=/backups"
+
+
+name: the snapshot name
+collection: collection name
+location: The shared filesystem path
+```
+
+### Command to check the backup status
+
+- **How to check the backup status?**
+```bash
+kubectl -n metadata-processing-testing get solrbackup backup-test-20250520 -o jsonpath='{.status.successful}'
+```
+- **Command to see the list of backups**
+
+```bash
+ kubectl -n metadata-processing-testing get solrbackups
+ ```
+
+- **How much space is needed to store the index files and metadata at the path specified in the location?**
+
+We need enough free space to store:
+- All index segments for the collection (including replicas). Solr doesn’t back up all replicas; 
+it backs up only one per shard. But it still must copy the full shard data to the backup location.
+- Snapshot metadata, so backup_size => index size of the collection
+
+
+- **Use Solr metrics API to get the collection size:**
+
+```bash
+ curl -u admin:$SOLR_PASS "http://localhost:53428/solr/admin/metrics?group=core&prefix=INDEX.sizeInBytes&wt=json" 
+ ```
+
+### Backing up Zookeeper state
+
+It is important to have backup of the cluster coordination state to:
+
+- Recovery from a disaster
+- Migration: When moving to a new cluster
+- Version Control: Snapshot configsets or cluster before changes
+- Audit: To preserve the state at a specific point in time.
+
+### Manual Backup kubectl:
+
+**Backup Zookeeper stage**
+
+Open a terminal in a Zookeeper pod
+
+```bash
+kubectl -n metadata-processing-testing exec metadata-processing-testing-solrcloud-zookeeper-0 -it -- /bin/bash
+```
+
+Export Zookeeper tree using zkCli.sh
+
+```bash
+zkCli.sh -server metadata-processing-testing-solrcloud-zookeeper-0.metadata-processing-testing-solrcloud-zookeeper-headless.metadata-processing-testing.svc.cluster.local:2181,metadata-processing-testing-solrcloud-zookeeper-1.metadata-processing-testing-solrcloud-zookeeper-headless.metadata-processing-testing.svc.cluster.local:2181,metadata-processing-testing-solrcloud-zookeeper-2.metadata-processing-testing-solrcloud-zookeeper-headless.metadata-processing-testing.svc.cluster.local:2181 get /configs/catalog > catalog_config.txt
+```
+
+#### Manual backup configsets
+
+To run solr `zk downconfig` in a Kubernetes-based SolrCloud cluster, you’ll need to run the command from inside a Solr pod
+
+Open a terminal into a Solr pod
+
+```bash
+kubectl -n metadata-processing-testing exec metadata-processing-testing-solrcloud-0 -it -- /bin/bash
+```
+
+Explore what is in ZK `solr zk ls -z <zk-hosts> /configs`
+
+e.g. 
+
+```bash
+solr zk ls -z metadata-processing-testing-solrcloud-zookeeper-0.metadata-processing-testing-solrcloud-zookeeper-headless.metadata-processing-testing.svc.cluster.local:2181,metadata-processing-testing-solrcloud-zookeeper-1.metadata-processing-testing-solrcloud-zookeeper-headless.metadata-processing-testing.svc.cluster.local:2181,metadata-processing-testing-solrcloud-zookeeper-2.metadata-processing-testing-solrcloud-zookeeper-headless.metadata-processing-testing.svc.cluster.local:2181 /configs
+```
+
+The input of the command below will be all the configset in the cluster. e.g. _default, catalog, catalog_logs
+
+Inside the Solr pod, run the command to download the configset
+
+```bash
+solr zk downconfig -z metadata-processing-testing-solrcloud-zookeeper-0.metadata-processing-testing-solrcloud-zookeeper-headless.metadata-processing-testing.svc.cluster.local:2181,metadata-processing-testing-solrcloud-zookeeper-1.metadata-processing-testing-solrcloud-zookeeper-headless.metadata-processing-testing.svc.cluster.local:2181,metadata-processing-testing-solrcloud-zookeeper-2.metadata-processing-testing-solrcloud-zookeeper-headless.metadata-processing-testing.svc.cluster.local:2181 -n catalog -d /tmp/catalog_configsetbackup_2025_05_19
+```
+
+* -z list of zookeeper host
+* -n name of the configset
+* -d the local directory to download the configset
+
+Copy Snapshot to Target Environment
+
+```bash
+kubectl cp -n metadata-processing-testing metadata-processing-testing-solrcloud-0:/tmp/catalog_configsetbackup_2025_05_19 Downloads/catalog_configsetbackup_2025_05_19
+```
+
+### Restore the back up
+
+We will need to understand better how to do that. 
+3- Restore Snapshot in Target Environment
+
+```bash
+curl "http://localhost:8983/solr/admin/collections?action=RESTORE&name=catalog_snapshot_2025_05_19&collection=catalog&location=/backups"
+```
+
+
+Note: For some update it will make sense to create a different namespace for the new release
+
+
 ## Next Steps
 
 We will need to understand the following for configuring something in our production k8s clusters: 
@@ -172,7 +350,10 @@ We will need to understand the following for configuring something in our produc
 * Configuring an ingress
 * Configuring metrics for prometheus (SolrPrometheusExporter custom type)
 * Configuring for sufficient performance -- indexing via minikube is very slow; it wasn't clear if that was because of running multiple solrs at once on my personal machine, the way that minikube handles local storage, or something else.
-
+* Restoring a Solr index (Use full-text search for this experiment)
+* Workflow to back up and restore Zookeeper state
 We could also investigate the backup/snapshots option for a potentially more supported way of setting up an index release workflow (i.e. take a snapshot, back it up, restore it, swap that in)
+
+
 
 https://solr.apache.org/operator/articles/explore-v030-gke.html has a good introduction to some of the concerns. It discusses some about high availability as well as configuring prometheus exporters.
