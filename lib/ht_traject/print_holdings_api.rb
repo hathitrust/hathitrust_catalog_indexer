@@ -1,4 +1,5 @@
 require_relative "../services"
+require "httpx/adapters/faraday"
 
 module HathiTrust
   class PrintHoldingsAPI
@@ -9,6 +10,7 @@ module HathiTrust
         # TODO: Perhaps if it fails we should retry instead of immediately raising an
         # error?
         builder.response :raise_error
+        builder.adapter :httpx
       end
     end
 
