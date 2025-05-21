@@ -38,7 +38,7 @@ jobs:
             - name: Build Solr
               uses: hathitrust/github_actions/build@v1
               with:
-                image: ghcr.io/hathitrust/catalog-solr
+                image: ghcr.io/catalog-solr
                 dockerfile: example-index/Dockerfile
                 img_tag: ${{ inputs.img_tag }}
                 tag: ${{ inputs.ref }}
@@ -46,10 +46,10 @@ jobs:
                 registry_token: ${{ github.token }}
                 rebuild: ${{ inputs.rebuild }}
                 build-args: "--target indexer"
-            - name: Build Solr (Sample Index) 
+            - name: Build Solr (Sample Index)
               uses: hathitrust/github_actions/build@v1
               with:
-                image: ghcr.io/hathitrust/catalog-solr-sample
+                image: ghcr.io/catalog-solr-sample
                 dockerfile: example-index/Dockerfile
                 img_tag: ${{ inputs.img_tag }}
                 tag: ${{ inputs.ref }}
