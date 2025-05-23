@@ -46,7 +46,7 @@ jobs:
                 registry_token: ${{ github.token }}
                 rebuild: ${{ inputs.rebuild }}
                 build-args: "--target indexer"
-            - name: Build Solr (Sample Index) 
+            - name: Build Solr (Sample Index)
               uses: hathitrust/github_actions/build@v1
               with:
                 image: ghcr.io/hathitrust/catalog-solr-sample

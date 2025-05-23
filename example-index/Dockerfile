@@ -2,32 +2,21 @@
 
 FROM --platform=$BUILDPLATFORM jruby:9.4 AS traject
 
-ARG UNAME=app
-ARG UID=1000
-ARG GID=1000
+ENV BUNDLE_PATH=/gems
+ENV redirect_file=/dev/null
+ENV NO_DB=1
 
 RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
-  build-essential
+  build-essential \
+  git
 
-RUN groupadd -g ${GID} -o ${UNAME}
-RUN useradd -m -d /app -u ${UID} -g ${GID} -o -s /bin/bash ${UNAME}
-RUN mkdir -p /gems && chown ${UID}:${GID} /gems
-
-COPY --chown=${UID}:${GID} ./Gemfile* /app/
-USER $UNAME
-
-ENV BUNDLE_PATH /gems
 RUN mkdir -p /gems
-
 
 WORKDIR /app
 
-COPY ./Gemfile /app
-RUN bundle install --version "~> 2.5.23"
+RUN gem install bundler --version "~> 2.5.23"
 COPY . /app
-
-ENV redirect_file /dev/null
-ENV NO_DB 1
+RUN bundle install
 
 # outputs /app/debug.json
 # records-to-index.json should be in ./example-index
@@ -64,9 +53,11 @@ RUN mkdir /tmp/catalog-data && \
 
 FROM solr:8.11
 
-LABEL org.opencontainers.image.source https://github.com/hathitrust/hathitrust_catalog_indexer
+LABEL org.opencontainers.image.source=https://github.com/hathitrust/hathitrust_catalog_indexer
 
 ENV SOLR_PORT=9033
 
 COPY --chown=solr:solr ./solr /var/solr/data
 COPY --from=indexer /tmp/catalog-data /var/solr/data/catalog/data
+
+USER app
