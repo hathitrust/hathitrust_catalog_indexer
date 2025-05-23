@@ -1,3 +1,3 @@
 FROM solr:8.11.4
 
-COPY --from=solr_lib --chown=solr:solr lib /var/solr/lib/
+COPY --chown=solr:solr --from=solr_lib lib /var/solr/lib/
