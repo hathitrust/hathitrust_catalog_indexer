@@ -45,6 +45,8 @@ jobs:
                 push_latest: ${{ inputs.push_latest}}
                 registry_token: ${{ github.token }}
                 rebuild: ${{ inputs.rebuild }}
+                build-args: "--build-context solr_lib=solr/solrcloud/"
+
             - name: Build Solr (Sample Index)
               uses: hathitrust/github_actions/build@v1
               with:
