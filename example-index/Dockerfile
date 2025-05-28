@@ -60,4 +60,5 @@ ENV SOLR_PORT=9033
 COPY --chown=solr:solr ./solr /var/solr/data
 COPY --from=indexer /tmp/catalog-data /var/solr/data/catalog/data
 
+RUN useradd -m -d /app -u 1000 -g 1000 -o -s /bin/bash app
 USER app
