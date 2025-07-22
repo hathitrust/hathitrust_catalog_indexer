@@ -13,6 +13,7 @@ GEM
       public_suffix (>= 2.0.2, < 7.0)
     ast (2.4.3)
     base64 (0.2.0)
+    bigdecimal (3.1.9)
     bigdecimal (3.1.9-java)
     builder (3.3.0)
     canister (0.9.2)
@@ -37,6 +38,7 @@ GEM
     faraday-net_http (3.4.0)
       net-http (>= 0.5.0)
     ffi (1.17.1-java)
+    ffi (1.17.1-x86_64-linux-gnu)
     ffi-compiler (1.3.2)
       ffi (>= 1.15.5)
       rake
@@ -56,7 +58,7 @@ GEM
       mutex_m
     httpx (1.4.4)
       http-2 (>= 1.0.0)
-    jdbc-mysql (9.1.0.1)
+    json (2.10.2)
     json (2.10.2-java)
     language_server-protocol (3.17.0.4)
     library_stdnums (1.6.0)
@@ -70,8 +72,6 @@ GEM
       rexml
     marc-fastxmlwriter (1.1.0)
       marc (~> 1.0)
-    marc-marc4j (1.0.0-java)
-      marc (~> 1)
     marc_alephsequential (2.0.0)
       marc (~> 1)
       yell (~> 2)
@@ -79,10 +79,11 @@ GEM
     method_source (1.1.0)
     milemarker (1.0.1)
     mutex_m (0.3.0)
-    naconormalizer (1.0.1-java)
     net-http (0.6.0)
       uri
     nokogiri (1.18.7-java)
+      racc (~> 1.4)
+    nokogiri (1.18.7-x86_64-linux-gnu)
       racc (~> 1.4)
     parallel (1.26.3)
     parser (3.3.7.4)
@@ -91,11 +92,15 @@ GEM
     prism (1.4.0)
     prometheus-client (4.2.4)
       base64
+    pry (0.15.2)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
     pry (0.15.2-java)
       coderay (~> 1.1)
       method_source (~> 1.0)
       spoon (~> 0.0)
     public_suffix (6.0.1)
+    racc (1.8.1)
     racc (1.8.1-java)
     rainbow (3.1.1)
     rake (13.2.1)
@@ -162,7 +167,7 @@ GEM
     standard-performance (1.7.0)
       lint_roller (~> 1.1)
       rubocop-performance (~> 1.24.0)
-    thor (1.3.2)
+    thor (1.4.0)
     timecop (0.9.10)
     traject (3.8.3)
       concurrent-ruby (>= 0.8.0)
@@ -177,9 +182,6 @@ GEM
       nokogiri (~> 1.9)
       slop (~> 4.0)
       yell
-    traject-marc4j_reader (1.1.0-java)
-      marc (~> 1.0)
-      marc-marc4j (~> 1.0)
     traject_alephsequential_reader (1.1.2)
       marc (~> 1)
       marc_alephsequential (~> 2)
@@ -198,6 +200,7 @@ GEM
 
 PLATFORMS
   universal-java-17
+  x86_64-linux
 
 DEPENDENCIES
   bundler (~> 2.0)
@@ -209,11 +212,9 @@ DEPENDENCIES
   http (~> 5.0)
   httpclient
   httpx
-  jdbc-mysql
   library_stdnums
   marc-fastxmlwriter (~> 1.1)
   match_map
-  naconormalizer
   pry
   push_metrics!
   rake
@@ -227,7 +228,6 @@ DEPENDENCIES
   thor
   timecop
   traject (~> 3.0)
-  traject-marc4j_reader
   traject_alephsequential_reader
   traject_umich_format
   webmock
