@@ -8,6 +8,7 @@ require_relative "../services"
 module CICTL
   class Indexer
     include Common
+
     DEFAULT_READER_NAME = "jsonl"
     DEFAULT_WRITER_NAME = "localhost"
     COLLECTION_MAP_FILE = "collection_code_to_original_from.yaml"

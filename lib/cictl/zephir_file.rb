@@ -4,6 +4,7 @@ module CICTL
   # Standard name templates for the three types of files processed by the indexer.
   module ZephirFile
     extend self
+
     def full_template
       template_prefix + "_full_%Y%m%d_vufind.json.gz"
     end
