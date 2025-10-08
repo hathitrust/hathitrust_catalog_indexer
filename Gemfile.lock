@@ -56,7 +56,7 @@ GEM
     httpx (1.6.2)
       http-2 (>= 1.0.0)
     jdbc-mysql (9.1.0.1)
-    json (2.15.0-java)
+    json (2.15.1-java)
     language_server-protocol (3.17.0.5)
     library_stdnums (1.6.0)
     lint_roller (1.1.0)
