@@ -6,6 +6,9 @@ require_relative "common"
 require "zinzout"
 
 module CICTL
+  # Support for backing up and restoring stub solr documents for deleted
+  # catalog records. This is used to support reporting in OAI about catalog
+  # records that have been deleted.
   module DeletedRecords
     extend Common
     extend self

@@ -54,6 +54,8 @@ module CICTL
       self
     end
 
+    # Mark a record as deleted. This is used to support reporting on items that
+    # have been deleted in the OAI feed.
     def set_deleted(ids)
       solr_data = Array(ids).map { |id| deleted_id id }
       update data: solr_data.to_json, headers: {"Content-Type" => "application/json"}
