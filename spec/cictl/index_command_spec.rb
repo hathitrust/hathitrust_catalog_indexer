@@ -91,7 +91,7 @@ RSpec.describe CICTL::IndexCommand do
         CICTL::Examples.of_type(:full, :upd)
           .reject { |e| e[:date] == "20230103" }
           .each do |ex|
-          CICTL::Examples.journal_for(example: ex).write!
+            CICTL::Examples.journal_for(example: ex).write!
         end
 
         CICTL::Commands.start(["index", "continue", "--quiet"])

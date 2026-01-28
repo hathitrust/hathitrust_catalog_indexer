@@ -1,4 +1,4 @@
-FROM jruby:9.4-jdk17 AS base
+FROM jruby:10.0-jdk21 AS base
 ARG UNAME=app
 ARG UID=1000
 ARG GID=1000
@@ -12,7 +12,7 @@ WORKDIR /app
 
 # USER $UNAME
 ENV BUNDLE_PATH /gems
-RUN gem install bundler --version "~> 2.5.23"
+RUN gem install bundler
 
 FROM base AS development
 
