@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 $:.unshift "#{File.dirname(__FILE__)}/../lib"
 
+require 'services'
 require 'set'
 require 'library_stdnums'
 require 'traject/macros/marc21_semantics'
@@ -41,7 +44,7 @@ require 'ht_traject/basic_macros'
 extend HathiTrust::BasicMacros
 
 require "services"
-require 'marc/fastxmlwriter'
+require 'marc/unsafe_xmlwriter'
 require 'marc_record_speed_monkeypatch'
 
 settings do
@@ -68,7 +71,7 @@ to_field 'id', extract_marc('001', first: true)
 
 to_field 'old_ids' do |_rec, acc, context|
   id = context.output_hash['id'].first
-  acc.replace HathiTrust::Services[:redirects].old_ids_for(id)
+  acc.replace HathiTrust::Services.redirects.old_ids_for(id)
 end
 
 to_field 'allfields', extract_all_marc_values do |_r, acc|
@@ -78,7 +81,7 @@ end
 # to_field 'fullrecord', macr4j_as_xml
 
 to_field 'fullrecord' do |rec, acc|
-  acc << MARC::FastXMLWriter.single_record_document(rec, include_namespace: true)
+  acc << MARC::UnsafeXMLWriter.single_record_document(rec, include_namespace: true)
 end
 
 to_field 'format', umich_format_and_types
@@ -100,7 +103,7 @@ to_field 'oclc_search' do |rec, acc, context|
   oclc_extractor.call(rec, acc) # side-effects the acc
   original_count = acc.size
   acc.map! { |x| x.sub(/\A0+/, '') } # drop leading zeros
-  acc.replace HathiTrust::Services[:oclc_resolution].all_resolved_oclcs(acc)
+  acc.replace HathiTrust::Services.oclc_resolution.all_resolved_oclcs(acc)
   if acc.size != original_count
     id = context.output_hash['id'].first
   end
@@ -277,7 +280,7 @@ to_field 'place_of_publication' do |r, acc|
       possible_single_letter_country_code = code[2]
       container = if possible_single_letter_country_code.nil? || (possible_single_letter_country_code == ' ')
                     nil
-                  else current_map['xx' << possible_single_letter_country_code]
+                  else current_map['xx' + possible_single_letter_country_code]
                   end
 
       pop = current_map[code]
@@ -352,7 +355,7 @@ to_field 'publishDateRange' do |rec, acc, context|
               context.output_hash['id'].first
             else '<no id in record>'
             end
-  logger.debug "No valid date for record #{id}: #{rec['008']}"
+    logger.debug "No valid date for record #{id}: #{rec['008']}"
   end
 end
 
@@ -371,5 +374,5 @@ to_field 'language008', extract_marc('008[35-37]', first: true) do |_r, acc|
 end
 
 each_record do |r, context|
-  HathiTrust::Services[:push_metrics].increment_and_log_batch_line
+  HathiTrust::Services.push_metrics.increment_and_log_batch_line
 end

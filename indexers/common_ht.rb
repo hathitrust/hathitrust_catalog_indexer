@@ -71,7 +71,7 @@ to_field 'ht_rightscode' do |_record, acc, context|
 end
 
 to_field 'htsource' do |_record, acc, context|
-  cc_to_of = HathiTrust::Services[:collection_map]
+  cc_to_of = HathiTrust::Services.collection_map
   if context.clipboard[:ht][:has_items]
     acc.concat context.clipboard[:ht][:items].collection_codes.map { |x| cc_to_of[x] }
   end

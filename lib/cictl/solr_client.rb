@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rsolr"
 require "delegate"
 require "pathname"
@@ -81,7 +83,7 @@ module CICTL
     def send_jsonl(filename, batch_size: 1000)
       Zinzout.zin(filename) do |infile|
         infile.each_slice(batch_size) do |batch|
-          body = "[" << batch.join(",") << "]"
+          body = "[" + batch.join(",") + "]"
           batch_sender_client.post(update_url, body)
         end
       end

@@ -11,8 +11,12 @@ RSpec.describe "indexers/ht" do
     end
   end
 
+  let(:traject_logger) do
+    CICTL::LoggerFactory.new(quiet: true).logger(owner: "rspec")
+  end
+
   let(:indexer) do
-    Traject::Indexer::MarcIndexer.new do
+    Traject::Indexer::MarcIndexer.new(logger: traject_logger) do
       [
         "./writers/null.rb",
         "./indexers/common.rb",
