@@ -54,7 +54,7 @@ GEM
     http-form_data (2.3.0)
     httpclient (2.9.0)
       mutex_m
-    httpx (1.7.5)
+    httpx (1.7.6)
       http-2 (>= 1.1.3)
     io-console (0.8.2-java)
     jdbc-mysql (9.1.0.1)
@@ -207,7 +207,7 @@ DEPENDENCIES
   faraday
   http (~> 5.0)
   httpclient
-  httpx (= 1.7.5)
+  httpx
   jdbc-mysql
   library_stdnums
   marc
