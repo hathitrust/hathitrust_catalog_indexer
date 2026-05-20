@@ -16,8 +16,9 @@ base_types = {
   pp: 'pipe_delimited',
   bin: 'binary',
   bool: 'boolean',
-  loc: 'location_rpt',
-  pt: 'point',
+  # Unused fields
+  # loc: 'location_rpt',
+  # pt: 'point',
 
   tbig: %i[t tp],
   tf: %i[t f],

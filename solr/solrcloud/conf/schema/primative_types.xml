@@ -17,7 +17,8 @@
 
 <fieldType class="solr.StrField" name="ignored" stored="false" indexed="false" multiValued="true"/>
 
-<fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
-     geo="true" distErrPct="0.025" maxDistErr="0.000009" distanceUnits="degrees" />
+<!-- Unused fields If we keep it we should  add spatial-extras to SOLR_MODULES and also to the solrconfig.xml -->
+<!-- <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
+     geo="true" distErrPct="0.025" maxDistErr="0.000009" distanceUnits="degrees" /> -->
 
-<fieldType name="point" class="solr.PointType" dimension="2" subFieldSuffix="_d"/>
+<!-- <fieldType name="point" class="solr.PointType" dimension="2" subFieldSuffix="_d"/> -->

@@ -74,10 +74,16 @@
 
        solr.RAMDirectoryFactory is memory based, not
        persistent, and doesn't work with replication.
+
+     Sorl 10: NRTCachingDirectoryFactory Deprecated/Removed
+      NRTCachingDirectoryFactory was deprecated in Solr 9.0 and is not available in Solr 10.
+      Solr 10 uses MMapDirectory automatically; I'll remove the <directoryFactory> element can be removed entirely,
+      we can check if it make sent to change to solr.StandardDirectoryFactory.
     -->
-  <directoryFactory name="DirectoryFactory" 
+
+  <!--<directoryFactory name="DirectoryFactory"
                     class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}">
-  </directoryFactory> 
+  </directoryFactory>  -->
   
   <!-- Use the classic schema.xml instead of a managed schema -->
   <schemaFactory class="ClassicIndexSchemaFactory"/>
@@ -135,7 +141,8 @@
          IndexWriter to write its info stream to solr's log. By default,
          this is enabled here, and controlled through log4j.properties.
       -->
-     <infoStream>true</infoStream>
+      <!-- Solr10: This element was deprecated in Lucene 10 and may be silently ignored or produce a warning. Safe to remove. -->
+     <!-- <infoStream>true</infoStream> -->
   </indexConfig>
 
 
@@ -373,8 +380,12 @@
 
        handleSelect="true" is not recommended for new users, but is the default
        for backwards compatibility
+
+       Solr 10: The handleSelect attribute was deprecated in Solr 9.0 and removed in Solr 10.
+       With it gone, legacy ?qt=handlerName routing no longer works. The standard handler registered without a
+       leading / path is affected. Fix: Register handlers explicitly with a /select or named path and remove handleSelect.
     -->
-  <requestDispatcher handleSelect="true" >
+  <!-- <requestDispatcher handleSelect="true" > -->
     <!-- Request Parsing
 
          These settings indicate how Solr Requests may be parsed, and
