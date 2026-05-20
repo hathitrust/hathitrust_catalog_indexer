@@ -6,7 +6,8 @@
 <!-- Sort types have to be single valued; we'll use ssort for
       string sort and isort for integer sort. In both cases,
       if you specify a stored value, it'll show up as a string
-      named <fieldname>_sort --> 
+      named <fieldname>_sort -->
+<!-- TO DELETE-->
 <dynamicField name="*_ssort" type="string" indexed="true" stored="false" multiValued="false" />
 <dynamicField name="*_isort" type="long" indexed="true" stored="false" multiValued="false" />
 <dynamicField name="*_ssort_stored" type="ignored" indexed="false" stored="false" multiValued="false" />

@@ -1,3 +1,5 @@
-FROM solr:8.11.4
+FROM solr:10.0.0
 
-COPY --chown=solr:solr solr/solrcloud/lib /var/solr/lib/
+# Load JARs inside the analysis-extras module so ICU is available in the same classloader as the other analysis components.
+# This is required for the ICU folding filter to work.
+COPY --chown=solr:solr solr/solrcloud/lib/solr10 /opt/solr/modules/analysis-extras/lib/

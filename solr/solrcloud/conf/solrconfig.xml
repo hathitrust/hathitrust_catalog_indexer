@@ -35,7 +35,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
   -->
-  <luceneMatchVersion>8.6.0</luceneMatchVersion>
+  <luceneMatchVersion>10.0.0</luceneMatchVersion>
 
   <!-- Data Directory
 
@@ -51,9 +51,14 @@
    <!-- Load up the libaries -->
 
   <!-- Solr home directory is by default /var/solr/data. Our library are in /var/solr/lib -->
-  <lib dir="${solr.solr.home}/../lib" regex=".*\.jar"/>
 
-  <!-- <lib dir="${solr.solr.home}/${solr.core.name}/lib" regex=".*\.jar"/> -->
+
+   <!-- Tell Solr's runtime engine to fetch the built-in Lucene ICU packages
+   Add ICUFoldingFilterFactory to the classpath so that it can be used in the schema.
+   -->
+   <lib modules="analysis-extras" />
+
+  <!-- custom JARs are loaded via the analysis-extras Solr module (see Dockerfile) -->
   <!-- <lib dir="${solr.solr.home}/${solr.core.name}/conf/lib" regex=".*\.jar"/> -->
 
   <!-- The DirectoryFactory to use for indexes.
@@ -119,7 +124,7 @@
          More details on the nuances of each LockFactory...
          http://wiki.apache.org/lucene-java/AvailableLockFactories
     -->
-    <lockType>${solr.lock.type:native}</lockType>
+    <lockType>${solr.lockType:native}</lockType>
 
     <!-- Lucene Infostream
        
@@ -142,8 +147,8 @@
        and statistics to JMX.
 
        For more details see http://wiki.apache.org/solr/SolrJmx
-    -->
-  <jmx />
+
+  <jmx />   -->
   <!-- If you want to connect to a particular server, specify the
        agentId 
     -->
@@ -226,16 +231,19 @@
     <maxBooleanClauses>2048</maxBooleanClauses>
 
 
-    <!-- Solr Internal Query Caches
+    <!-- Solr Caches and Query Warming
 
-         There are two implementations of cache available for Solr,
-         LRUCache, based on a synchronized LinkedHashMap, and
-         FastLRUCache, based on a ConcurrentHashMap.  
+        Solr Guide: https://solr.apache.org/guide/solr/latest/configuration-guide/caches-warming.html
 
-         FastLRUCache has faster gets and slower puts in single
-         threaded operation and thus is generally faster than LRUCache
-         when the hit ratio of the cache is high (> 75%), and may be
-         faster under other scenarios on multi-cpu systems.
+         Solr comes with a default SolrCache implementation that is used for different types of caches.
+         The CaffeineCache is an implementation backed by the Caffeine caching library.
+         By default, it uses a Window TinyLFU (W-TinyLFU) eviction policy, which allows the eviction
+         based on both frequency and recency of use in O(1) time with a small footprint.
+         Generally this cache usually offers lower memory footprint, higher hit ratio, and better
+         multithreaded performance over legacy caches.
+
+            CaffeineCache uses an auto-warm count that supports both integers and percentages which get evaluated
+            relative to the current size of the cache when warming happens.
     -->
 
     <!-- Filter Cache
@@ -244,20 +252,21 @@
          unordered sets of *all* documents that match a query.  When a
          new searcher is opened, its caches may be prepopulated or
          "autowarmed" using data from caches in the old searcher.
-         autowarmCount is the number of items to prepopulate.  For
-         LRUCache, the autowarmed items will be the most recently
-         accessed items.
+         autowarmCount is the number of items to prepopulate.
+
+         The most typical way Solr uses the filterCache is to cache results of each fq search parameter,
+         though there are some other use cases as well. Subsequent queries using the same parameter
+         filter query result in cache hits and rapid returns of results.
 
          Parameters:
-           class - the SolrCache implementation LRUCache or
-               (LRUCache or FastLRUCache)
-           size - the maximum number of entries in the cache
+           class - the SolrCache implementation (solr.CaffeineCache, solr.LRUCache, etc)
+           size - the maximum number of entries allowed in the cache
            initialSize - the initial capacity (number of entries) of
                the cache.  (see java.util.HashMap)
            autowarmCount - the number of entries to prepopulate from
                and old cache.  
       -->
-    <filterCache class="solr.FastLRUCache"
+    <filterCache class="solr.CaffeineCache"
                  size="512"
                  initialSize="512"
                  autowarmCount="0"/>
@@ -266,11 +275,11 @@
 
         Caches results of searches - ordered lists of document ids
         (DocList) based on a query, a sort, and the range of documents requested.
-        Additional supported parameter by LRUCache:
+        Additional supported parameter by solr.CaffeineCache:
            maxRamMB - the maximum amount of RAM (in MB) that this cache is allowed
                       to occupy
      -->
-    <queryResultCache class="solr.LRUCache"
+    <queryResultCache class="solr.CaffeineCache"
                      size="512"
                      initialSize="512"
                      autowarmCount="0"/>
@@ -281,14 +290,16 @@
          document).  Since Lucene internal document ids are transient,
          this cache will not be autowarmed.  
       -->
-    <documentCache class="solr.LRUCache"
+    <documentCache class="solr.CaffeineCache"
                    size="512"
                    initialSize="512"
                    autowarmCount="0"/>
     
-    <!-- custom cache currently used by block join --> 
+    <!-- custom cache currently used by block join -->
+    <!-- The regenerator="solr.NoOpRegenerator" remains valid and required. It ensures old segment
+    caches are safely discarded instead of trying to warm into new searcher segments. -->
     <cache name="perSegFilter"
-      class="solr.search.LRUCache"
+      class="solr.CaffeineCache"
       size="10"
       initialSize="0"
       autowarmCount="10"
@@ -472,7 +483,16 @@
       </lst>
     </requestHandler>
 
-    <queryResponseWriter name="xslt" class="solr.XSLTResponseWriter">
+    <!-- XSLTResponseWriter
+
+         This is a custom ResponseWriter that applies an XSLT transformation
+         to the XML output of a request.  It is used in the /marcxml handler
+         above to transform Solr's XML output into MARCXML format.
+
+         In Solr 9 and later (including Solr 10), the class has been moved to the solr.scripting namespace
+      -->
+
+    <queryResponseWriter name="xslt" class="solr.scripting.xslt.XSLTResponseWriter">
       <int name="xsltCacheLifetimeSeconds">5</int>
     </queryResponseWriter>
   
