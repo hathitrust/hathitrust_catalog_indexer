@@ -1,4 +1,4 @@
-!--    ............................
+<!--    ............................
         :     Text types           :
         ............................
 
@@ -61,7 +61,7 @@
     <filter class="solr.KeywordRepeatFilterFactory"/>
       &stemmer;
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
-    <filter class="edu.umich.lib.solr_filters.LeftAnchoredSearchFilterFactory"/>
+    <filter class="edu.umich.lib.solr.LeftAnchoredSearchFilterFactory"/>
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
@@ -78,7 +78,7 @@
   <filter class="solr.KeywordRepeatFilterFactory"/>
   &stemmer;
   <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
-  <filter class="edu.umich.lib.solr_filters.AnchoredSearchFilterFactory"/>
+  <filter class="edu.umich.lib.solr.FullyAnchoredSearchFilterFactory"/>
   <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
 </analyzer>
 </fieldType>

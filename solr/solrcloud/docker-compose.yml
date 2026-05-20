@@ -1,0 +1,59 @@
+---
+
+x-condition-healthy: &healthy
+  condition: service_healthy
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 5s
+  timeout: 10s
+  start_period: 10s
+  retries: 5
+
+services:
+  solr-sdr-catalog:
+    image: ghcr.io/hathitrust/catalog-solr:solrcloud-9.10.1
+    ports:
+      - "9033:9033"
+    command: solr-foreground -p 9033 # Explicitly ensures to start Solr on port 9033.
+    environment:
+      SOLR_OPTS: "-Dsun.misc.Unsafe=allow -Djavax.xml.accessExternalDTD=file" # Add this option until next Update Solr release to avoid the warning the sun.misc.Unsafe
+      ZK_HOST: zoo1:2181
+      SOLR_MODULES: analysis-extras,scripting # Enable Solr modules explicitly
+    depends_on:
+      zoo1:
+        condition: service_healthy
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      test: [ "CMD", "curl", "-fsS", "http://localhost:9033/solr/admin/info/system" ]
+  zoo1:
+    image: zookeeper:3.9.0
+    container_name: zoo1
+    restart: always
+    hostname: zoo1
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181
+      ZOO_4LW_COMMANDS_WHITELIST: "mntr,conf,ruok"
+    healthcheck:
+      test: ["CMD", "nc", "-z", "-w", "2", "localhost", "2181"] # Check if ZooKeeper is listening on port 2181
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  solr-init-catalog:
+    build:
+      context: ../..
+      dockerfile: solr/solrcloud/Dockerfile.init
+    # image: ghcr.io/hathitrust/catalog-solr-sample:latest
+    depends_on:
+      solr-sdr-catalog:
+        condition: service_healthy
+    environment:
+      ZK_HOST: zoo1:2181
+      SOLR_HOST: solr-sdr-catalog:9033
+
+volumes:
+  gem_cache:
+  solr1_data: null
+  zoo1_data: null
