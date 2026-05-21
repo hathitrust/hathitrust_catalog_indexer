@@ -383,9 +383,12 @@
 
        Solr 10: The handleSelect attribute was deprecated in Solr 9.0 and removed in Solr 10.
        With it gone, legacy ?qt=handlerName routing no longer works. The standard handler registered without a
-       leading / path is affected. Fix: Register handlers explicitly with a /select or named path and remove handleSelect.
+       leading / path is affected.
+       Fix: Register handlers explicitly with a /select or named path and remove handleSelect.
+
+       Solr now expects and relies on direct, path-based routing (e.g., querying directly against /my_handler instead of /select?qt=/my_handler)
     -->
-  <!-- <requestDispatcher handleSelect="true" > -->
+  <requestDispatcher> <!-- handleSelect="true" -->
     <!-- Request Parsing
 
          These settings indicate how Solr Requests may be parsed, and

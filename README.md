@@ -5,6 +5,7 @@ There are two quasi-independent parts to this repository:
 * [solr/](solr/) contains all of the configuration for the catalog solr,
   which currently uses a non-managed schema (i.e., we hand-edit the
   `schema.xml` file)
+  * We have have set up Solr in standalone mode (production) and in cloude mode (testing).
 * Everything else is concerned with the actual indexing code (based on
   [traject](https://github.com/traject/traject/))
 
@@ -42,7 +43,7 @@ docker compose run --rm test
 Generate Solr documents given an input file of MARC records in JSON format, one per line:
 
 ```
-docker compose run --rm traject bundle exec bin/cictl index file --no-commit --writer=json input-marc-records.jsonl
+docker compose run --rm test bundle exec bin/cictl index file --no-commit --writer=json example-index/records-to-index.jsonl
 ```
 
 Output will be in `debug.json`.
@@ -92,6 +93,34 @@ Zephir records for the last monthly up to the current date should be in `example
 ```bash
 docker compose run --rm traject bundle exec bin/cictl index all
 ```
+
+### Specific set up for Solr cloud testing
+
+To set up a Solr cloud cluster for testing, run the following command:
+
+All the files in `solr/solrcloud` are set up to run a 1-node Solr cloud cluster. 
+
+To start the cluster, run the following command from the `solr/solrcloud` directory:
+
+```
+cd solr/solrcloud
+docker compose up -d
+```
+
+This command will start a Solr cloud cluster with one node, and the Solr instance will be accessible 
+at http://localhost:9033/solr. The catalog collection will be created in the index
+
+To populate the collection you will need to generate the `debug.json` file with the Solr documents to index.
+
+Following the instructions on the session Generate Solr documents, you can generate the `debug.json` file with the Solr documents to index by running the following command:
+
+After that run the following command to index the generated `debug.json` file into the Solr cloud cluster:
+
+```
+cd solr/solrcloud
+./load_into_solrcloud.sh --url http://localhost:9033/solr/catalog --input ../debug.json --batch-size 50
+```
+from `example-index/records-to-index.jsonl` as part of the startup process.
 
 ### Query Solr
 

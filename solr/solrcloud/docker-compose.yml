@@ -1,0 +1,89 @@
+---
+
+x-condition-healthy: &healthy
+  condition: service_healthy
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 5s
+  timeout: 10s
+  start_period: 10s
+  retries: 5
+
+services:
+  solr-sdr-catalog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    #image: hattrust/solr-sdr-catalog:latest
+    ports:
+      - "9033:8983" # Map host port 9033 to container port 8983 to avoid conflicts with any local Solr instances
+    # command: solr-foreground # Explicitly ensures cloud mode is used, even if the image's default command changes
+    environment:
+      SOLR_OPTS: "-Dsun.misc.Unsafe=allow -Djavax.xml.accessExternalDTD=file" # Add this option until next Update Solr release to avoid the warning the sun.misc.Unsafe
+      ZK_HOST: zoo1:2181
+      SOLR_MODULES: analysis-extras,scripting # Enable Solr modules explicitly
+    networks: [solr]
+    depends_on:
+      zoo1:
+        condition: service_healthy
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      test: [ "CMD", "curl", "-fsS", "http://localhost:8983/solr/admin/info/system" ]
+  zoo1:
+    image: zookeeper:3.9.0
+    container_name: zoo1
+    restart: always
+    hostname: zoo1
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181
+      ZOO_4LW_COMMANDS_WHITELIST: "mntr,conf,ruok"
+    networks: [solr]
+    healthcheck:
+      test: ["CMD", "nc", "-z", "-w", "2", "localhost", "2181"] # Check if ZooKeeper is listening on port 2181
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  solr-init-catalog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      solr-sdr-catalog:
+        condition: service_healthy
+    volumes:
+      - ./conf:/catalog_config/conf:ro
+    environment:
+      SOLR_OPTS: "-Dsun.misc.Unsafe=allow"
+      SOLR_MODULES: analysis-extras,scripting # Ensures init container can compile ICU schemas - solr modules
+    networks: [solr]
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        echo "Uploading configset via zk upconfig (marks configset as trusted)..."
+        /opt/solr/bin/solr zk upconfig \
+          -n catalog-config \
+          -d /catalog_config/conf \
+          -z zoo1:2181
+
+        echo "Creating collection..."
+        curl -f "http://solr-sdr-catalog:8983/api/collections" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "name": "catalog",
+            "config": "catalog-config",
+            "numShards": 1,
+            "replicationFactor": 1
+          }'
+        echo "Collection created successfully."
+networks:
+    solr:
+      driver: bridge
+volumes:
+  gem_cache:
+  solr1_data: null
+  zoo1_data: null
