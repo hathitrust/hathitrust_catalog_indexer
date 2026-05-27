@@ -140,12 +140,53 @@ cd example-index
 ```
 from `example-index/records-to-index.jsonl` as part of the startup process.
 
-If you want to use the Solr cloud cluster for testing in other applications such as Catalog for example, you must copy 
-the two services `solr-sdr-catalog` and `zk` from the `solr/solrcloud/docker-compose.yml` file to 
-the `docker-compose.yml` file of the application, and make sure to set the `SOLR_URL` environment variable in the 
-application to point to the Solr cloud cluster, which should be accessible at http://localhost:9033/solr/catalog.
+If you want to use the Solr cloud cluster for testing in other applications such as Catalog for example, you must replace
+solr-sdr-catalog with the following service definition in the `docker-compose.yml` file of the application:
 
-After that, you will have to run the scripts solr/solrcloud/bin/init-catalog.sh and solr/solrcloud/bin/load-into-solrcloud.sh to initialize the catalog collection and load the data into the Solr cloud cluster, which will be accessible at http://localhost:9033/solr/catalog.
+```yaml
+    solr-sdr-catalog:
+    image: ghcr.io/hathitrust/catalog-solr:solrcloud-10.0.0
+    ports:
+      - "9033:9033"
+    command: solr-foreground -p 9033 # Explicitly ensures to start Solr on port 9033.
+    environment:
+      SOLR_OPTS: "-Dsun.misc.Unsafe=allow -Djavax.xml.accessExternalDTD=file" # Add this option until next Update Solr release to avoid the warning the sun.misc.Unsafe
+      ZK_HOST: zoo1:2181
+      SOLR_MODULES: analysis-extras,scripting # Enable Solr modules explicitly
+    depends_on:
+      zoo1:
+        condition: service_healthy
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      test: [ "CMD", "curl", "-fsS", "http://localhost:9033/solr/admin/info/system" ]
+  zoo1:
+    image: zookeeper:3.9.0
+    container_name: zoo1
+    restart: always
+    hostname: zoo1
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181
+      ZOO_4LW_COMMANDS_WHITELIST: "mntr,conf,ruok"
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "-w", "2", "localhost", "2181" ] # Check if ZooKeeper is listening on port 2181
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  solr-init:
+    image: ghcr.io/hathitrust/catalog-solr-sample:solrcloud-10.0.0
+    depends_on:
+      solr-sdr-catalog: *healthy
+    environment:
+      ZK_HOST: zoo1:2181
+      SOLR_HOST: solr-sdr-catalog:9033
+
+```
+
+The images `ghcr.io/hathitrust/catalog-solr-sample:solrcloud-10.0.0` and `ghcr.io/hathitrust/catalog-solr:solrcloud-10.0.0`
+are built with the actions in https://github.com/hathitrust/hathitrust_catalog_indexer/actions/workflows/build-solr.yml
 
 ### Query Solr
 
