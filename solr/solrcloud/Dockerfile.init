@@ -1,0 +1,40 @@
+# Stage 1: Generate Solr documents from MARC records using traject/cictl
+FROM --platform=$BUILDPLATFORM jruby:9.4 AS traject
+
+ENV BUNDLE_PATH=/gems
+ENV redirect_file=/dev/null
+ENV NO_DB=1
+
+RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
+  build-essential \
+  git
+
+RUN mkdir -p /gems
+
+WORKDIR /app
+
+RUN gem install bundler --version "~> 2.5.23"
+COPY . /app
+RUN bundle install
+
+# outputs /app/debug.json
+RUN bundle exec bin/cictl index file --no-commit --writer=json example-index/records-to-index.jsonl
+
+# Stage 2: Init container — upload configset, create collection, load sample data
+FROM solr:10.0.0
+
+# Copy the catalog configset, sample data, and init script into the image
+COPY --chown=solr:solr solr/solrcloud/conf /catalog_config/conf
+COPY --from=traject --chown=solr:solr /app/debug.json /catalog_config/solrdocs.jsonl
+
+# Copy the init script that will be run to upload the configset, create the collection.
+COPY --chown=solr:solr solr/solrcloud/bin/init-catalog.sh /usr/local/bin/init-catalog
+
+# Copy the script to load the sample data into the collection after it's created.
+# This is separate from the above script because it needs to be run after the collection is created,
+# and we want to be able to run it multiple times (e.g. for testing).
+COPY --chown=solr:solr example-index/load_into_solrcloud.sh /usr/local/bin/load-into-solrcloud
+
+RUN chmod +x /usr/local/bin/init-catalog /usr/local/bin/load-into-solrcloud
+
+ENTRYPOINT ["/usr/local/bin/init-catalog"]

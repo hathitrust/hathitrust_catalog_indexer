@@ -3,7 +3,7 @@ set -uo pipefail
 
 SOLR_URL="${SOLR_URL:-http://localhost:9033/solr/catalog}"
 INPUT_FILE="${INPUT_FILE:-/tmp/solrdocs.jsonl}"
-BATCH_SIZE="${BATCH_SIZE:-100}"
+BATCH_SIZE="${BATCH_SIZE:-1}"
 
 usage() {
   cat <<EOF
@@ -43,8 +43,8 @@ post_batch() {
   response=$(curl -s -w "\n%{http_code}" \
     -X POST \
     -H "Content-Type: application/json" \
-    --data-binary "$json_array" \
-    "$SOLR_URL/update/json/docs")
+    --data-binary @- \
+    "$SOLR_URL/update/json/docs" <<< "$json_array")
 
   http_code=$(tail -n1 <<< "$response")
   body=$(sed '$d' <<< "$response")

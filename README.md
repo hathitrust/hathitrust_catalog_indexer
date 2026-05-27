@@ -5,7 +5,7 @@ There are two quasi-independent parts to this repository:
 * [solr/](solr/) contains all of the configuration for the catalog solr,
   which currently uses a non-managed schema (i.e., we hand-edit the
   `schema.xml` file)
-  * We have have set up Solr in standalone mode (production) and in cloude mode (testing).
+  * We have set up Solr in standalone mode (production) and in cloude mode (testing).
 * Everything else is concerned with the actual indexing code (based on
   [traject](https://github.com/traject/traject/))
 
@@ -66,6 +66,11 @@ docker build . -f example-index/Dockerfile -t my-sample-solr
 and run e.g. `docker run -p 9033:9033 my-sample-solr`, or use in another
 `docker-compose.yml`, etc.
 
+You can run the script `example-index/load_into_solr.sh` to load the records into a Solr cloud cluster as well,
+but before that you will need to generate the `debug.json` file with the Solr documents to index by following the 
+instructions on the session Generate Solr documents and update the line 4
+of the script from `input="/tmp/solrdocs.jsonl"` to `input="../debug.json"`.
+
 A multi-platform (amd64/arm64) image with the sample records pre-loaded is
 available:
 
@@ -98,7 +103,7 @@ docker compose run --rm traject bundle exec bin/cictl index all
 
 To set up a Solr cloud cluster for testing, run the following command:
 
-All the files in `solr/solrcloud` are set up to run a 1-node Solr cloud cluster. 
+All the files in `solr/solrcloud` are set up to run a 1-node Solr cloud cluster with an external ZooKeeper. 
 
 To start the cluster, run the following command from the `solr/solrcloud` directory:
 
@@ -108,19 +113,39 @@ docker compose up -d
 ```
 
 This command will start a Solr cloud cluster with one node, and the Solr instance will be accessible 
-at http://localhost:9033/solr. The catalog collection will be created in the index
+at http://localhost:9033/solr. The service solr-init-catalog will run the initialization script 
+to upload the catalog configset and create the catalog collection in the Solr cloud cluster.
 
-To populate the collection you will need to generate the `debug.json` file with the Solr documents to index.
+It uses the `sorl/solrcloud/Dockerfile.init` multistage image, which runs:
 
-Following the instructions on the session Generate Solr documents, you can generate the `debug.json` file with the Solr documents to index by running the following command:
+- the script `solr/solrcloud/bin/init-catalog.sh` to initialize the catalog collection and the script. 
+- the traject command to generate the Solr documents from the input MARC records and write them to `debug.json`.
+- the script `solr/solrcloud/bin/load-into-solrcloud.sh` to load the generated Solr documents (`debug.json`) 
+into the catalog collection in Solr cloud.
 
-After that run the following command to index the generated `debug.json` file into the Solr cloud cluster:
+The structure of the `Dockerfile.init` image is as follows:
+[traject]  bundle exec cictl → /app/debug.json
+       ↓ COPY --from=traject
+  [init]     /catalog_config/conf/       ← schema + solrconfig
+             /catalog_config/solrdocs.jsonl  ← pre-built Solr docs
+             /usr/local/bin/init-catalog     ← runtime: zk upconfig → create collection → load data
+             /usr/local/bin/load-into-solrcloud
+
+The solr-init-catalog waits for Solr to be healthy, then runs the whole pipeline in one shot, at runtime, generating 
+the collection and loading the generated Solr documents into the Solr cloud cluster.
 
 ```
-cd solr/solrcloud
+cd example-index
 ./load_into_solrcloud.sh --url http://localhost:9033/solr/catalog --input ../debug.json --batch-size 50
 ```
 from `example-index/records-to-index.jsonl` as part of the startup process.
+
+If you want to use the Solr cloud cluster for testing in other applications such as Catalog for example, you must copy 
+the two services `solr-sdr-catalog` and `zk` from the `solr/solrcloud/docker-compose.yml` file to 
+the `docker-compose.yml` file of the application, and make sure to set the `SOLR_URL` environment variable in the 
+application to point to the Solr cloud cluster, which should be accessible at http://localhost:9033/solr/catalog.
+
+After that, you will have to run the scripts solr/solrcloud/bin/init-catalog.sh and solr/solrcloud/bin/load-into-solrcloud.sh to initialize the catalog collection and load the data into the Solr cloud cluster, which will be accessible at http://localhost:9033/solr/catalog.
 
 ### Query Solr
 
