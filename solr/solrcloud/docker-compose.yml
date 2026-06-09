@@ -45,7 +45,7 @@ services:
     build:
       context: ../..
       dockerfile: solr/solrcloud/Dockerfile.init
-    image: ghcr.io/hathitrust/catalog-solr-sample:latest
+    # image: ghcr.io/hathitrust/catalog-solr-sample:latest
     depends_on:
       solr-sdr-catalog:
         condition: service_healthy
