@@ -32,7 +32,6 @@
 
     <str name="host">${host:}</str>
     <int name="hostPort">${jetty.port:8983}</int>
-    <str name="hostContext">${hostContext:solr}</str>
 
     <bool name="genericCoreNodeNames">${genericCoreNodeNames:true}</bool>
 
