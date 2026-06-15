@@ -5,6 +5,7 @@ There are two quasi-independent parts to this repository:
 * [solr/](solr/) contains all of the configuration for the catalog solr,
   which currently uses a non-managed schema (i.e., we hand-edit the
   `schema.xml` file)
+  * We have set up Solr in standalone mode (production) and in cloude mode (testing).
 * Everything else is concerned with the actual indexing code (based on
   [traject](https://github.com/traject/traject/))
 
@@ -42,7 +43,7 @@ docker compose run --rm test
 Generate Solr documents given an input file of MARC records in JSON format, one per line:
 
 ```
-docker compose run --rm traject bundle exec bin/cictl index file --no-commit --writer=json input-marc-records.jsonl
+docker compose run --rm test bundle exec bin/cictl index file --no-commit --writer=json example-index/records-to-index.jsonl
 ```
 
 Output will be in `debug.json`.
@@ -64,6 +65,11 @@ docker build . -f example-index/Dockerfile -t my-sample-solr
 
 and run e.g. `docker run -p 9033:9033 my-sample-solr`, or use in another
 `docker-compose.yml`, etc.
+
+You can run the script `example-index/load_into_solr.sh` to load the records into a Solr cloud cluster as well,
+but before that you will need to generate the `debug.json` file with the Solr documents to index by following the 
+instructions on the session Generate Solr documents and update the line 4
+of the script from `input="/tmp/solrdocs.jsonl"` to `input="../debug.json"`.
 
 A multi-platform (amd64/arm64) image with the sample records pre-loaded is
 available:
@@ -92,6 +98,95 @@ Zephir records for the last monthly up to the current date should be in `example
 ```bash
 docker compose run --rm traject bundle exec bin/cictl index all
 ```
+
+### Specific set up for Solr cloud testing
+
+To set up a Solr cloud cluster for testing, run the following command:
+
+All the files in `solr/solrcloud` are set up to run a 1-node Solr cloud cluster with an external ZooKeeper. 
+
+To start the cluster, run the following command from the `solr/solrcloud` directory:
+
+```
+cd solr/solrcloud
+docker compose up -d
+```
+
+This command will start a Solr cloud cluster with one node, and the Solr instance will be accessible 
+at http://localhost:9033/solr. The service solr-init-catalog will run the initialization script 
+to upload the catalog configset and create the catalog collection in the Solr cloud cluster.
+
+It uses the `sorl/solrcloud/Dockerfile.init` multistage image, which runs:
+
+- the script `solr/solrcloud/bin/init-catalog.sh` to initialize the catalog collection and the script. 
+- the traject command to generate the Solr documents from the input MARC records and write them to `debug.json`.
+- the script `solr/solrcloud/bin/load-into-solrcloud.sh` to load the generated Solr documents (`debug.json`) 
+into the catalog collection in Solr cloud.
+
+The structure of the `Dockerfile.init` image is as follows:
+[traject]  bundle exec cictl → /app/debug.json
+       ↓ COPY --from=traject
+  [init]     /catalog_config/conf/       ← schema + solrconfig
+             /catalog_config/solrdocs.jsonl  ← pre-built Solr docs
+             /usr/local/bin/init-catalog     ← runtime: zk upconfig → create collection → load data
+             /usr/local/bin/load-into-solrcloud
+
+The solr-init-catalog waits for Solr to be healthy, then runs the whole pipeline in one shot, at runtime, generating 
+the collection and loading the generated Solr documents into the Solr cloud cluster.
+
+```
+cd example-index
+./load_into_solrcloud.sh --url http://localhost:9033/solr/catalog --input ../debug.json --batch-size 50
+```
+from `example-index/records-to-index.jsonl` as part of the startup process.
+
+If you want to use the Solr cloud cluster for testing in other applications such as Catalog for example, you must replace
+solr-sdr-catalog with the following service definition in the `docker-compose.yml` file of the application:
+
+```yaml
+    solr-sdr-catalog:
+    image: ghcr.io/hathitrust/catalog-solr:solrcloud-10.0.0
+    ports:
+      - "9033:9033"
+    command: solr-foreground -p 9033 # Explicitly ensures to start Solr on port 9033.
+    environment:
+      SOLR_OPTS: "-Dsun.misc.Unsafe=allow -Djavax.xml.accessExternalDTD=file" # Add this option until next Update Solr release to avoid the warning the sun.misc.Unsafe
+      ZK_HOST: zoo1:2181
+      SOLR_MODULES: analysis-extras,scripting # Enable Solr modules explicitly
+    depends_on:
+      zoo1:
+        condition: service_healthy
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      test: [ "CMD", "curl", "-fsS", "http://localhost:9033/solr/admin/info/system" ]
+  zoo1:
+    image: zookeeper:3.9.0
+    container_name: zoo1
+    restart: always
+    hostname: zoo1
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181
+      ZOO_4LW_COMMANDS_WHITELIST: "mntr,conf,ruok"
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "-w", "2", "localhost", "2181" ] # Check if ZooKeeper is listening on port 2181
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  solr-init:
+    image: ghcr.io/hathitrust/catalog-solr-sample:solrcloud-10.0.0
+    depends_on:
+      solr-sdr-catalog: *healthy
+    environment:
+      ZK_HOST: zoo1:2181
+      SOLR_HOST: solr-sdr-catalog:9033
+
+```
+
+The images `ghcr.io/hathitrust/catalog-solr-sample:solrcloud-10.0.0` and `ghcr.io/hathitrust/catalog-solr:solrcloud-10.0.0`
+are built with the actions in https://github.com/hathitrust/hathitrust_catalog_indexer/actions/workflows/build-solr.yml
 
 ### Query Solr
 

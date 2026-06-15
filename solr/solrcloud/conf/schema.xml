@@ -38,10 +38,6 @@
 
   <!ENTITY library_types    SYSTEM "schema/library_types.xml">
 
-  <!-- ...and the dynanic fields -->
-<!--  <!ENTITY dynamic_fields    SYSTEM "schema/dynamic_fields.xml">-->
-
-
   ]>
 
 <!--
@@ -139,10 +135,14 @@
 
 
    <!-- see https://www.elastic.co/blog/practical-bm25-part-2-the-bm25-algorithm-and-its-variables -->
+  <!-- Solr 10:  The raw Lucene BM25Similarity class doesn't implement Solr's SimilarityFactory interface,
+  so the b/k1 <str> params may be silently ignored or cause a class-cast error in Solr 10.
+  Fix: Use solr.BM25SimilarityFactory:
+ -->
 
-   <similarity class="org.apache.lucene.search.similarities.BM25Similarity">
-     <str name="b">0.1</str>  <!-- default is 0.75 -->
-     <str name="k1">1.2</str> <!-- default is 1.2 -->
+   <similarity class="solr.BM25SimilarityFactory">
+     <float name="b">0.1</float>  <!-- default is 0.75 -->
+     <float name="k1">1.2</float> <!-- default is 1.2 -->
    </similarity>
 
   <!--
@@ -346,7 +346,7 @@
  <!-- Time and Place -->
 
  <field name="publishDate"      type="string" indexed="true" stored="true"  multiValued="true"/>
- <field name="publishDateTrie"  type="int"   indexed="true" stored="false" multiValued="false" docValues="false" sortMissingLast="true"/>/>
+ <field name="publishDateTrie"  type="int"   indexed="true" stored="false" multiValued="false" docValues="false" sortMissingLast="true"/>
  <field name="publishDateRange" type="string" indexed="true" stored="true" multiValued="true"/>
  <field name="display_date"     type="string" indexed="false" stored="true" multiValued="false"/>
 
@@ -378,13 +378,5 @@
  <!-- Print holdings -->
 
  <field name="print_holdings" type="string" indexed="true" stored="true" multiValued="true"/>
-
-
-
- <!-- Insert the dynamic fields -->
-
-<!-- &dynamic_fields;-->
-
-
 
 </schema>

@@ -1,3 +1,4 @@
+<!-- TO DELETE-->
 <fieldType name="pipe_delimited" class="solr.TextField">
     <analyzer type="index">
         <tokenizer class="solr.PathHierarchyTokenizerFactory" delimiter="|"/>
@@ -8,9 +9,11 @@
 </fieldType>
 
 <fieldType name="dash_delimited" class="solr.TextField">
+    <!-- If you index usr-local-bin into dash_delimited, Solr stores three distinct tokens: usr, usr-local, and usr-local-bin. -->
     <analyzer type="index">
         <tokenizer class="solr.PathHierarchyTokenizerFactory" delimiter="-"/>
     </analyzer>
+    <!-- Query-time (Exact Match): When you run a search, KeywordTokenizerFactory treats your entire search term as a single, unbroken string -->
     <analyzer type="query">
         <tokenizer class="solr.KeywordTokenizerFactory"/>
     </analyzer>
