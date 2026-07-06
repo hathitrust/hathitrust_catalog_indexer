@@ -2,7 +2,6 @@
 
 require "rsolr"
 require "delegate"
-require "pathname"
 require "zinzout"
 require "faraday"
 require "httpx/adapters/faraday"
