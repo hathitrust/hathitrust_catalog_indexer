@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "../services"
-require "pathname"
 require "date"
 require "date_named_file"
 
