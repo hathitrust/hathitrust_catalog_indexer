@@ -1,30 +1,27 @@
-name: Deploy
+ame: Deploy
 
 on:
     workflow_dispatch:
         inputs:
             branch_hash:
-                description: Branch hash (default) or revision to deploy
+                description: Branch sha or revision to deploy (Defaults to branch sha)
             environments:
                 description: The environment to deploy to
                 type: choice
                 default: testing
                 options:
-                - testing
-                - production
+                    - testing
+                    - production
 
 jobs:
     deploy:
-            runs-on: ubuntu-latest
-            permissions:
-                contents: read
-                packages: write
-            steps:
-                - name: Deploy to ${{inputs.environments}}
-                  uses: hathitrust/github_actions/deploy@v1
-                  with:
-                    image: ghcr.io/${{ github.repository }}:${{ inputs.branch_hash || github.sha}}
-                    file: environments/metadata_processing/${{inputs.environments}}/catalog-indexing-image.txt
-                    CONFIG_REPO_RW_APP_ID: ${{ vars.CONFIG_REPO_RW_APP_ID }}
-                    CONFIG_REPO_FULL_NAME: ${{ vars.CONFIG_REPO_FULL_NAME }}
-                    CONFIG_REPO_RW_KEY: ${{secrets.CONFIG_REPO_RW_KEY}}
+        permissions:
+            contents: read
+            packages: write
+        name: Deploy to ${{inputs.environments}}
+        uses: hathitrust/github_actions/.github/workflows/deploy.yml@01b5414ee8d41485319b355b347002d269d42d30 # v2.0.0
+        with:
+            image: ghcr.io/${{ github.repository }}:${{ inputs.branch_hash || github.sha}}
+            file: environments/metadata_processing/${{inputs.environments}}/catalog-indexing-image.txt
+            CONFIG_REPO_FULL_NAME: ${{ vars.CONFIG_REPO_FULL_NAME }}
+        secrets: inherit
