@@ -7,7 +7,7 @@ on:
 jobs:
   tag-release:
     name: Tag Release
-    uses: hathitrust/github_actions/.github/workflows/tag-release.yml@01b5414ee8d41485319b355b347002d269d42d30 # v2.0.0
+    uses: hathitrust/github_actions/.github/workflows/tag-release.yml@2936af20240b3438cd0694fdd0e598b52ced1324 # v2.0.1
     with:
       existing_tag: ghcr.io/${{ github.repository }}:${{ github.sha }}
       image: ghcr.io/${{ github.repository }}
