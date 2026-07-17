@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "pathname"
 require "date_named_file"
 require_relative "common"
 require "zinzout"
@@ -37,7 +36,7 @@ module CICTL
     end
 
     def most_recent_non_empty_file
-      daily_template.to_a.reverse.find { |f| deleted_record_file_not_empty?(f) }
+      daily_template.to_a.rfind { |f| deleted_record_file_not_empty?(f) }
     end
 
     private
