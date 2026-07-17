@@ -1,4 +1,4 @@
-name: Build
+name: Build Catalog Indexer
 
 on:
     workflow_dispatch:
@@ -18,9 +18,9 @@ on:
                 type: choice
                 default: linux/amd64
                 options:
-                - linux/amd64,linux/arm64
-                - linux/amd64
-                - linux/arm64
+                    - linux/amd64,linux/arm64
+                    - linux/amd64
+                    - linux/arm64
             rebuild:
                 description: Rebuild this image?
                 type: boolean
@@ -28,20 +28,17 @@ on:
 
 jobs:
     build-image:
-        runs-on: ubuntu-latest
         permissions:
             contents: read
             packages: write
-
-        steps:
-            - name: Build Image
-              uses: hathitrust/github_actions/build@v1
-              with:
-                image: ghcr.io/${{ github.repository }}
-                dockerfile: Dockerfile
-                img_tag: ${{ inputs.img_tag }}
-                tag: ${{ inputs.ref }}
-                push_latest: ${{ inputs.push_latest}}
-                platforms: ${{ inputs.platforms }}
-                registry_token: ${{ github.token }}
-                rebuild: ${{ inputs.rebuild }}
+        name: Build Catalog Indexer
+        uses: hathitrust/github_actions/.github/workflows/build.yml@98a7b0f67c16b968bb1f357ac50224dbfa789f3f # v2.0.2
+        with:
+            image: ghcr.io/${{ github.repository }}
+            dockerfile: Dockerfile
+            img_tag: ${{ inputs.img_tag }}
+            tag: ${{ inputs.ref }}
+            push_latest: ${{ inputs.push_latest}}
+            rebuild: ${{ inputs.rebuild }}
+            platforms: ${{ inputs.platforms }}
+        secrets: inherit

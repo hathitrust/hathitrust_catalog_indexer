@@ -1,4 +1,4 @@
-name: Build Solr Catalog Sample Index
+name: Build Catalog Standalone Index
 
 on:
     workflow_dispatch:
@@ -31,11 +31,11 @@ jobs:
         permissions:
             contents: read
             packages: write
-        name: Build Solr
+        name: Build Solr Standalone (Sample Index)
         uses: hathitrust/github_actions/.github/workflows/build.yml@98a7b0f67c16b968bb1f357ac50224dbfa789f3f # v2.0.2
         with:
-            image: ghcr.io/hathitrust/catalog-solr
-            dockerfile: solr/solrcloud/Dockerfile
+            image: ghcr.io/hathitrust/catalog-solr-sample-standalone
+            dockerfile: example-index/Dockerfile
             img_tag: ${{ inputs.img_tag }}
             tag: ${{ inputs.ref }}
             push_latest: ${{ inputs.push_latest}}
