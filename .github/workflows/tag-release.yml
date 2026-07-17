@@ -1,4 +1,4 @@
-name: Docker Tag Latest Release
+name: Tag Latest Image with Release Version
 
 on:
   release:
