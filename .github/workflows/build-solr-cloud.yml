@@ -1,0 +1,44 @@
+name: Build Solr Catalog Sample Index
+
+on:
+    workflow_dispatch:
+        inputs:
+            img_tag:
+                description: Docker Image Tag
+            ref:
+                description: Revision or Branch to build
+                default: main
+            push_latest:
+                description: Set True if the build is for the latest version
+                type: boolean
+                required: false
+                default: false
+            platforms:
+                description: Platforms to build for
+                type: choice
+                default: linux/amd64,linux/arm64
+                options:
+                    - linux/amd64,linux/arm64
+                    - linux/amd64
+                    - linux/arm64
+            rebuild:
+                description: Rebuild this image?
+                type: boolean
+                default: false
+
+jobs:
+    build-image:
+        permissions:
+            contents: read
+            packages: write
+        name: Build Solr
+        uses: hathitrust/github_actions/.github/workflows/build.yml@98a7b0f67c16b968bb1f357ac50224dbfa789f3f # v2.0.2
+        with:
+            image: ghcr.io/hathitrust/catalog-solr
+            dockerfile: solr/solrcloud/Dockerfile
+            img_tag: ${{ inputs.img_tag }}
+            tag: ${{ inputs.ref }}
+            push_latest: ${{ inputs.push_latest}}
+            rebuild: ${{ inputs.rebuild }}
+            platforms: ${{ inputs.platforms }}
+        secrets: inherit

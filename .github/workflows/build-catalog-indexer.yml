@@ -1,4 +1,4 @@
-name: Build
+name: Build Catalog Indexer
 
 on:
     workflow_dispatch:
@@ -31,7 +31,7 @@ jobs:
         permissions:
             contents: read
             packages: write
-        name: Build Image
+        name: Build Catalog Indexer
         uses: hathitrust/github_actions/.github/workflows/build.yml@98a7b0f67c16b968bb1f357ac50224dbfa789f3f # v2.0.2
         with:
             image: ghcr.io/${{ github.repository }}
