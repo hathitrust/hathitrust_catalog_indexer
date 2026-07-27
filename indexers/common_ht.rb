@@ -1,5 +1,6 @@
 $:.unshift "#{File.dirname(__FILE__)}/../lib"
 require "services"
+require "hathitrust/catalog_record"
 
 #################################
 # COMMON HT STUFF
@@ -19,6 +20,14 @@ each_record do |r, context|
   context.clipboard[:ht][:has_items] = (itemset.size > 0)
   context.clipboard[:ht][:items] = itemset
 end
+
+# Create a HathiTrust::CatalogRecord for each MARC record
+#each_record do |r, context|
+#  catalog_record = HathiTrust::CatalogRecord.new(marc_record: r)
+#  context.clipboard[:ht][:catalog_record] = catalog_record
+#end
+
+
 
 # make use of the HathiTrust::ItemSet object stuffed into
 # [:ht][:items] to pull out all the other stuff we need.

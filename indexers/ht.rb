@@ -57,7 +57,9 @@ end
 each_record do |r, context|
   items = context.clipboard[:ht][:items]
   fields = context.output_hash
-  bibdate = HathiTrust::BibDate.get_bib_date(r)
+  #FIXME: this is a different bib_date from what is in the macros/`CatalogRecord` class
+  #FIXME more: this isn't even used
+  #bibdate = HathiTrust::BibDate.get_bib_date(r)
 
   items.each do |item|
     item.title_sortkey = [
@@ -79,4 +81,10 @@ end
 # All the print holdings from all the items
 to_field 'print_holdings' do |_record, acc, context|
   acc.replace context.clipboard[:ht][:items].print_holdings
+end
+
+to_field 'gov_doc' do |record, acc, context|
+  acc.replace [
+    context.clipboard[:ht][:catalog_record].gov_doc?
+  ]
 end

@@ -311,8 +311,15 @@ end
 each_record extract_date_into_context
 
 # Now use that value
-to_field 'publishDate', get_date
+#to_field 'publishDate', get_date
 
+# This is an array
+to_field 'publishDate' do |_rec, acc, context|
+  d = context.clipboard[:ht][:catalog_record].record_date.date
+  acc.replace [d] if d
+end
+
+#FIXME: moving to `RecordDate`
 def ordinalize_incomplete_year(s)
   i = s.to_s
   case i
@@ -328,10 +335,14 @@ def ordinalize_incomplete_year(s)
   end
 end
 
+#TODO: move this to CatalogRecord and test
+# This is a single string
 to_field 'display_date' do |_rec, acc, context|
   next unless context.output_hash['publishDate']
 
-  rd = context.clipboard[:ht][:rawdate]
+  #rd = context.clipboard[:ht][:rawdate]
+  rd = context.clipboard[:ht][:catalog_record].record_date.raw_date
+  # If `date` is the same as `raw_date` it means there are no 'u' bytes converted to 0
   if context.output_hash['publishDate'].first == rd
     acc << rd
   else if rd =~ /(\d\d\d)u/
@@ -346,10 +357,11 @@ to_field 'display_date' do |_rec, acc, context|
   end
 end
 
+#TODO: move this to CatalogRecord and test
 to_field 'publishDateRange' do |rec, acc, context|
   if context.output_hash['publishDate']
     d = context.output_hash['publishDate'].first
-    dr = HathiTrust::Traject::Macros::HTMacros.compute_date_range(d)
+    dr = HathiTrust::RecordDate.compute_date_range(d)
     acc << dr if dr
   else id = if context.output_hash['id']
               context.output_hash['id'].first

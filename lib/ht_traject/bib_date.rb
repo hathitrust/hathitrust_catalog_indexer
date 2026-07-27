@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+#FIXME remove this and an isolated reference to it in the macros if I didn't already
 class HathiTrust::BibDate
   VALID_DATE_CHARS = /[\du]/.freeze
 

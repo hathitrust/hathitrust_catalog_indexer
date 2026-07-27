@@ -4,15 +4,16 @@ module HathiTrust
 end
 
 require_relative 'bib_date.rb'
+require_relative "../hathitrust/gov_doc.rb"
 
 module HathiTrust::Traject::Macros
   # Nab the best bib date, based on teh date type and whatever's in the 008/date1 and 008/date2
-  def bib_date
-    lambda do |r, acc|
-      bd = HathiTrust::BibDate.get_bib_date(r)
-      acc.replace [bd] if bd
-    end
-  end
+  #def bib_date
+  #  lambda do |r, acc|
+  #    bd = HathiTrust::BibDate.get_bib_date(r)
+  #    acc.replace [bd] if bd
+  #  end
+  #end
 
   # Need a way to skip some fields, notably 710s with a $9 == 'WaSeSS'
   # because we've got JSTOR showing up as an author
@@ -74,13 +75,17 @@ module HathiTrust::Traject::Macros
     end
   end
 
-  # Get a namespaced place to put all the ht stuff
+  # Get a namespaced place to put all the ht stuff.
+  # Stash a `CatalogRecord` for computing the HT-specific stuff
   def self.setup
     lambda do |_record, context|
       context.clipboard[:ht] = {}
+      catalog_record = HathiTrust::CatalogRecord.new(marc_record: _record)
+      context.clipboard[:ht][:catalog_record] = catalog_record
     end
   end
 
+  #FIXME unused, commented out in common.rb
   def macr4j_as_xml
     lambda do |_r, acc, context|
       xmlos = java.io.ByteArrayOutputStream.new
@@ -172,29 +177,6 @@ module HathiTrust::Traject::Macros
 
       m = CONTAINS_FOUR_DIGITS.match(r['260']['c'])
       m && m[1]
-    end
-
-    # Get a date range for easier faceting. 1800+ goes to the decade,
-    # before that goes to the century, pre-1500 gets the string
-    # "Pre-1500"
-    #
-    # Returns 'nil' for dates after 2100, presuming they're just wrong
-    def self.compute_date_range(date)
-      return nil if date.nil?
-
-      date = date.to_s
-
-      return 'Pre-1500' if date.to_i < 1500
-
-      case date.to_i
-      when 1500..1800 then
-        century = date[0..1]
-        return century + '00-' + century + '99'
-      when 1801..2100 then
-        decade = date[0..2]
-        return decade + '0-' + decade + '9'
-      end
-      nil # default
     end
   end
 end

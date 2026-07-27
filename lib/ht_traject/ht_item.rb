@@ -126,7 +126,7 @@ module HathiTrust
 
           if item.enum_pubdate
             jsonrec['enum_pubdate']       = item.enum_pubdate
-            jsonrec['enum_pubdate_range'] = HathiTrust::Traject::Macros::HTMacros.compute_date_range(item.enum_pubdate.to_i)
+            jsonrec['enum_pubdate_range'] = HathiTrust::RecordDate.compute_date_range(item.enum_pubdate.to_i)
           end
 
           if platform == :ht
@@ -251,7 +251,7 @@ module HathiTrust
       def enum_pubdate=(e)
         if e && (e =~ /\d/)
           @enum_pubdate       = ('%04d' % e.to_i)
-          @enum_pubdate_range = HathiTrust::Traject::Macros::HTMacros.compute_date_range(@enum_pubdate)
+          @enum_pubdate_range = HathiTrust::RecordDate.compute_date_range(@enum_pubdate)
         else
           @enum_pubdate       = nil
           @enum_pubdate_range = nil
@@ -266,6 +266,7 @@ module HathiTrust
         ItemSet.ht_avail_intl[rights].first
       end
 
+      #FIXME remove
       def newly_open
         'newly_open' if HathiTrust::Constants::NewlyOpen.include? htid
       end
