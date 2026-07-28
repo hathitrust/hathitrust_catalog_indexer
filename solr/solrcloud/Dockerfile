@@ -10,6 +10,6 @@ ENV SOLR_MODULES=analysis-extras,scripting
 USER root
 RUN curl -fL \
     -o /opt/solr/modules/analysis-extras/lib/umich-solr-extensions.jar \
-    https://github.com/mlibrary/umich-lib-solr-extensions/releases/download/v1.0/umich-solr-extensions.jar \
+    https://github.com/mlibrary/umich-lib-solr-extensions/releases/download/v1.1/umich-solr-extensions.jar \
     && chown solr:solr /opt/solr/modules/analysis-extras/lib/umich-solr-extensions.jar
 USER solr
