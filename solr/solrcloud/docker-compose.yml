@@ -11,7 +11,9 @@ x-healthcheck-defaults: &healthcheck-defaults
 
 services:
   solr-sdr-catalog:
-    image: ghcr.io/hathitrust/catalog-solr:solrcloud-9.10.1
+    build:
+        context: ../..
+        dockerfile: solr/solrcloud/Dockerfile
     ports:
       - "9033:9033"
     command: solr-foreground -p 9033 # Explicitly ensures to start Solr on port 9033.

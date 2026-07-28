@@ -7,4 +7,9 @@ ENV SOLR_MODULES=analysis-extras,scripting
 
 # Load JARs inside the analysis-extras module so ICU is available in the same classloader as the other analysis components.
 # This is required for the ICU folding filter to work.
-COPY --chown=solr:solr solr/solrcloud/lib/solr9 /opt/solr/modules/analysis-extras/lib/
+USER root
+RUN curl -fL \
+    -o /opt/solr/modules/analysis-extras/lib/umich-solr-extensions.jar \
+    https://github.com/mlibrary/umich-lib-solr-extensions/releases/download/v1.1/umich-solr-extensions.jar \
+    && chown solr:solr /opt/solr/modules/analysis-extras/lib/umich-solr-extensions.jar
+USER solr
