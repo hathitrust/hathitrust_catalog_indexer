@@ -26,6 +26,7 @@ WebMock.disable_net_connect!(allow: [
 ])
 
 require_relative "../lib/cictl"
+require_relative "../lib/hathitrust/gov_doc"
 require_relative "../lib/ht_traject"
 require_relative "examples"
 

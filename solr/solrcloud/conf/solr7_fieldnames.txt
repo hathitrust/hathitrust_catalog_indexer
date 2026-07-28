@@ -36,6 +36,7 @@ genre
 genreStr
 geographic
 geographicStr
+gov_doc
 ht_availability
 ht_availability_intl
 ht_count
