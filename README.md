@@ -26,6 +26,9 @@ docker compose up -d solr-sdr-catalog
 docker compose run --rm traject bundle install
 ```
 
+Note: the Solr admin page is located at localhost:9034 for Solr 8 and
+at localhost:9033 for Solr 9 cloud.
+
 ### Testing
 
 To run all the Ruby tests (rspec) do:
@@ -36,6 +39,7 @@ cd hathitrust_catalog_indexer
 docker compose build
 docker compose run --rm test bundle install
 docker compose run --rm test
+docker compose run --rm test-solrcloud
 ```
 
 ### Generate Solr documents

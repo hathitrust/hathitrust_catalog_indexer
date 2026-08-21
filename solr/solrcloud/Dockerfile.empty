@@ -1,0 +1,11 @@
+FROM solr:9.10.1
+
+# Copy the catalog configset into the image
+COPY --chown=solr:solr solr/solrcloud/conf /catalog_config/conf
+
+# Copy the init script that will be run to upload the configset, create the collection.
+COPY --chown=solr:solr solr/solrcloud/bin/init-catalog.sh /usr/local/bin/init-catalog
+
+RUN chmod +x /usr/local/bin/init-catalog
+
+ENTRYPOINT ["/usr/local/bin/init-catalog"]
