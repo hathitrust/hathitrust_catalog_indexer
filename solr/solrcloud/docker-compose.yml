@@ -25,9 +25,10 @@ services:
       zoo1:
         condition: service_healthy
     healthcheck:
-      interval: 30s
+      interval: 5s
       timeout: 10s
-      retries: 5
+      start_period: 60s
+      retries: 12
       test: [ "CMD", "curl", "-fsS", "http://localhost:9033/solr/admin/info/system" ]
   zoo1:
     image: zookeeper:3.9.0

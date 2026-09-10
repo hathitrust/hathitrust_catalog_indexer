@@ -90,11 +90,13 @@ services:
   # Build an empty Solrcloud with our config set
   init-solr-sdr-catalog-solrcloud:
     build:
+      context: .
       dockerfile: solr/solrcloud/Dockerfile.empty
     depends_on:
       solr-sdr-catalog-solrcloud: *healthy
     environment:
       SOLR_HOST: solr-sdr-catalog-solrcloud:9033
+      ZK_HOST: zoo1:2181
 
   mariadb:
     image: ghcr.io/hathitrust/db-image:latest
