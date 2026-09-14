@@ -21,6 +21,7 @@ end
 WebMock.disable_net_connect!(allow: [
   "http://pushgateway:9091",
   "http://solr-sdr-catalog:9033",
+  "http://solr-sdr-catalog-solrcloud:9033",
   # for testing a non-working URL specifically
   "http://solr-sdr-catalog:1111"
 ])

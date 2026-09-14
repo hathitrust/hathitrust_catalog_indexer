@@ -25,13 +25,16 @@ jobs:
       - name: Set up tests
         run: |
           docker compose build
-          docker compose run test bundle install
+          docker compose run --rm test bundle install
 
       - name: Run standardrb
-        run: docker compose run test bundle exec standardrb
+        run: docker compose run --rm test bundle exec standardrb
 
       - name: Run tests
-        run: docker compose run test
+        run: docker compose run --rm test
+
+      - name: Run solrcloud tests
+        run: docker compose run --rm test-solrcloud
 
       - name: Report to Coveralls
         uses: coverallsapp/github-action@8d6379e14d29928660c4ba802d8e85393440b329 # v2.3.7
