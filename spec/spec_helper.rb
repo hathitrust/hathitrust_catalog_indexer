@@ -15,7 +15,7 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
   SimpleCov::Formatter::LcovFormatter
 ])
 SimpleCov.start do
-  add_filter "/spec/"
+  skip "/spec/"
 end
 
 WebMock.disable_net_connect!(allow: [
