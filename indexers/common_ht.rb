@@ -1,5 +1,6 @@
 $:.unshift "#{File.dirname(__FILE__)}/../lib"
 require "services"
+require "hathitrust/gov_doc"
 
 #################################
 # COMMON HT STUFF
@@ -75,4 +76,9 @@ to_field 'htsource' do |_record, acc, context|
   if context.clipboard[:ht][:has_items]
     acc.concat context.clipboard[:ht][:items].collection_codes.map { |x| cc_to_of[x] }
   end
+end
+
+to_field "gov_doc" do |record, acc, context|
+  oclcs = context.output_hash["oclc"]
+  acc << HathiTrust::GovDoc.new(record, oclcs).gov_doc?
 end

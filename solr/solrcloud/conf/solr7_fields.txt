@@ -36,6 +36,7 @@
  <field name="genre"       type="text"       indexed="true" stored="true"  multiValued="true"  omitNorms="true"/>
  <field name="geographicStr"    type="string" indexed="true" stored="true" multiValued="true"/>
  <field name="geographic"       type="text"   indexed="true" stored="true" multiValued="true"  omitNorms="true"/>
+ <field name="gov_doc"      type="boolean"   indexed="true" stored="true" multiValued="false"/>
 <field name="ht_availability_intl" type="string"  indexed="true" stored="true" multiValued="true"/>
 <field name="ht_availability"      type="string"  indexed="true" stored="true" multiValued="true"/>
 <field name="ht_count"      type="int"    indexed="true"  stored="true"  multiValued="false"/>

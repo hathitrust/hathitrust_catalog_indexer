@@ -259,7 +259,7 @@
  <field name="publisher"    type="text_nostem" indexed="true" stored="true" multiValued="true"/>
  <field name="edition"      type="string"     indexed="true" stored="true" multiValued="true"/>
  <field name="cat_date"     type="int"       indexed="true" stored="true" multiValued="false"/>
-
+ <field name="gov_doc"      type="boolean"   indexed="true" stored="true" multiValued="false"/>
 
  <!-- Author fields -->
 

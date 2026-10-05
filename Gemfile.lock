@@ -1,4 +1,10 @@
 GIT
+  remote: https://github.com/hathitrust/feddocs_filter.git
+  revision: cac86559eae01439cbc63448098785942bebd614
+  specs:
+    filter (0.7.5)
+
+GIT
   remote: https://github.com/hathitrust/push_metrics
   revision: 197dacfa9da68059012809cb6108691da7b605f6
   specs:
@@ -207,6 +213,7 @@ DEPENDENCIES
   date_named_file
   dotenv
   faraday
+  filter!
   http (~> 5.0)
   httpclient
   httpx
