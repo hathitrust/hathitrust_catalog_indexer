@@ -1,4 +1,4 @@
-FROM solr:9.10.1
+FROM solr:9.11.0
 
 ENV SOLR_PORT=9033
 
